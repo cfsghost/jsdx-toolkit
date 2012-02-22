@@ -29,6 +29,8 @@ void Texture::Initialize(Handle<Object> target)
 	/* Methods */
 	Actor::PrototypeMethodsInit(tpl);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "loadFile", Texture::LoadFile);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setLoadAsync", Texture::SetLoadAsync);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getLoadAsync", Texture::GetLoadAsync);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -65,6 +67,30 @@ Handle<Value> Texture::LoadFile(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Texture::SetLoadAsync(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsBoolean()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_texture_set_load_async(CLUTTER_TEXTURE(instance), args[0]->ToBoolean()->Value());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Texture::GetLoadAsync(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Boolean::New(clutter_texture_get_load_async(CLUTTER_TEXTURE(instance)))
+	);
 }
 
 }

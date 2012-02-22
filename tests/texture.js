@@ -12,9 +12,19 @@ stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
 stage.show();
 
+/* Normal to load (default: sync) */
 var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 stage.add(texture1);
+
+/* Asynchronize */
+var texture2 = new clutter.Texture;
+texture2.setLoadAsync(true);
+texture2.loadFile('fred.jpg');
+texture2.setPosition(200, 200);
+stage.add(texture2);
+
+console.log(texture2.getLoadAsync());
 
 clutter.main();
