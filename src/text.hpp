@@ -17,10 +17,8 @@ protected:
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetColor(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetColor(const v8::Arguments& args);
-	static v8::Handle<v8::Value> SetBorderColor(const v8::Arguments& args);
-	static v8::Handle<v8::Value> GetBorderColor(const v8::Arguments& args);
-	static v8::Handle<v8::Value> SetBorderWidth(const v8::Arguments& args);
-	static v8::Handle<v8::Value> GetBorderWidth(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetText(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetText(const v8::Arguments& args);
 };
 
 }

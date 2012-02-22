@@ -15,6 +15,8 @@ stage.show();
 var text1 = new clutter.Text('WHITE TEXT');
 text1.setPosition(100, 100);
 text1.setColor(255, 255, 255, 255);
+console.log(text1.getText());
+text1.setText(text1.getText() + '!!!');
 console.log('Text1\'s Color is ');
 console.log(text1.getColor());
 stage.add(text1);
