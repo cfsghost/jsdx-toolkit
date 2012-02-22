@@ -7,6 +7,7 @@
 #include "actor.hpp"
 #include "container.hpp"
 #include "stage.hpp"
+#include "rectangle.hpp"
 
 namespace clutter {
  
@@ -55,6 +56,7 @@ extern "C" {
 		Actor::Initialize(target);
 		Container::Initialize(target);
 		Stage::Initialize(target);
+		Rectangle::Initialize(target);
 	}
 
 	NODE_MODULE(clutter, init);
