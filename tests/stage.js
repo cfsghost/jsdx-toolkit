@@ -15,6 +15,7 @@ stage.useAlpha(true);
 stage.setOpacity(100);
 stage.resize(500, 500);
 stage.setPosition(100, 100);
+stage.setColor(255, 0, 0, 255);
 
 stage.show();
 stage.hide();

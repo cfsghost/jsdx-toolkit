@@ -35,6 +35,7 @@ void Stage::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setTitle", Stage::SetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -87,6 +88,25 @@ Handle<Value> Stage::SetUseAlpha(const Arguments &args)
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 		clutter_stage_set_use_alpha(CLUTTER_STAGE(instance), args[0]->ToBoolean()->Value());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Stage::SetColor(const Arguments &args)
+{
+	HandleScope scope;
+	static ClutterColor color;
+
+	if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		color.red = args[0]->NumberValue();
+		color.green = args[1]->NumberValue();
+		color.blue = args[2]->NumberValue();
+		color.alpha = args[3]->NumberValue();
+
+		clutter_stage_set_color(CLUTTER_STAGE(instance), &color);
 	}
 
 	return args.This();
