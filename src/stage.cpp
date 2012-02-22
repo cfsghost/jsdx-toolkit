@@ -4,6 +4,7 @@
 
 #include "clutter.hpp"
 #include "actor.hpp"
+#include "container.hpp"
 #include "stage.hpp"
 
 namespace clutter {
@@ -11,7 +12,7 @@ namespace clutter {
 using namespace node;
 using namespace v8;
 
-Stage::Stage() : Actor() {
+Stage::Stage() : Container() {
 	HandleScope scope;
 
 	/* Create Stage */
@@ -29,7 +30,8 @@ void Stage::Initialize(Handle<Object> target)
 	Local<String> name = String::NewSymbol("Stage");
 
 	/* Methods */
-	Actor::PrototypeMethodsInit(tpl);
+	Container::PrototypeMethodsInit(tpl);
+
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setTitle", Stage::SetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);

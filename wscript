@@ -21,6 +21,7 @@ def build(bld):
 	obj.source = """
 		src/clutter.cpp
 		src/actor.cpp
+		src/container.cpp
 		src/stage.cpp
 		"""
 	obj.cxxflags = ["-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE"]

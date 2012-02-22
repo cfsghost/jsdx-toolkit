@@ -7,7 +7,7 @@
 
 namespace clutter {
 
-class Stage : public Actor {
+class Stage : public Container {
 public:
 	static void Initialize(v8::Handle<v8::Object> target);
 

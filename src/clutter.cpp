@@ -5,6 +5,7 @@
 
 #include "clutter.hpp"
 #include "actor.hpp"
+#include "container.hpp"
 #include "stage.hpp"
 
 namespace clutter {
@@ -52,6 +53,7 @@ extern "C" {
 		NODE_SET_METHOD(target, "useARGB", SetUseARGBVisual);
 
 		Actor::Initialize(target);
+		Container::Initialize(target);
 		Stage::Initialize(target);
 	}
 
