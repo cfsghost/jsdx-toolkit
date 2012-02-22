@@ -29,6 +29,10 @@ protected:
 	static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetDepth(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetDepth(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetX(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetX(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetY(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetY(const v8::Arguments& args);
 };
 
 }

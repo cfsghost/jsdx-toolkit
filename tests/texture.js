@@ -38,5 +38,6 @@ texture3.setPosition(50, 50);
 stage.add(texture3);
 
 console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());
+console.log('texture3 (x, y) = (' + texture3.getX() + ', ' + texture3.getY() + ')');
 
 clutter.main();

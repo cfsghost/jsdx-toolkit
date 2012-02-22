@@ -40,6 +40,10 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setDepth", Actor::SetDepth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getDepth", Actor::GetDepth);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setX", Actor::SetX);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getX", Actor::GetX);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setY", Actor::SetY);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -152,6 +156,54 @@ Handle<Value> Actor::SetPosition(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Actor::SetX(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_x(CLUTTER_ACTOR(instance), args[0]->NumberValue());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::GetX(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Number::New(clutter_actor_get_x(CLUTTER_ACTOR(instance)))
+	);
+}
+
+Handle<Value> Actor::SetY(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_y(CLUTTER_ACTOR(instance), args[0]->NumberValue());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::GetY(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Number::New(clutter_actor_get_y(CLUTTER_ACTOR(instance)))
+	);
 }
 
 Handle<Value> Actor::SetDepth(const Arguments &args)
