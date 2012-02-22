@@ -32,6 +32,10 @@ void Rectangle::Initialize(Handle<Object> target)
 	Actor::PrototypeMethodsInit(tpl);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Rectangle::SetColor);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getColor", Rectangle::GetColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setBorderColor", Rectangle::SetBorderColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getBorderColor", Rectangle::GetBorderColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setBorder", Rectangle::SetBorderWidth);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getBorder", Rectangle::GetBorderWidth);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -105,8 +109,70 @@ Handle<Value> Rectangle::GetColor(const Arguments &args)
 	o->Set(String::New("b"), Integer::New(color.blue));
 	o->Set(String::New("a"), Integer::New(color.alpha));
 
+	return scope.Close(o);
+}
+
+Handle<Value> Rectangle::SetBorderColor(const Arguments &args)
+{
+	HandleScope scope;
+	static ClutterColor color;
+
+	if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		color.red = args[0]->NumberValue();
+		color.green = args[1]->NumberValue();
+		color.blue = args[2]->NumberValue();
+		color.alpha = args[3]->NumberValue();
+
+		clutter_rectangle_set_border_color(CLUTTER_RECTANGLE(instance), &color);
+	}
+
+	return args.This();
+}
+
+Handle<Value> Rectangle::GetBorderColor(const Arguments &args)
+{
+	HandleScope scope;
+	Local<Object> o;
+	static ClutterColor color;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	clutter_rectangle_get_border_color(CLUTTER_RECTANGLE(instance), &color);
+
+	/* create a JavaScript Object */
+	o = Object::New();
+	o->Set(String::New("r"), Integer::New(color.red));
+	o->Set(String::New("g"), Integer::New(color.green));
+	o->Set(String::New("b"), Integer::New(color.blue));
+	o->Set(String::New("a"), Integer::New(color.alpha));
 
 	return scope.Close(o);
+}
+
+Handle<Value> Rectangle::SetBorderWidth(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_rectangle_set_border_width(CLUTTER_RECTANGLE(instance), args[0]->NumberValue());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Rectangle::GetBorderWidth(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Integer::New(clutter_rectangle_get_border_width(CLUTTER_RECTANGLE(instance)))
+	);
 }
 
 }
