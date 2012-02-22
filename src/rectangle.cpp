@@ -30,6 +30,7 @@ void Rectangle::Initialize(Handle<Object> target)
 
 	/* Methods */
 	Actor::PrototypeMethodsInit(tpl);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Rectangle::SetColor);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -51,8 +52,29 @@ Handle<Value> Rectangle::New(const Arguments& args)
 	obj->Wrap(args.This());
 
 	/* Set color */
+	if (args.Length() > 0) {
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
+			ClutterActor *instance = obj->_actor;
+
+			color.red = args[0]->NumberValue();
+			color.green = args[1]->NumberValue();
+			color.blue = args[2]->NumberValue();
+			color.alpha = args[3]->NumberValue();
+
+			clutter_rectangle_set_color(CLUTTER_RECTANGLE(instance), &color);
+		}
+	}
+
+	return scope.Close(args.This());
+}
+
+Handle<Value> Rectangle::SetColor(const Arguments &args)
+{
+	HandleScope scope;
+	static ClutterColor color;
+
 	if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
-		ClutterActor *instance = obj->_actor;
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 		color.red = args[0]->NumberValue();
 		color.green = args[1]->NumberValue();
@@ -62,7 +84,7 @@ Handle<Value> Rectangle::New(const Arguments& args)
 		clutter_rectangle_set_color(CLUTTER_RECTANGLE(instance), &color);
 	}
 
-	return scope.Close(args.This());
+	return args.This();
 }
 
 }

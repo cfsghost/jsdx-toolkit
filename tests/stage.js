@@ -20,9 +20,4 @@ stage.show();
 stage.hide();
 stage.showAll();
 
-var rectangle = new clutter.Rectangle(0, 255, 255, 255);
-rectangle.resize(100, 100);
-rectangle.setPosition(100, 100);
-stage.add(rectangle);
-
 clutter.main();
