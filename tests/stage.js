@@ -7,7 +7,7 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 
 /* Create a new stage */
 var stage = new clutter.Stage();
-
+stage.setTitle('This is a new stage');
 stage.show();
 
 clutter.main();

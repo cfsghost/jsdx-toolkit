@@ -28,7 +28,9 @@ void Stage::Initialize(Handle<Object> target)
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	Local<String> name = String::NewSymbol("Stage");
 
+	/* Methods */
 	Actor::PrototypeMethodsInit(tpl);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setTitle", Stage::SetTitle);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -49,6 +51,19 @@ Handle<Value> Stage::New(const Arguments& args)
 	obj->Wrap(args.This());
 
 	return scope.Close(args.This());
+}
+
+Handle<Value> Stage::SetTitle(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsString()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_stage_set_title(CLUTTER_STAGE(instance), *String::Utf8Value(args[0]->ToString()));
+	}
+
+	return args.This();
 }
 
 }

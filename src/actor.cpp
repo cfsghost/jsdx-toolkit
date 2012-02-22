@@ -56,7 +56,7 @@ Handle<Value> Actor::Show(const Arguments &args)
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 	clutter_actor_show(instance);
 
-	return Undefined();
+	return args.This();
 }
 
 }
