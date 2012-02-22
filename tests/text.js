@@ -21,4 +21,18 @@ console.log('Text1\'s Color is ');
 console.log(text1.getColor());
 stage.add(text1);
 
+var text2 = new clutter.Text('Test Font');
+text2.setFontName('Droid Sans 40');
+console.log(text2.getFontName());
+text2.setPosition(200, 200);
+text2.setColor(255, 0, 0, 255);
+stage.add(text2);
+
+var text3 = new clutter.Text('Bold Font');
+text3.setFontName('Droid Sans bold 40');
+console.log(text3.getFontName());
+text3.setPosition(200, 300);
+text3.setColor(200, 200, 0, 255);
+stage.add(text3);
+
 clutter.main();

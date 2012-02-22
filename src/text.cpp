@@ -32,6 +32,8 @@ void Text::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getColor", Text::GetColor);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setText", Text::SetText);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getText", Text::GetText);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setFontName", Text::SetFontName);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getFontName", Text::GetFontName);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -124,6 +126,31 @@ Handle<Value> Text::GetText(const Arguments &args)
 
 	return scope.Close(
 		String::New(clutter_text_get_text(CLUTTER_TEXT(instance)))
+	);
+}
+
+Handle<Value> Text::SetFontName(const Arguments &args)
+{
+	HandleScope scope;
+	static ClutterColor color;
+
+	if (args[0]->IsString()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_text_set_font_name(CLUTTER_TEXT(instance), *String::Utf8Value(args[0]->ToString()));
+	}
+
+	return args.This();
+}
+
+Handle<Value> Text::GetFontName(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		String::New(clutter_text_get_font_name(CLUTTER_TEXT(instance)))
 	);
 }
 
