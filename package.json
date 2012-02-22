@@ -1,0 +1,28 @@
+{
+	"name": "clutter",
+	"version": "0.0.1",
+	"description": "Node.js binding for Clutter Toolkit",
+	"keywords": [
+		"clutter",
+		"gui"
+	],
+	"author": {
+		"name": "Fred Chien(錢逢祥)",
+		"email": "cfsghost@gmail.com",
+		"web": "http://people.linux.org.tw/~fred/"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:cfsghost/node-clutter.git"
+	},
+	"directories": {
+		"tests": "tests"
+	},
+	"engines": {
+		"node": ">= 0.4.0"
+	},
+	"scripts": {
+		"install": "node-waf configure build"
+	}
+}
