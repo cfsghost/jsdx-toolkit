@@ -31,6 +31,7 @@ void Rectangle::Initialize(Handle<Object> target)
 	/* Methods */
 	Actor::PrototypeMethodsInit(tpl);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Rectangle::SetColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getColor", Rectangle::GetColor);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -85,6 +86,27 @@ Handle<Value> Rectangle::SetColor(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Rectangle::GetColor(const Arguments &args)
+{
+	HandleScope scope;
+	Local<Object> o;
+	static ClutterColor color;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	clutter_rectangle_get_color(CLUTTER_RECTANGLE(instance), &color);
+
+	/* create a JavaScript Object */
+	o = Object::New();
+	o->Set(String::New("r"), Integer::New(color.red));
+	o->Set(String::New("g"), Integer::New(color.green));
+	o->Set(String::New("b"), Integer::New(color.blue));
+	o->Set(String::New("a"), Integer::New(color.alpha));
+
+
+	return scope.Close(o);
 }
 
 }
