@@ -9,6 +9,7 @@
 #include "stage.hpp"
 #include "rectangle.hpp"
 #include "text.hpp"
+#include "texture.hpp"
 
 namespace clutter {
  
@@ -59,6 +60,7 @@ extern "C" {
 		Stage::Initialize(target);
 		Rectangle::Initialize(target);
 		Text::Initialize(target);
+		Texture::Initialize(target);
 	}
 
 	NODE_MODULE(clutter, init);
