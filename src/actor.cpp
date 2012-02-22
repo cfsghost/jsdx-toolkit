@@ -30,6 +30,8 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	HandleScope scope;
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", Actor::ShowAll);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -55,6 +57,26 @@ Handle<Value> Actor::Show(const Arguments &args)
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 	clutter_actor_show(instance);
+
+	return args.This();
+}
+
+Handle<Value> Actor::ShowAll(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	clutter_actor_show_all(instance);
+
+	return args.This();
+}
+
+Handle<Value> Actor::Hide(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	clutter_actor_hide(instance);
 
 	return args.This();
 }
