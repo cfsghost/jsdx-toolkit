@@ -12,6 +12,8 @@ var stage = new clutter.Stage();
 stage.setTitle('This is a new stage');
 stage.useAlpha(true);
 stage.setOpacity(100);
+stage.resize(320, 240);
+
 stage.show();
 stage.hide();
 stage.showAll();
