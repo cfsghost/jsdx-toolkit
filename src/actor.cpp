@@ -35,6 +35,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setOpacity", Actor::SetOpacity);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -91,7 +92,7 @@ Handle<Value> Actor::SetOpacity(const Arguments &args)
 	if (args[0]->IsNumber()) {
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
-		clutter_actor_set_opacity(instance, args[0]->NumberValue());
+		clutter_actor_set_opacity(CLUTTER_ACTOR(instance), args[0]->NumberValue());
 	}
 
 	return args.This();
@@ -104,7 +105,20 @@ Handle<Value> Actor::Resize(const Arguments &args)
 	if (args[0]->IsNumber() && args[1]->IsNumber()) {
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
-		clutter_actor_set_size(instance, args[0]->NumberValue(), args[1]->NumberValue());
+		clutter_actor_set_size(CLUTTER_ACTOR(instance), args[0]->NumberValue(), args[1]->NumberValue());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::SetPosition(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber() && args[1]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_position(CLUTTER_ACTOR(instance), args[0]->NumberValue(), args[1]->NumberValue());
 	}
 
 	return args.This();
