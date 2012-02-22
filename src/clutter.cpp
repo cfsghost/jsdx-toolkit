@@ -1,6 +1,7 @@
 #include <v8.h>
 #include <node.h>
 #include <clutter/clutter.h>
+#include <clutter/x11/clutter-x11.h>
 
 #include "clutter.hpp"
 #include "actor.hpp"
@@ -24,6 +25,15 @@ static Handle<Value> ClutterMain(const Arguments& args)
 
 	return Undefined();
 }
+
+static Handle<Value> SetUseARGBVisual(const Arguments& args)
+{
+	if (args[0]->IsBoolean()) {
+		clutter_x11_set_use_argb_visual(args[0]->ToBoolean()->Value());
+	}
+
+	return Undefined();
+}
  
 extern "C" {
 	static void init(Handle<Object> target)
@@ -39,6 +49,7 @@ extern "C" {
 
 		NODE_SET_METHOD(target, "init", ClutterInit);
 		NODE_SET_METHOD(target, "main", ClutterMain);
+		NODE_SET_METHOD(target, "useARGB", SetUseARGBVisual);
 
 		Actor::Initialize(target);
 		Stage::Initialize(target);

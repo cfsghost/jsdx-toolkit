@@ -32,6 +32,8 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", Actor::ShowAll);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
+
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setOpacity", Actor::SetOpacity);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -77,6 +79,19 @@ Handle<Value> Actor::Hide(const Arguments &args)
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 	clutter_actor_hide(instance);
+
+	return args.This();
+}
+
+Handle<Value> Actor::SetOpacity(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_opacity(instance, args[0]->NumberValue());
+	}
 
 	return args.This();
 }
