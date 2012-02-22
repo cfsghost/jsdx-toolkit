@@ -27,6 +27,8 @@ protected:
 	static v8::Handle<v8::Value> SetWidth(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetHeight(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetDepth(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetDepth(const v8::Arguments& args);
 };
 
 }
