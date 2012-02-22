@@ -25,6 +25,16 @@ texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 stage.add(texture2);
 
-console.log(texture2.getLoadAsync());
+console.log('texture2 getLoadAsync() = ' + texture2.getLoadAsync());
+
+/* Keep aspect ratio */
+var texture3 = new clutter.Texture;
+texture3.keepAspectRatio(true);
+texture3.loadFile('fred.jpg');
+texture3.setWidth(50);
+texture3.setPosition(50, 50);
+stage.add(texture3);
+
+console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());
 
 clutter.main();

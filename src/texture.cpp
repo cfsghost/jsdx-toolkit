@@ -31,6 +31,7 @@ void Texture::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "loadFile", Texture::LoadFile);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setLoadAsync", Texture::SetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getLoadAsync", Texture::GetLoadAsync);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "keepAspectRatio", Texture::KeepAspectRatio);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -91,6 +92,25 @@ Handle<Value> Texture::GetLoadAsync(const Arguments &args)
 	return scope.Close(
 		Boolean::New(clutter_texture_get_load_async(CLUTTER_TEXTURE(instance)))
 	);
+}
+
+Handle<Value> Texture::KeepAspectRatio(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	/* Return value if no parameter */
+	if (args[0]->IsUndefined() || args[0]->IsNull())
+		return scope.Close(
+			Boolean::New(clutter_texture_get_keep_aspect_ratio(CLUTTER_TEXTURE(instance)))
+		);
+
+	if (args[0]->IsBoolean()) {
+		clutter_texture_set_keep_aspect_ratio(CLUTTER_TEXTURE(instance), args[0]->ToBoolean()->Value());
+	}
+
+	return args.This();
 }
 
 }
