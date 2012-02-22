@@ -31,6 +31,7 @@ void Stage::Initialize(Handle<Object> target)
 	/* Methods */
 	Actor::PrototypeMethodsInit(tpl);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setTitle", Stage::SetTitle);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
 
 	target->Set(name, tpl->GetFunction());
@@ -65,6 +66,15 @@ Handle<Value> Stage::SetTitle(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Stage::GetTitle(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(String::New(clutter_stage_get_title(CLUTTER_STAGE(instance))));
 }
 
 Handle<Value> Stage::SetUseAlpha(const Arguments &args)
