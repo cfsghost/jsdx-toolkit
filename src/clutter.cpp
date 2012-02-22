@@ -38,6 +38,13 @@ static Handle<Value> SetUseARGBVisual(const Arguments& args)
 
 	return Undefined();
 }
+
+static Handle<Value> ClutterMainQuit(const Arguments& args)
+{
+	clutter_main_quit();
+
+	return Undefined();
+}
  
 extern "C" {
 	static void init(Handle<Object> target)
@@ -53,6 +60,7 @@ extern "C" {
 
 		NODE_SET_METHOD(target, "init", ClutterInit);
 		NODE_SET_METHOD(target, "main", ClutterMain);
+		NODE_SET_METHOD(target, "quit", ClutterMainQuit);
 		NODE_SET_METHOD(target, "useARGB", SetUseARGBVisual);
 
 		Actor::Initialize(target);
