@@ -4,6 +4,7 @@
 
 #include "clutter.hpp"
 #include "actor.hpp"
+#include "stage.hpp"
 
 namespace clutter {
  
@@ -40,6 +41,7 @@ extern "C" {
 		NODE_SET_METHOD(target, "main", ClutterMain);
 
 		Actor::Initialize(target);
+		Stage::Initialize(target);
 	}
 
 	NODE_MODULE(clutter, init);

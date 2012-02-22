@@ -20,9 +20,16 @@ void Actor::Initialize(Handle<Object> target)
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 	Local<String> name = String::NewSymbol("Actor");
 
-//	NODE_SET_PROTOTYPE_METHOD(t, "get", Point::get);
+	PrototypeMethodsInit(tpl);
 
 	target->Set(name, tpl->GetFunction());
+}
+
+void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+{
+	HandleScope scope;
+
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -37,10 +44,19 @@ Handle<Value> Actor::New(const Arguments& args)
 
 	// Creates a new instance object of this type and wraps it.
 	Actor* obj = new Actor();
-
 	obj->Wrap(args.This());
 
 	return args.This();
+}
+
+Handle<Value> Actor::Show(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	clutter_actor_show(instance);
+
+	return Undefined();
 }
 
 }

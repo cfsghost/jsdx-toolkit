@@ -5,4 +5,9 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 	process.exit();
 }
 
+/* Create a new stage */
+var stage = new clutter.Stage();
+
+stage.show();
+
 clutter.main();
