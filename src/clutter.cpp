@@ -8,6 +8,7 @@
 #include "container.hpp"
 #include "stage.hpp"
 #include "rectangle.hpp"
+#include "text.hpp"
 
 namespace clutter {
  
@@ -57,6 +58,7 @@ extern "C" {
 		Container::Initialize(target);
 		Stage::Initialize(target);
 		Rectangle::Initialize(target);
+		Text::Initialize(target);
 	}
 
 	NODE_MODULE(clutter, init);
