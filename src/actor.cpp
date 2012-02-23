@@ -1,6 +1,7 @@
 #include <v8.h>
 #include <node.h>
 #include <clutter/clutter.h>
+#include <string.h>
 
 #include "clutter.hpp"
 #include "actor.hpp"
@@ -55,6 +56,9 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	/* Event handler */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Actor::On);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "_off", Actor::Off);
+
+	/* Animation */
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "animate", Actor::Animate);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -498,6 +502,51 @@ Handle<Value> Actor::Off(const Arguments &args)
 	HandleScope scope;
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return args.This();
+}
+
+/* Animate */
+Handle<Value> Actor::Animate(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterAnimation *animation;
+	GValue value = {0};
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsObject()) {
+		Local<Object> properties = args[2]->ToObject();
+		Local<Array> names = properties->GetOwnPropertyNames();
+
+		/* Create animation */
+		animation = clutter_animation_new();
+		clutter_animation_set_object(animation, G_OBJECT(instance));
+		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
+		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
+
+		g_value_init(&value, G_TYPE_FLOAT);
+
+		/* Set Properties */
+		for (int i = 0; i < names->Length(); ++i) {
+			Local<Value> property = properties->Get(i);
+			if (property->IsUint32()) {
+				g_value_set_int(&value, property->ToInteger()->Value());
+			} else if (property->IsNumber()) {
+				g_value_set_float(&value, property->NumberValue());
+			}
+
+			clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+		}
+
+		/* Loop */
+		if (args[3]->IsBoolean()) {
+			clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
+		}
+
+		/* Start Animation */
+		clutter_timeline_start(clutter_animation_get_timeline(animation));
+	}
 
 	return args.This();
 }
