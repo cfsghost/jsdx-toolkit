@@ -6,6 +6,7 @@
 #include "clutter.hpp"
 #include "actor.hpp"
 #include "container.hpp"
+#include "group.hpp"
 #include "stage.hpp"
 #include "rectangle.hpp"
 #include "text.hpp"
@@ -84,6 +85,7 @@ extern "C" {
 
 		Actor::Initialize(target);
 		Container::Initialize(target);
+		Group::Initialize(target);
 		Stage::Initialize(target);
 		Rectangle::Initialize(target);
 		Text::Initialize(target);

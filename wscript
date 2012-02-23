@@ -22,6 +22,7 @@ def build(bld):
 		src/clutter.cpp
 		src/actor.cpp
 		src/container.cpp
+		src/group.cpp
 		src/stage.cpp
 		src/rectangle.cpp
 		src/text.cpp
