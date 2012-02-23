@@ -46,6 +46,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getX", Actor::GetX);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setY", Actor::SetY);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "rotate", Actor::Rotate);
@@ -325,6 +326,25 @@ Handle<Value> Actor::Rotate(const Arguments &args)
 
 		}
 	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::Reactive(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args[0]->IsUndefined() || args[0]->IsNull()) {
+		return scope.Close(
+			Boolean::New(clutter_actor_get_reactive(CLUTTER_ACTOR(instance)))
+		);
+	}
+
+	if (args[0]->IsBoolean())
+		clutter_actor_set_reactive(CLUTTER_ACTOR(instance), args[0]->ToBoolean()->Value());
+
 
 	return args.This();
 }
