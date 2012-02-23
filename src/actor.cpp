@@ -36,7 +36,9 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setOpacity", Actor::SetOpacity);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setWidth", Actor::SetWidth);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getWidth", Actor::GetWidth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setHeight", Actor::SetHeight);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHeight", Actor::GetHeight);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setDepth", Actor::SetDepth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getDepth", Actor::GetDepth);
@@ -132,6 +134,17 @@ Handle<Value> Actor::SetWidth(const Arguments &args)
 	return args.This();
 }
 
+Handle<Value> Actor::GetWidth(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Number::New(clutter_actor_get_width(CLUTTER_ACTOR(instance)))
+	);
+}
+
 Handle<Value> Actor::SetHeight(const Arguments &args)
 {
 	HandleScope scope;
@@ -143,6 +156,17 @@ Handle<Value> Actor::SetHeight(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Actor::GetHeight(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Number::New(clutter_actor_get_height(CLUTTER_ACTOR(instance)))
+	);
 }
 
 Handle<Value> Actor::SetPosition(const Arguments &args)

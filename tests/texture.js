@@ -39,5 +39,6 @@ stage.add(texture3);
 
 console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());
 console.log('texture3 (x, y) = (' + texture3.getX() + ', ' + texture3.getY() + ')');
+console.log('texture3 (w, h) = (' + texture3.getWidth() + ', ' + texture3.getHeight() + ')');
 
 clutter.main();
