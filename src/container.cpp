@@ -42,6 +42,7 @@ void Container::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_templa
 	Actor::PrototypeMethodsInit(constructor_template);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", Container::Add);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "remove", Container::Remove);
 }
 
 /* ECMAScript constructor */
@@ -70,6 +71,18 @@ Handle<Value> Container::Add(const Arguments &args)
 	ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
 
 	clutter_container_add_actor(CLUTTER_CONTAINER(instance), CLUTTER_ACTOR(actor));
+
+	return args.This();
+}
+
+Handle<Value> Container::Remove(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+
+	clutter_container_remove_actor(CLUTTER_CONTAINER(instance), CLUTTER_ACTOR(actor));
 
 	return args.This();
 }
