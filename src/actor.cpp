@@ -378,11 +378,40 @@ void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor
 	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
 }
 
+gboolean Actor::_EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+{
+	const unsigned argc = 1;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_ENTER))
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
+}
+
+gboolean Actor::_LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+{
+	const unsigned argc = 1;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_ENTER))
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
+}
+
 Handle<Value> Actor::On(const Arguments &args)
 {
 	HandleScope scope;
 	Actor *obj = ObjectWrap::Unwrap<Actor>(args.This());
 
+	ClutterAction *action;
 	ClutterActor *instance = obj->_actor;
 
 	/* Check arguments */
@@ -399,16 +428,27 @@ Handle<Value> Actor::On(const Arguments &args)
 			String::New("Second argument must be a callback function")));
     }
 
+	/* Get callback function */
+	Persistent<Function> *callback = new Persistent<Function>();
+	*callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+
 	switch(args[0]->ToInteger()->Value()) {
 	case NODE_CLUTTER_EVENT_CLICK:
-		ClutterAction *action = clutter_click_action_new();
+		action = clutter_click_action_new();
 		clutter_actor_add_action(instance, action);
 
-		/* Get callback function */
-		Persistent<Function> *callback = new Persistent<Function>();
-		*callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
-		
 		g_signal_connect(action, "clicked", G_CALLBACK(Actor::_ClickActionCallback), (gpointer)callback);
+
+		break;
+
+	case NODE_CLUTTER_EVENT_ENTER:
+		g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Actor::_EnterCallback), (gpointer)callback);
+
+		break;
+
+	case NODE_CLUTTER_EVENT_LEAVE:
+		g_signal_connect(G_OBJECT(instance), "leave-event", G_CALLBACK(Actor::_LeaveCallback), (gpointer)callback);
+
 		break;
 	}
 

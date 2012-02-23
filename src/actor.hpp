@@ -45,6 +45,8 @@ protected:
 	static v8::Handle<v8::Value> Off(const v8::Arguments& args);
 
 	static void _ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data);
+	static gboolean _EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
+	static gboolean _LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 };
 
 }
