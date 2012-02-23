@@ -34,6 +34,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setOpacity", Actor::SetOpacity);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getOpacity", Actor::GetOpacity);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setWidth", Actor::SetWidth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getWidth", Actor::GetWidth);
@@ -110,6 +111,17 @@ Handle<Value> Actor::SetOpacity(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Actor::GetOpacity(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Integer::New(clutter_actor_get_opacity(CLUTTER_ACTOR(instance)))
+	);
 }
 
 Handle<Value> Actor::Resize(const Arguments &args)

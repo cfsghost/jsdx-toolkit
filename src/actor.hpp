@@ -23,6 +23,7 @@ protected:
 	static v8::Handle<v8::Value> Hide(const v8::Arguments& args);
 
 	static v8::Handle<v8::Value> SetOpacity(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetOpacity(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Resize(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetWidth(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetWidth(const v8::Arguments& args);
