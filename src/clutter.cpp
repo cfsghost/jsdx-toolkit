@@ -11,6 +11,7 @@
 #include "rectangle.hpp"
 #include "text.hpp"
 #include "texture.hpp"
+#include "state.hpp"
 
 namespace clutter {
  
@@ -163,6 +164,7 @@ extern "C" {
 		Rectangle::Initialize(target);
 		Text::Initialize(target);
 		Texture::Initialize(target);
+		State::Initialize(target);
 	}
 
 	NODE_MODULE(clutter, init);

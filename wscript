@@ -27,6 +27,7 @@ def build(bld):
 		src/rectangle.cpp
 		src/text.cpp
 		src/texture.cpp
+		src/state.cpp
 		"""
 	obj.cxxflags = ["-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE"]
 	obj.uselib = "CLUTTER"
