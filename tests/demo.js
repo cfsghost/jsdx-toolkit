@@ -1,4 +1,4 @@
-var clutter = require('../build/Release/clutter');
+var clutter = require('../index');
 
 clutter.useARGB(true);
 
@@ -27,6 +27,10 @@ var texture2 = new clutter.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 150);
 texture2.rotate(30, clutter.GRAVITY_CENTER);
+texture2.reactive(true);
+texture2.on(clutter.EVENT_CLICK, function(ev) {
+	console.log('Clicked texture2!');
+});
 stage.add(texture2);
 
 var text1 = new clutter.Text('node-clutter Rocks!');

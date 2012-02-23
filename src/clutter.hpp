@@ -11,6 +11,11 @@ namespace clutter {
 	v8::Integer::New(constant),											\
 	static_cast<v8::PropertyAttribute>(v8::ReadOnly|v8::DontDelete))
 
+typedef enum {
+	NODE_CLUTTER_EVENT_CLICK,
+	NODE_CLUTTER_EVENT_LONG_PRESS
+} NodeClutterEvent;
+
 }
 
 #endif

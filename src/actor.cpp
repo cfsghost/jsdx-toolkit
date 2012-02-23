@@ -51,6 +51,10 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "rotate", Actor::Rotate);
+
+	/* Event handler */
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Actor::On);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "_off", Actor::Off);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -357,6 +361,65 @@ Handle<Value> Actor::Reactive(const Arguments &args)
 	if (args[0]->IsBoolean())
 		clutter_actor_set_reactive(CLUTTER_ACTOR(instance), args[0]->ToBoolean()->Value());
 
+
+	return args.This();
+}
+
+/* Event Dispatcher */
+void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
+{
+	const unsigned argc = 1;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_CLICK))
+	};
+
+	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
+Handle<Value> Actor::On(const Arguments &args)
+{
+	HandleScope scope;
+	Actor *obj = ObjectWrap::Unwrap<Actor>(args.This());
+
+	ClutterActor *instance = obj->_actor;
+
+	/* Check arguments */
+	if (args.Length() != 2)
+		return args.This();
+
+	if (!args[0]->IsNumber()) {
+		return ThrowException(Exception::TypeError(
+			String::New("first argument must be integer")));
+	}
+
+	if (!args[1]->IsFunction()) {
+		return ThrowException(Exception::TypeError(
+			String::New("Second argument must be a callback function")));
+    }
+
+	switch(args[0]->ToInteger()->Value()) {
+	case NODE_CLUTTER_EVENT_CLICK:
+		ClutterAction *action = clutter_click_action_new();
+		clutter_actor_add_action(instance, action);
+
+		/* Get callback function */
+		Persistent<Function> *callback = new Persistent<Function>();
+		*callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+		
+		g_signal_connect(action, "clicked", G_CALLBACK(Actor::_ClickActionCallback), (gpointer)callback);
+		break;
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::Off(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 	return args.This();
 }
