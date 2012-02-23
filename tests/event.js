@@ -20,9 +20,19 @@ texture1.setOpacity(150);
 texture1.reactive(true);
 texture1.on(clutter.EVENT_ENTER, function(ev) {
 	console.log('texture1: enter');
+
+	return true;
 });
 texture1.on(clutter.EVENT_LEAVE, function(ev) {
 	console.log('texture1: leave');
+
+	return true;
+});
+texture1.on(clutter.EVENT_MOTION, function(ev, motion) {
+	//console.log('texture1: motion');
+	console.log('texture1: motion (' + motion.x + ', ' + motion.y + ') time=' + motion.time);
+
+	return true;
 });
 stage.add(texture1);
 

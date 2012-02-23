@@ -398,7 +398,28 @@ gboolean Actor::_LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointe
 	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
 
 	Local<Value> argv[argc] = {
-		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_ENTER))
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_LEAVE))
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
+}
+
+gboolean Actor::_MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("x"), Number::New(event->motion.x));
+	o->Set(String::New("y"), Number::New(event->motion.y));
+	o->Set(String::New("time"), Uint32::New(event->motion.time));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_MOTION)),
+		o
 	};
 
 	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
@@ -448,6 +469,11 @@ Handle<Value> Actor::On(const Arguments &args)
 
 	case NODE_CLUTTER_EVENT_LEAVE:
 		g_signal_connect(G_OBJECT(instance), "leave-event", G_CALLBACK(Actor::_LeaveCallback), (gpointer)callback);
+
+		break;
+
+	case NODE_CLUTTER_EVENT_MOTION:
+		g_signal_connect(G_OBJECT(instance), "motion-event", G_CALLBACK(Actor::_MotionCallback), (gpointer)callback);
 
 		break;
 	}
