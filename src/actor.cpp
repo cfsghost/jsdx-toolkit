@@ -30,6 +30,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 {
 	HandleScope scope;
 
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", Actor::ShowAll);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
@@ -74,6 +75,16 @@ Handle<Value> Actor::New(const Arguments& args)
 	// Creates a new instance object of this type and wraps it.
 	Actor* obj = new Actor();
 	obj->Wrap(args.This());
+
+	return args.This();
+}
+
+Handle<Value> Actor::Destroy(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	clutter_actor_destroy(instance);
 
 	return args.This();
 }
