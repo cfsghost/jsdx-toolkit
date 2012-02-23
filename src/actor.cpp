@@ -46,6 +46,8 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getX", Actor::GetX);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setY", Actor::SetY);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
+
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -252,6 +254,50 @@ Handle<Value> Actor::GetDepth(const Arguments &args)
 	return scope.Close(
 		Number::New(clutter_actor_get_depth(CLUTTER_ACTOR(instance)))
 	);
+}
+
+Handle<Value> Actor::Scale(const Arguments &args)
+{
+	HandleScope scope;
+	static gdouble scale_x, scale_y;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args[0]->IsUndefined() || args[0]->IsNull()) {
+		Local<Object> o;
+
+		clutter_actor_get_scale(CLUTTER_ACTOR(instance), &scale_x, &scale_y);
+
+		/* create a JavaScript Object */
+		o = Object::New();
+		o->Set(String::New("scale_x"), Number::New(scale_x));
+		o->Set(String::New("scale_y"), Number::New(scale_y));
+
+		return scope.Close(o);
+	}
+	
+	if (args[0]->IsNumber() && args[1]->IsNumber()) {
+		if (args.Length() == 2) {
+			clutter_actor_set_scale(CLUTTER_ACTOR(instance), args[0]->NumberValue(), args[1]->NumberValue());
+
+		} else if (args.Length() == 3) {
+			if (args[2]->IsNumber())
+				clutter_actor_set_scale_with_gravity(CLUTTER_ACTOR(instance),
+					args[0]->NumberValue(),
+					args[1]->NumberValue(), 
+					(ClutterGravity)args[2]->Int32Value());
+
+		} else if (args.Length() == 4) {
+			if (args[2]->IsNumber() && args[3]->IsNumber())
+				clutter_actor_set_scale_full(CLUTTER_ACTOR(instance),
+					args[0]->NumberValue(),
+					args[1]->NumberValue(), 
+					args[2]->NumberValue(), 
+					args[3]->NumberValue()); 
+
+		}
+	}
+
+	return args.This();
 }
 
 }
