@@ -12,6 +12,9 @@ namespace clutter {
 	static_cast<v8::PropertyAttribute>(v8::ReadOnly|v8::DontDelete))
 
 typedef enum {
+	NODE_CLUTTER_EVENT_DESTROY,
+	NODE_CLUTTER_EVENT_SHOW,
+	NODE_CLUTTER_EVENT_HIDE,
 	NODE_CLUTTER_EVENT_CLICK,
 	NODE_CLUTTER_EVENT_LONG_PRESS,
 	NODE_CLUTTER_EVENT_ENTER,

@@ -366,6 +366,13 @@ Handle<Value> Actor::Reactive(const Arguments &args)
 }
 
 /* Event Dispatcher */
+void Actor::_DestroyCallback(ClutterActor *actor, gpointer user_data)
+{
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	(*callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+}
+
 void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
 {
 	const unsigned argc = 1;
@@ -454,6 +461,11 @@ Handle<Value> Actor::On(const Arguments &args)
 	*callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
 	switch(args[0]->ToInteger()->Value()) {
+	case NODE_CLUTTER_EVENT_DESTROY:
+		g_signal_connect(G_OBJECT(instance), "destroy", G_CALLBACK(Actor::_DestroyCallback), (gpointer)callback);
+
+		break;
+
 	case NODE_CLUTTER_EVENT_CLICK:
 		action = clutter_click_action_new();
 		clutter_actor_add_action(instance, action);

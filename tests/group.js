@@ -10,6 +10,9 @@ var stage = new clutter.Stage();
 stage.setTitle('Rotate');
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
+stage.on(clutter.EVENT_DESTROY, function() {
+	clutter.quit();
+});
 stage.show();
 
 /* Create a group */

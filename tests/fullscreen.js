@@ -10,6 +10,9 @@ var stage = new clutter.Stage();
 stage.setTitle('Fullscreen');
 stage.setColor(0, 0, 0, 255);
 stage.fullscreen(true);
+stage.on(clutter.EVENT_DESTROY, function() {
+	clutter.quit();
+});
 stage.show();
 
 clutter.main();
