@@ -20,6 +20,8 @@ var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.setOpacity(150);
+//texture1.effect(clutter.EFFECT_BLUR);
+texture1.effect(clutter.EFFECT_PAGE_TURN, { period: 0.5, angle: 30, radius: 30 });
 stage.add(texture1);
 
 console.log('texture1 getOpacity() = ' + texture1.getOpacity());
@@ -30,6 +32,7 @@ texture2.setLoadAsync(true);
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.setDepth(-200);
+texture2.effect(clutter.EFFECT_COLORIZE, [ 255, 255, 255, 255 ]);
 stage.add(texture2);
 
 console.log('texture2 getLoadAsync() = ' + texture2.getLoadAsync());
@@ -41,6 +44,7 @@ texture3.keepAspectRatio(true);
 texture3.loadFile('fred.jpg');
 texture3.setWidth(50);
 texture3.setPosition(50, 50);
+texture3.effect(clutter.EFFECT_DESATURATE, 0.5);
 stage.add(texture3);
 
 console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());

@@ -58,6 +58,9 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Actor::On);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "_off", Actor::Off);
 
+	/* Effect */
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "effect", Actor::Effect);
+
 	/* Animation */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "animate", Actor::Animate);
 }
@@ -513,6 +516,56 @@ Handle<Value> Actor::Off(const Arguments &args)
 	HandleScope scope;
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return args.This();
+}
+
+/* Effect */
+Handle<Value> Actor::Effect(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterColor color;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args[0]->IsNumber()) {
+		switch(args[0]->ToInteger()->Value()) {
+		case NODE_CLUTTER_EFFECT_CUSTOM:
+			/* TODO: Apply custom effect */
+			break;
+
+		case NODE_CLUTTER_EFFECT_BLUR:
+			clutter_actor_add_effect(instance, clutter_blur_effect_new());
+			break;
+
+		case NODE_CLUTTER_EFFECT_COLORIZE:
+			if (args[1]->IsObject()) {
+				color.red = args[1]->ToObject()->Get(0)->ToInteger()->Value();
+				color.green = args[1]->ToObject()->Get(1)->ToInteger()->Value();
+				color.blue = args[1]->ToObject()->Get(2)->ToInteger()->Value();
+				color.alpha = args[1]->ToObject()->Get(3)->ToInteger()->Value();
+
+				clutter_actor_add_effect(instance, clutter_colorize_effect_new(&color));
+			}
+			break;
+
+		case NODE_CLUTTER_EFFECT_DESATURATE:
+			if (args[1]->IsNumber()) {
+				clutter_actor_add_effect(instance, clutter_desaturate_effect_new(args[1]->NumberValue()));
+			}
+			break;
+
+		case NODE_CLUTTER_EFFECT_PAGE_TURN:
+			if (args[1]->IsObject()) {
+				gdouble period = (gdouble)args[1]->ToObject()->Get(String::New("period"))->NumberValue();
+				gdouble angle = (gdouble)args[1]->ToObject()->Get(String::New("angle"))->NumberValue();
+				gfloat radius = (gfloat)args[1]->ToObject()->Get(String::New("radius"))->NumberValue();
+
+				clutter_actor_add_effect(instance, clutter_page_turn_effect_new(period, angle, radius));
+			}
+			break;
+		}
+	}
 
 	return args.This();
 }
