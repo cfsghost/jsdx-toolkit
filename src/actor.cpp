@@ -48,6 +48,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "rotate", Actor::Rotate);
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -293,6 +294,34 @@ Handle<Value> Actor::Scale(const Arguments &args)
 					args[1]->NumberValue(), 
 					args[2]->NumberValue(), 
 					args[3]->NumberValue()); 
+
+		}
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::Rotate(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args.Length() == 2) {
+		if (args[0]->IsNumber() && args[1]->IsNumber()) {
+			clutter_actor_set_z_rotation_from_gravity(CLUTTER_ACTOR(instance),
+					args[0]->NumberValue(), 
+					(ClutterGravity)args[1]->ToInteger()->Value());
+		}
+
+	} else if (args.Length() == 5) {
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber() && args[4]->IsNumber()) {
+			clutter_actor_set_rotation(CLUTTER_ACTOR(instance),
+					(ClutterRotateAxis)args[0]->ToInteger()->Value(),
+					args[1]->NumberValue(), 
+					args[2]->NumberValue(), 
+					args[3]->NumberValue(), 
+					args[4]->NumberValue()); 
 
 		}
 	}
