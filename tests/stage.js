@@ -1,4 +1,4 @@
-var clutter = require('../build/Release/clutter');
+var clutter = require('../index');
 
 clutter.useARGB(true);
 

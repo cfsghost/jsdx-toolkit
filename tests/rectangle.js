@@ -1,4 +1,4 @@
-var clutter = require('../build/Release/clutter');
+var clutter = require('../index');
 
 if (clutter.init() != clutter.INIT_SUCCESS) {
 	console.log("Failed to initialize clutter.");
