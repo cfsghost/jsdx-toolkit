@@ -36,6 +36,7 @@ void Stage::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "fullscreen", Stage::Fullscreen);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -107,6 +108,24 @@ Handle<Value> Stage::SetColor(const Arguments &args)
 		color.alpha = args[3]->NumberValue();
 
 		clutter_stage_set_color(CLUTTER_STAGE(instance), &color);
+	}
+
+	return args.This();
+}
+
+Handle<Value> Stage::Fullscreen(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	if (args[0]->IsUndefined() || args[0]->IsNull()) {
+		return scope.Close(
+			Boolean::New(clutter_stage_get_fullscreen(CLUTTER_STAGE(instance)))
+		);
+	}
+
+	if (args[0]->IsBoolean()) {
+		clutter_stage_set_fullscreen(CLUTTER_STAGE(instance), args[0]->ToBoolean()->Value());
 	}
 
 	return args.This();

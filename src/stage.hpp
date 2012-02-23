@@ -19,6 +19,7 @@ protected:
 	static v8::Handle<v8::Value> GetTitle(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetUseAlpha(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetColor(const v8::Arguments& args);
+	static v8::Handle<v8::Value> Fullscreen(const v8::Arguments& args);
 };
 
 }
