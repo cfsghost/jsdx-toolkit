@@ -11,14 +11,7 @@ namespace clutter {
 using namespace node;
 using namespace v8;
 
-Container::Container() : Actor() {
-	HandleScope scope;
-
-	/* Create Container */
-	_actor = clutter_stage_new();
-
-	/* TODO: Binding destroy event */
-}
+Container::Container() : Actor() {}
 
 void Container::Initialize(Handle<Object> target)
 {
