@@ -21,6 +21,7 @@ def build(bld):
 	obj.source = """
 		src/clutter.cpp
 		src/actor.cpp
+		src/media.cpp
 		src/container.cpp
 		src/group.cpp
 		src/stage.cpp

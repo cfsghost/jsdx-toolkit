@@ -40,7 +40,6 @@ void Texture::Initialize(Handle<Object> target)
 Handle<Value> Texture::New(const Arguments& args)
 {
 	HandleScope scope;
-	static ClutterColor color;
 
 	if (!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
@@ -58,7 +57,6 @@ Handle<Value> Texture::New(const Arguments& args)
 Handle<Value> Texture::LoadFile(const Arguments &args)
 {
 	HandleScope scope;
-	static ClutterColor color;
 
 	if (args[0]->IsString()) {
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
