@@ -7,7 +7,7 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 
 /* Create a new stage */
 var stage = new clutter.Stage();
-stage.setTitle('Animate');
+stage.setTitle('State Manchine');
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
 stage.on(clutter.EVENT_DESTROY, function() {
