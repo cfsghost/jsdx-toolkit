@@ -29,6 +29,8 @@ void Media::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "pause", Media::Pause);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setVolume", Media::SetVolume);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getVolume", Media::GetVolume);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setProgress", Media::SetProgress);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getProgress", Media::GetProgress);
 
 	target->Set(name, tpl->GetFunction());
 }
@@ -121,6 +123,30 @@ Handle<Value> Media::GetVolume(const Arguments &args)
 
 	return scope.Close(
 		Number::New(clutter_media_get_audio_volume(CLUTTER_MEDIA(instance)))
+	);
+}
+
+Handle<Value> Media::SetProgress(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_media_set_progress(CLUTTER_MEDIA(instance), args[0]->NumberValue());
+	}
+
+	return args.This();
+}
+
+Handle<Value> Media::GetProgress(const Arguments &args)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	return scope.Close(
+		Number::New(clutter_media_get_progress(CLUTTER_MEDIA(instance)))
 	);
 }
 

@@ -21,6 +21,8 @@ protected:
 	static v8::Handle<v8::Value> Pause(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetVolume(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetVolume(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetProgress(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetProgress(const v8::Arguments& args);
 };
 
 }
