@@ -20,13 +20,13 @@ var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.reactive(true);
-texture1.scale(0.5, 0.5);
+texture1.scale(0.5, 0.5, clutter.GRAVITY_CENTER);
 stage.add(texture1);
 
 var texture2 = new clutter.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
-texture2.scale(0.5, 0.5);
+texture2.scale(0.5, 0.5, clutter.GRAVITY_CENTER);
 stage.add(texture2);
 
 /* Create state manchine */

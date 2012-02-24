@@ -76,7 +76,10 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
+	/* Scale */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setScaleGravity", Actor::SetScaleGravity);
+
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "rotate", Actor::Rotate);
 
 	/* Event handler */
@@ -382,6 +385,19 @@ Handle<Value> Actor::Scale(const Arguments &args)
 					args[3]->NumberValue()); 
 
 		}
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::SetScaleGravity(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		g_object_set(G_OBJECT(instance), "scale-gravity", args[0]->ToInteger()->Value(), NULL);
 	}
 
 	return args.This();
