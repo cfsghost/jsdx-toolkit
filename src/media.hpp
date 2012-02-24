@@ -19,6 +19,8 @@ protected:
 	static v8::Handle<v8::Value> LoadFileURI(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Play(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Pause(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetVolume(const v8::Arguments& args);
+	static v8::Handle<v8::Value> GetVolume(const v8::Arguments& args);
 };
 
 }
