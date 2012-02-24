@@ -36,6 +36,7 @@ void Stage::Initialize(Handle<Object> target)
 	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setCursor", Stage::SetCursor);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "fullscreen", Stage::Fullscreen);
 
 	target->Set(name, tpl->GetFunction());
@@ -108,6 +109,22 @@ Handle<Value> Stage::SetColor(const Arguments &args)
 		color.alpha = args[3]->NumberValue();
 
 		clutter_stage_set_color(CLUTTER_STAGE(instance), &color);
+	}
+
+	return args.This();
+}
+
+Handle<Value> Stage::SetCursor(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsBoolean()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		if (args[0]->ToBoolean()->Value())
+			clutter_stage_show_cursor(CLUTTER_STAGE(instance));
+		else
+			clutter_stage_hide_cursor(CLUTTER_STAGE(instance));
 	}
 
 	return args.This();
