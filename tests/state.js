@@ -47,10 +47,15 @@ state.set('blur', [
 
 texture1.on(clutter.EVENT_ENTER, function(ev) {
 	state.setState('focus');
-})
+
+	return true;
+});
 
 texture1.on(clutter.EVENT_LEAVE, function(ev) {
 	state.setState('blur');
-})
+
+	return true;
+});
+
 
 clutter.main();
