@@ -11,6 +11,31 @@ namespace clutter {
 using namespace node;
 using namespace v8;
 
+struct PropertyDefine properties[] = {
+	{ "anchor-x", G_TYPE_FLOAT },
+	{ "anchor-y", G_TYPE_FLOAT },
+	{ "depth", G_TYPE_FLOAT },
+	{ "fixed-x", G_TYPE_FLOAT },
+	{ "fixed-y", G_TYPE_FLOAT },
+	{ "height", G_TYPE_FLOAT },
+	{ "min-height", G_TYPE_FLOAT },
+	{ "min-width", G_TYPE_FLOAT },
+	{ "natural-height", G_TYPE_FLOAT },
+	{ "natural-width", G_TYPE_FLOAT },
+	{ "opacity", G_TYPE_UINT },
+	{ "rotation-angle-x", G_TYPE_DOUBLE },
+	{ "rotation-angle-y", G_TYPE_DOUBLE },
+	{ "rotation-angle-z", G_TYPE_DOUBLE },
+	{ "scale-center-x", G_TYPE_FLOAT },
+	{ "scale-center-y", G_TYPE_FLOAT },
+	{ "scale-x", G_TYPE_DOUBLE },
+	{ "scale-y", G_TYPE_DOUBLE },
+	{ "width", G_TYPE_FLOAT },
+	{ "x", G_TYPE_FLOAT },
+	{ "y", G_TYPE_FLOAT },
+	{ NULL, 0 },
+};
+
 Actor::Actor()
 	: ObjectWrap() {}
 
@@ -63,6 +88,32 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 
 	/* Animation */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "animate", Actor::Animate);
+}
+
+void Actor::PropertyValueInit(GValue *gvalue, Handle<Value> property, Handle<Value> value)
+{
+	int i;
+
+	for (i = 0; properties[i].name != NULL; ++i) {
+		if (strcmp(properties[i].name, *String::AsciiValue(property->ToString())) == 0) {
+			g_value_init(gvalue, properties[i].type);
+
+			switch(properties[i].type) {
+			case G_TYPE_UINT:
+				g_value_set_uint(gvalue, value->ToInteger()->Value());
+				break;
+
+			case G_TYPE_FLOAT:
+				g_value_set_float(gvalue, value->NumberValue());
+				break;
+
+			case G_TYPE_DOUBLE:
+				g_value_set_double(gvalue, value->NumberValue());
+				break;
+
+			}
+		}
+	}
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -589,18 +640,16 @@ Handle<Value> Actor::Animate(const Arguments &args)
 		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
 		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
 
-		g_value_init(&value, G_TYPE_FLOAT);
-
 		/* Set Properties */
 		for (int i = 0; i < names->Length(); ++i) {
-			Local<Value> property = properties->Get(i);
-			if (property->IsUint32()) {
-				g_value_set_int(&value, property->ToInteger()->Value());
-			} else if (property->IsNumber()) {
-				g_value_set_float(&value, property->NumberValue());
-			}
+			Local<Value> property = properties->Get(names->Get(i)->ToString());
+
+			/* Prepare value */
+			ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
 
 			clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+
+			g_value_unset(&value);
 		}
 
 		/* Loop */
