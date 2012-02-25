@@ -12,6 +12,12 @@
 #include "text.hpp"
 #include "texture.hpp"
 #include "state.hpp"
+#include "media.hpp"
+
+#if ENABLE_CLUTTER_GST
+#include "gst/gst.hpp"
+#include "gst/video-texture.hpp"
+#endif
 
 namespace clutter {
  
@@ -165,6 +171,11 @@ extern "C" {
 		Text::Initialize(target);
 		Texture::Initialize(target);
 		State::Initialize(target);
+
+#if ENABLE_CLUTTER_GST
+		Gst::Initialize(target);
+		GstVideoTexture::Initialize(target);
+#endif
 	}
 
 	NODE_MODULE(clutter, init);

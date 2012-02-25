@@ -1,5 +1,5 @@
 #ifndef NODE_CLUTTER_TEXTURE_H_
-#define NODE_CLUTTER_TExTURE_H_
+#define NODE_CLUTTER_TEXTURE_H_
 
 #include <v8.h>
 #include <node.h>
@@ -9,6 +9,7 @@ namespace clutter {
 class Texture : public Actor {
 public:
 	static void Initialize(v8::Handle<v8::Object> target);
+	static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 
 protected:
 	Texture();

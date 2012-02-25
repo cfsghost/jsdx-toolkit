@@ -11,47 +11,20 @@ namespace clutter {
 using namespace node;
 using namespace v8;
 
-Media::Media() : Actor() {}
+Media::Media() : node::ObjectWrap() {}
 
-void Media::Initialize(Handle<Object> target)
+void Media::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 {
 	HandleScope scope;
 
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-	Local<String> name = String::NewSymbol("Media");
-
-	/* Methods */
-	Actor::PrototypeMethodsInit(tpl);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "loadFile", Media::LoadFile);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "loadFileURI", Media::LoadFileURI);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "play", Media::Play);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "pause", Media::Pause);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "setVolume", Media::SetVolume);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getVolume", Media::GetVolume);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "setProgress", Media::SetProgress);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getProgress", Media::GetProgress);
-
-	target->Set(name, tpl->GetFunction());
-}
-
-/* ECMAScript constructor */
-Handle<Value> Media::New(const Arguments& args)
-{
-	HandleScope scope;
-	static ClutterColor color;
-
-	if (!args.IsConstructCall()) {
-		return ThrowException(Exception::TypeError(
-			String::New("Use the new operator to create instances of this object."))
-		);
-	}
-
-	// Creates a new instance object of this type and wraps it.
-	Media* obj = new Media();
-	obj->Wrap(args.This());
-
-	return scope.Close(args.This());
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Media::LoadFile);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileURI", Media::LoadFileURI);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "play", Media::Play);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "pause", Media::Pause);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setVolume", Media::SetVolume);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getVolume", Media::GetVolume);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setProgress", Media::SetProgress);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getProgress", Media::GetProgress);
 }
 
 Handle<Value> Media::LoadFile(const Arguments &args)

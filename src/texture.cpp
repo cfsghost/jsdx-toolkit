@@ -13,9 +13,6 @@ using namespace v8;
 
 Texture::Texture() : Actor() {
 	HandleScope scope;
-
-	/* Create Texture */
-	_actor = clutter_texture_new();
 }
 
 void Texture::Initialize(Handle<Object> target)
@@ -27,13 +24,21 @@ void Texture::Initialize(Handle<Object> target)
 	Local<String> name = String::NewSymbol("Texture");
 
 	/* Methods */
-	Actor::PrototypeMethodsInit(tpl);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "loadFile", Texture::LoadFile);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "setLoadAsync", Texture::SetLoadAsync);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getLoadAsync", Texture::GetLoadAsync);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "keepAspectRatio", Texture::KeepAspectRatio);
+	PrototypeMethodsInit(tpl);
 
 	target->Set(name, tpl->GetFunction());
+}
+
+void Texture::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+{
+	HandleScope scope;
+
+	Actor::PrototypeMethodsInit(constructor_template);
+
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Texture::LoadFile);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setLoadAsync", Texture::SetLoadAsync);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getLoadAsync", Texture::GetLoadAsync);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "keepAspectRatio", Texture::KeepAspectRatio);
 }
 
 /* ECMAScript constructor */
@@ -50,6 +55,9 @@ Handle<Value> Texture::New(const Arguments& args)
 	// Creates a new instance object of this type and wraps it.
 	Texture* obj = new Texture();
 	obj->Wrap(args.This());
+
+	/* Create Texture */
+	obj->_actor = clutter_texture_new();
 
 	return scope.Close(args.This());
 }
