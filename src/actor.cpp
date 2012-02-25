@@ -519,33 +519,113 @@ gboolean Actor::_MotionCallback(ClutterActor *actor, ClutterEvent *event, gpoint
 	return (*ret)->IsTrue();
 }
 
+void Actor::_DragActionBeginCallback(ClutterClickAction *action,
+	ClutterActor *actor,
+	gfloat event_x,
+	gfloat event_y,
+	ClutterModifierType modifiers,
+	gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("x"), Number::New(event_x));
+	o->Set(String::New("y"), Number::New(event_y));
+	o->Set(String::New("y"), Integer::New(modifiers));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(String::New("begin")),
+		o
+	};
+
+	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
+void Actor::_DragActionEndCallback(ClutterClickAction *action,
+	ClutterActor *actor,
+	gfloat event_x,
+	gfloat event_y,
+	ClutterModifierType modifiers,
+	gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("x"), Number::New(event_x));
+	o->Set(String::New("y"), Number::New(event_y));
+	o->Set(String::New("y"), Integer::New(modifiers));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(String::New("end")),
+		o
+	};
+
+	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
+void Actor::_DragActionMotionCallback(ClutterClickAction *action,
+	ClutterActor *actor,
+	gfloat delta_x,
+	gfloat delta_y,
+	gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("delta_x"), Number::New(delta_x));
+	o->Set(String::New("delta_y"), Number::New(delta_y));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(String::New("motion")),
+		o
+	};
+
+	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
 Handle<Value> Actor::On(const Arguments &args)
 {
 	HandleScope scope;
+	Local<Value> Event;
+	Local<Value> Options;
+	Local<Value> Callback;
 	Actor *obj = ObjectWrap::Unwrap<Actor>(args.This());
 
 	ClutterAction *action;
 	ClutterActor *instance = obj->_actor;
 
 	/* Check arguments */
-	if (args.Length() != 2)
+	if (args.Length() == 2) {
+		Event = args[0];
+		Callback = args[1];
+	} else if (args.Length() == 3) {
+		Event = args[0];
+		Options = args[1];
+		Callback = args[2];
+	} else
 		return args.This();
 
-	if (!args[0]->IsNumber()) {
+	if (!Event->IsNumber()) {
 		return ThrowException(Exception::TypeError(
 			String::New("first argument must be integer")));
 	}
 
-	if (!args[1]->IsFunction()) {
+	if (!Callback->IsFunction()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Second argument must be a callback function")));
-    }
+	}
 
 	/* Get callback function */
 	Persistent<Function> *callback = new Persistent<Function>();
-	*callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+	*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-	switch(args[0]->ToInteger()->Value()) {
+	switch(Event->ToInteger()->Value()) {
 	case NODE_CLUTTER_EVENT_DESTROY:
 		g_signal_connect(G_OBJECT(instance), "destroy", G_CALLBACK(Actor::_DestroyCallback), (gpointer)callback);
 
@@ -573,6 +653,39 @@ Handle<Value> Actor::On(const Arguments &args)
 		g_signal_connect(G_OBJECT(instance), "motion-event", G_CALLBACK(Actor::_MotionCallback), (gpointer)callback);
 
 		break;
+
+	case NODE_CLUTTER_EVENT_DRAG:
+		gint x_threshold = 0;
+		gint y_threshold = 0;
+		ClutterDragAxis axis = CLUTTER_DRAG_AXIS_NONE;
+
+		/* Get x_threshold, y_threshold, axis */
+		if (args.Length() == 3 && Options->IsObject()) {
+			if (Options->ToObject()->Get(String::New("x_threshold"))->IsNumber()) {
+				x_threshold = Options->ToObject()->Get(String::New("x_threshold"))->ToInteger()->Value();
+			}
+
+			if (Options->ToObject()->Get(String::New("y_threshold"))->IsNumber()) {
+				y_threshold = Options->ToObject()->Get(String::New("y_threshold"))->ToInteger()->Value();
+			}
+
+			if (Options->ToObject()->Get(String::New("axis"))->IsNumber()) {
+				axis = (ClutterDragAxis)Options->ToObject()->Get(String::New("axis"))->ToInteger()->Value();
+			}
+		}
+
+		/* Create action */
+		action = clutter_drag_action_new();
+		clutter_drag_action_set_drag_threshold(CLUTTER_DRAG_ACTION(action), x_threshold, y_threshold);
+		clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(action), axis);
+		clutter_actor_add_action(instance, action);
+
+		g_signal_connect(G_OBJECT(action), "drag-begin", G_CALLBACK(Actor::_DragActionBeginCallback), (gpointer)callback);
+		g_signal_connect(G_OBJECT(action), "drag-end", G_CALLBACK(Actor::_DragActionEndCallback), (gpointer)callback);
+		g_signal_connect(G_OBJECT(action), "drag-motion", G_CALLBACK(Actor::_DragActionMotionCallback), (gpointer)callback);
+
+		break;
+
 	}
 
 	return args.This();

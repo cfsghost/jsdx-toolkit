@@ -61,6 +61,24 @@ protected:
 	static gboolean _EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
+
+	static void _DragActionBeginCallback(ClutterClickAction *action,
+		ClutterActor *actor,
+		gfloat event_x,
+		gfloat event_y,
+		ClutterModifierType modifiers,
+		gpointer user_data);
+	static void _DragActionEndCallback(ClutterClickAction *action,
+		ClutterActor *actor,
+		gfloat event_x,
+		gfloat event_y,
+		ClutterModifierType modifiers,
+		gpointer user_data);
+	static void _DragActionMotionCallback(ClutterClickAction *action,
+		ClutterActor *actor,
+		gfloat delta_x,
+		gfloat delta_y,
+		gpointer user_data);
 };
 
 }
