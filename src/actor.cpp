@@ -763,31 +763,33 @@ Handle<Value> Actor::Animate(const Arguments &args)
 		Local<Object> properties = args[2]->ToObject();
 		Local<Array> names = properties->GetOwnPropertyNames();
 
-		/* Create animation */
-		animation = clutter_animation_new();
-		clutter_animation_set_object(animation, G_OBJECT(instance));
-		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
-		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
+		if (names->Length() > 0) {
+			/* Create animation */
+			animation = clutter_animation_new();
+			clutter_animation_set_object(animation, G_OBJECT(instance));
+			clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
+			clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
 
-		/* Set Properties */
-		for (int i = 0; i < names->Length(); ++i) {
-			Local<Value> property = properties->Get(names->Get(i)->ToString());
+			/* Set Properties */
+			for (int i = 0; i < names->Length(); ++i) {
+				Local<Value> property = properties->Get(names->Get(i)->ToString());
 
-			/* Prepare value */
-			ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
+				/* Prepare value */
+				ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
 
-			clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+				clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
 
-			g_value_unset(&value);
+				g_value_unset(&value);
+			}
+
+			/* Loop */
+			if (args[3]->IsBoolean()) {
+				clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
+			}
+
+			/* Start Animation */
+			clutter_timeline_start(clutter_animation_get_timeline(animation));
 		}
-
-		/* Loop */
-		if (args[3]->IsBoolean()) {
-			clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
-		}
-
-		/* Start Animation */
-		clutter_timeline_start(clutter_animation_get_timeline(animation));
 	}
 
 	return args.This();
