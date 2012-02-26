@@ -759,37 +759,47 @@ Handle<Value> Actor::Animate(const Arguments &args)
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
-	if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsObject()) {
-		Local<Object> properties = args[2]->ToObject();
-		Local<Array> names = properties->GetOwnPropertyNames();
+	if (!args[0]->IsNumber())
+		return ThrowException(Exception::TypeError(
+			String::New("first argument must be integer")));
 
-		if (names->Length() > 0) {
-			/* Create animation */
-			animation = clutter_animation_new();
-			clutter_animation_set_object(animation, G_OBJECT(instance));
-			clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
-			clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
+	if (!args[1]->IsNumber())
+		return ThrowException(Exception::TypeError(
+			String::New("second argument must be integer")));
 
-			/* Set Properties */
-			for (int i = 0; i < names->Length(); ++i) {
-				Local<Value> property = properties->Get(names->Get(i)->ToString());
+	if (!args[2]->IsObject())
+		return ThrowException(Exception::TypeError(
+			String::New("third argument must be object")));
 
-				/* Prepare value */
-				ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
+	Local<Object> properties = args[2]->ToObject();
+	Local<Array> names = properties->GetOwnPropertyNames();
 
-				clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+	if (names->Length() > 0) {
+		/* Create animation */
+		animation = clutter_animation_new();
+		clutter_animation_set_object(animation, G_OBJECT(instance));
+		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
+		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
 
-				g_value_unset(&value);
-			}
+		/* Set Properties */
+		for (int i = 0; i < names->Length(); ++i) {
+			Local<Value> property = properties->Get(names->Get(i)->ToString());
 
-			/* Loop */
-			if (args[3]->IsBoolean()) {
-				clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
-			}
+			/* Prepare value */
+			ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
 
-			/* Start Animation */
-			clutter_timeline_start(clutter_animation_get_timeline(animation));
+			clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+
+			g_value_unset(&value);
 		}
+
+		/* Loop */
+		if (args[3]->IsBoolean()) {
+			clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
+		}
+
+		/* Start Animation */
+		clutter_timeline_start(clutter_animation_get_timeline(animation));
 	}
 
 	return args.This();
