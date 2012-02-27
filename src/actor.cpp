@@ -843,9 +843,18 @@ Handle<Value> Actor::Effect(const Arguments &args)
 }
 
 /* Animate */
+void Actor::_AnimationCompletedCallback(ClutterAnimation *animation, gpointer user_data)
+{
+	HandleScope scope;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	(*callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+}
+
 Handle<Value> Actor::Animate(const Arguments &args)
 {
 	HandleScope scope;
+	Persistent<Function> *callback;
 	GValue value = {0};
 	ClutterTimeline *timeline;
 	ClutterAnimation *animation;
@@ -862,6 +871,14 @@ Handle<Value> Actor::Animate(const Arguments &args)
 	if (!args[2]->IsObject())
 		return ThrowException(Exception::TypeError(
 			String::New("third argument must be object")));
+
+	if (args.Length() > 3) {
+		if (args[args.Length() - 1]->IsFunction()) {
+			/* Get callback function */
+			callback = new Persistent<Function>();
+			*callback = Persistent<Function>::New(Handle<Function>::Cast(args[args.Length() - 1]));
+		}
+	}
 
 	Local<Object> properties = args[2]->ToObject();
 	Local<Array> names = properties->GetOwnPropertyNames();
@@ -882,6 +899,9 @@ Handle<Value> Actor::Animate(const Arguments &args)
 		clutter_animation_set_object(animation, G_OBJECT(instance));
 		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
 		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
+
+		if (args[args.Length() - 1]->IsFunction())
+			g_signal_connect(G_OBJECT(animation), "completed", G_CALLBACK(_AnimationCompletedCallback), callback);
 
 		/* Options */
 		if (args[3]->IsObject()) {

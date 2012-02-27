@@ -24,7 +24,13 @@ texture1.animate(clutter.EASE_IN_QUINT, 1000, {
 	'x': 5,
 	'y': 5,
 	'opacity': 0
-}, { loop: true });
+}, function() {
+	texture1.animate(clutter.EASE_IN_QUINT, 1000, {
+		'x': 100,
+		'y': 100,
+		'opacity': 255
+	}, { loop: true });
+});
 
 
 clutter.main();
