@@ -16,7 +16,6 @@ typedef enum {
 struct PropertyDefine {
 	const char *name;
 	GType type;
-	bool accumulation;
 };
 
 class Actor : public node::ObjectWrap {

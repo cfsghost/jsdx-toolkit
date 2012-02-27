@@ -12,28 +12,28 @@ using namespace node;
 using namespace v8;
 
 struct PropertyDefine properties[] = {
-	{ "anchor-x", G_TYPE_FLOAT, False },
-	{ "anchor-y", G_TYPE_FLOAT, False },
-	{ "depth", G_TYPE_FLOAT, True },
-	{ "fixed-x", G_TYPE_FLOAT, True },
-	{ "fixed-y", G_TYPE_FLOAT, True },
-	{ "height", G_TYPE_FLOAT, True },
-	{ "min-height", G_TYPE_FLOAT, False },
-	{ "min-width", G_TYPE_FLOAT, False },
-	{ "natural-height", G_TYPE_FLOAT, False },
-	{ "natural-width", G_TYPE_FLOAT, False },
-	{ "opacity", G_TYPE_UINT, True },
-	{ "rotation-angle-x", G_TYPE_DOUBLE, False },
-	{ "rotation-angle-y", G_TYPE_DOUBLE, False },
-	{ "rotation-angle-z", G_TYPE_DOUBLE, False },
-	{ "scale-center-x", G_TYPE_FLOAT, False },
-	{ "scale-center-y", G_TYPE_FLOAT, False },
-	{ "scale-x", G_TYPE_DOUBLE, True },
-	{ "scale-y", G_TYPE_DOUBLE, True },
-	{ "width", G_TYPE_FLOAT, True },
-	{ "x", G_TYPE_FLOAT, True },
-	{ "y", G_TYPE_FLOAT, True },
-	{ NULL, 0, 0 },
+	{ "anchor-x", G_TYPE_FLOAT },
+	{ "anchor-y", G_TYPE_FLOAT },
+	{ "depth", G_TYPE_FLOAT },
+	{ "fixed-x", G_TYPE_FLOAT },
+	{ "fixed-y", G_TYPE_FLOAT },
+	{ "height", G_TYPE_FLOAT },
+	{ "min-height", G_TYPE_FLOAT },
+	{ "min-width", G_TYPE_FLOAT },
+	{ "natural-height", G_TYPE_FLOAT },
+	{ "natural-width", G_TYPE_FLOAT },
+	{ "opacity", G_TYPE_UINT },
+	{ "rotation-angle-x", G_TYPE_DOUBLE },
+	{ "rotation-angle-y", G_TYPE_DOUBLE },
+	{ "rotation-angle-z", G_TYPE_DOUBLE },
+	{ "scale-center-x", G_TYPE_FLOAT },
+	{ "scale-center-y", G_TYPE_FLOAT },
+	{ "scale-x", G_TYPE_DOUBLE },
+	{ "scale-y", G_TYPE_DOUBLE },
+	{ "width", G_TYPE_FLOAT },
+	{ "x", G_TYPE_FLOAT },
+	{ "y", G_TYPE_FLOAT },
+	{ NULL, 0 },
 };
 
 Actor::Actor()
@@ -846,7 +846,6 @@ Handle<Value> Actor::Effect(const Arguments &args)
 Handle<Value> Actor::Animate(const Arguments &args)
 {
 	HandleScope scope;
-	bool accumulation = False;
 	GValue value = {0};
 	ClutterTimeline *timeline;
 	ClutterAnimation *animation;
@@ -892,12 +891,6 @@ Handle<Value> Actor::Animate(const Arguments &args)
 			OptionValue = args[3]->ToObject()->Get(String::New("loop"));
 			if (OptionValue->IsBoolean())
 				clutter_timeline_set_loop(clutter_animation_get_timeline(animation), OptionValue->ToBoolean()->Value());
-
-			/* Accumulation */
-			OptionValue = args[3]->ToObject()->Get(String::New("accumulation"));
-			if (OptionValue->IsBoolean())
-				accumulation = OptionValue->ToBoolean()->Value();
-
 		}
 
 		/* Set Properties */
