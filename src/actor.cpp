@@ -12,28 +12,28 @@ using namespace node;
 using namespace v8;
 
 struct PropertyDefine properties[] = {
-	{ "anchor-x", G_TYPE_FLOAT },
-	{ "anchor-y", G_TYPE_FLOAT },
-	{ "depth", G_TYPE_FLOAT },
-	{ "fixed-x", G_TYPE_FLOAT },
-	{ "fixed-y", G_TYPE_FLOAT },
-	{ "height", G_TYPE_FLOAT },
-	{ "min-height", G_TYPE_FLOAT },
-	{ "min-width", G_TYPE_FLOAT },
-	{ "natural-height", G_TYPE_FLOAT },
-	{ "natural-width", G_TYPE_FLOAT },
-	{ "opacity", G_TYPE_UINT },
-	{ "rotation-angle-x", G_TYPE_DOUBLE },
-	{ "rotation-angle-y", G_TYPE_DOUBLE },
-	{ "rotation-angle-z", G_TYPE_DOUBLE },
-	{ "scale-center-x", G_TYPE_FLOAT },
-	{ "scale-center-y", G_TYPE_FLOAT },
-	{ "scale-x", G_TYPE_DOUBLE },
-	{ "scale-y", G_TYPE_DOUBLE },
-	{ "width", G_TYPE_FLOAT },
-	{ "x", G_TYPE_FLOAT },
-	{ "y", G_TYPE_FLOAT },
-	{ NULL, 0 },
+	{ "anchor-x", G_TYPE_FLOAT, False },
+	{ "anchor-y", G_TYPE_FLOAT, False },
+	{ "depth", G_TYPE_FLOAT, True },
+	{ "fixed-x", G_TYPE_FLOAT, True },
+	{ "fixed-y", G_TYPE_FLOAT, True },
+	{ "height", G_TYPE_FLOAT, True },
+	{ "min-height", G_TYPE_FLOAT, False },
+	{ "min-width", G_TYPE_FLOAT, False },
+	{ "natural-height", G_TYPE_FLOAT, False },
+	{ "natural-width", G_TYPE_FLOAT, False },
+	{ "opacity", G_TYPE_UINT, True },
+	{ "rotation-angle-x", G_TYPE_DOUBLE, False },
+	{ "rotation-angle-y", G_TYPE_DOUBLE, False },
+	{ "rotation-angle-z", G_TYPE_DOUBLE, False },
+	{ "scale-center-x", G_TYPE_FLOAT, False },
+	{ "scale-center-y", G_TYPE_FLOAT, False },
+	{ "scale-x", G_TYPE_DOUBLE, True },
+	{ "scale-y", G_TYPE_DOUBLE, True },
+	{ "width", G_TYPE_FLOAT, True },
+	{ "x", G_TYPE_FLOAT, True },
+	{ "y", G_TYPE_FLOAT, True },
+	{ NULL, 0, 0 },
 };
 
 Actor::Actor()
@@ -91,11 +91,13 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 
 	/* Animation */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "animate", Actor::Animate);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnimate", Actor::SetAnimate);
 }
 
-void Actor::PropertyValueInit(GValue *gvalue, Handle<Value> property, Handle<Value> value)
+bool Actor::PropertyValueInit(GValue *gvalue, Handle<Value> property, Handle<Value> value)
 {
 	int i;
+	bool ret = False;
 
 	for (i = 0; properties[i].name != NULL; ++i) {
 		if (strcmp(properties[i].name, *String::AsciiValue(property->ToString())) == 0) {
@@ -103,20 +105,37 @@ void Actor::PropertyValueInit(GValue *gvalue, Handle<Value> property, Handle<Val
 
 			switch(properties[i].type) {
 			case G_TYPE_UINT:
+				if (!value->IsNumber())
+					break;
+
 				g_value_set_uint(gvalue, value->ToInteger()->Value());
+				ret = True;
+
 				break;
 
 			case G_TYPE_FLOAT:
+				if (!value->IsNumber())
+					break;
+
 				g_value_set_float(gvalue, value->NumberValue());
+				ret = True;
+
 				break;
 
 			case G_TYPE_DOUBLE:
+				if (!value->IsNumber())
+					break;
+
 				g_value_set_double(gvalue, value->NumberValue());
+				ret = True;
+
 				break;
 
 			}
 		}
 	}
+
+	return ret;
 }
 
 Handle<Value> Actor::New(const Arguments& args)
@@ -458,6 +477,26 @@ void Actor::_DestroyCallback(ClutterActor *actor, gpointer user_data)
 	(*callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
 }
 
+gboolean Actor::_PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("x"), Number::New(event->button.x));
+	o->Set(String::New("y"), Number::New(event->button.y));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_PRESS)),
+		o
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
+}
+
 void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
 {
 	const unsigned argc = 1;
@@ -468,6 +507,31 @@ void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor
 	};
 
 	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
+gboolean Actor::_LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data)
+{
+	const unsigned argc = 2;
+	gfloat x, y;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* Get position */
+	clutter_click_action_get_coords(action, &x, &y);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("state"), Integer::New(state));
+	o->Set(String::New("x"), Number::New(x));
+	o->Set(String::New("y"), Number::New(y));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_LONG_PRESS)),
+		o
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
 }
 
 gboolean Actor::_EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
@@ -631,6 +695,34 @@ Handle<Value> Actor::On(const Arguments &args)
 
 		break;
 
+	case NODE_CLUTTER_EVENT_PRESS:
+		g_signal_connect(G_OBJECT(instance), "button-press-event", G_CALLBACK(Actor::_PressCallback), (gpointer)callback);
+
+		break;
+
+	case NODE_CLUTTER_EVENT_LONG_PRESS:
+		action = clutter_click_action_new();
+		clutter_actor_add_action(instance, action);
+
+		/* Get duration, threshold */
+		if (args.Length() == 3 && Options->IsObject()) {
+			Local<Value> OptionValue;
+
+			OptionValue = Options->ToObject()->Get(String::New("threshold"));
+			if (OptionValue->IsNumber()) {
+				g_object_set(G_OBJECT(action), "long-press-threshold", OptionValue->ToInteger()->Value(), NULL);
+			}
+
+			OptionValue = Options->ToObject()->Get(String::New("duration"));
+			if (OptionValue->IsNumber()) {
+				g_object_set(G_OBJECT(action), "long-press-duration", OptionValue->ToInteger()->Value(), NULL);
+			}
+		}
+
+		g_signal_connect(action, "long-press", G_CALLBACK(Actor::_LongPressActionCallback), (gpointer)callback);
+
+		break;
+
 	case NODE_CLUTTER_EVENT_CLICK:
 		action = clutter_click_action_new();
 		clutter_actor_add_action(instance, action);
@@ -754,9 +846,10 @@ Handle<Value> Actor::Effect(const Arguments &args)
 Handle<Value> Actor::Animate(const Arguments &args)
 {
 	HandleScope scope;
-	ClutterAnimation *animation;
+	bool accumulation = False;
 	GValue value = {0};
-
+	ClutterTimeline *timeline;
+	ClutterAnimation *animation;
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 	if (!args[0]->IsNumber())
@@ -775,31 +868,91 @@ Handle<Value> Actor::Animate(const Arguments &args)
 	Local<Array> names = properties->GetOwnPropertyNames();
 
 	if (names->Length() > 0) {
+		/* Stop current animation */
+		animation = clutter_actor_get_animation(instance);
+		if (animation) {
+			timeline = clutter_animation_get_timeline(animation);
+			if (timeline)
+				clutter_timeline_pause(timeline);
+
+			clutter_actor_detach_animation(instance);
+		}
+
 		/* Create animation */
 		animation = clutter_animation_new();
 		clutter_animation_set_object(animation, G_OBJECT(instance));
 		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
 		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
 
-		/* Set Properties */
-		for (int i = 0; i < names->Length(); ++i) {
-			Local<Value> property = properties->Get(names->Get(i)->ToString());
+		/* Options */
+		if (args[3]->IsObject()) {
+			Local<Value> OptionValue;
 
-			/* Prepare value */
-			ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), property);
+			/* Loop */
+			OptionValue = args[3]->ToObject()->Get(String::New("loop"));
+			if (OptionValue->IsBoolean())
+				clutter_timeline_set_loop(clutter_animation_get_timeline(animation), OptionValue->ToBoolean()->Value());
 
-			clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+			/* Accumulation */
+			OptionValue = args[3]->ToObject()->Get(String::New("accumulation"));
+			if (OptionValue->IsBoolean())
+				accumulation = OptionValue->ToBoolean()->Value();
 
-			g_value_unset(&value);
 		}
 
-		/* Loop */
-		if (args[3]->IsBoolean()) {
-			clutter_timeline_set_loop(clutter_animation_get_timeline(animation), args[3]->ToBoolean()->Value());
+		/* Set Properties */
+		for (int i = 0; i < names->Length(); ++i) {
+			Local<Value> PropertyValue = properties->Get(names->Get(i)->ToString());
+
+			/* Prepare value */
+			if (ObjectWrap::Unwrap<Actor>(args.This())->PropertyValueInit(&value, names->Get(i), PropertyValue))
+				clutter_animation_bind(animation, *String::AsciiValue(names->Get(i)->ToString()), &value);
+
+			g_value_unset(&value);
+				
 		}
 
 		/* Start Animation */
-		clutter_timeline_start(clutter_animation_get_timeline(animation));
+		timeline = clutter_animation_get_timeline(animation);
+		if (timeline)
+			clutter_timeline_start(timeline);
+	}
+
+	return args.This();
+}
+
+Handle<Value> Actor::SetAnimate(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterTimeline *timeline;
+	ClutterAnimation *animation;
+
+	if (!args[0]->IsNumber())
+		return ThrowException(Exception::TypeError(
+			String::New("first argument must be integer")));
+	
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	animation = clutter_actor_get_animation(instance);
+
+	if (animation) {
+		timeline = clutter_animation_get_timeline(animation);
+		if (timeline) {
+			switch(args[0]->ToInteger()->Value()) {
+			case NODE_CLUTTER_ANIMATION_PLAY:
+				clutter_timeline_start(timeline);
+				break;
+
+			case NODE_CLUTTER_ANIMATION_PAUSE:
+				clutter_timeline_pause(timeline);
+				break;
+
+			case NODE_CLUTTER_ANIMATION_STOP:
+				clutter_timeline_stop(timeline);
+				break;
+
+			}
+		}
 	}
 
 	return args.This();

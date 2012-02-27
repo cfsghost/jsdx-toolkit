@@ -7,16 +7,23 @@
 
 namespace clutter {
 
+typedef enum {
+	NODE_CLUTTER_ANIMATION_PLAY,
+	NODE_CLUTTER_ANIMATION_PAUSE,
+	NODE_CLUTTER_ANIMATION_STOP
+} NodeClutterAnimationCommand;
+
 struct PropertyDefine {
 	const char *name;
-	int type;
+	GType type;
+	bool accumulation;
 };
 
 class Actor : public node::ObjectWrap {
 public:
 	static void Initialize(v8::Handle<v8::Object> target);
 	static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
-	void PropertyValueInit(GValue *gvalue, v8::Handle<v8::Value> property, v8::Handle<v8::Value> value);
+	bool PropertyValueInit(GValue *gvalue, v8::Handle<v8::Value> property, v8::Handle<v8::Value> value);
 
 	ClutterActor *_actor;
 
@@ -52,12 +59,15 @@ protected:
 
 	static v8::Handle<v8::Value> Effect(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Animate(const v8::Arguments& args);
+	static v8::Handle<v8::Value> SetAnimate(const v8::Arguments& args);
 
 	static v8::Handle<v8::Value> On(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Off(const v8::Arguments& args);
 
 	static void _DestroyCallback(ClutterActor *actor, gpointer user_data);
 	static void _ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data);
+	static gboolean _LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data);
+	static gboolean _PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
