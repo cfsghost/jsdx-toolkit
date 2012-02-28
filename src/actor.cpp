@@ -36,24 +36,36 @@ struct PropertyDefine properties[] = {
 	{ NULL, 0 },
 };
 
+Persistent<FunctionTemplate> Actor::constructor_template;
+
 Actor::Actor()
-	: ObjectWrap() {}
+	: ObjectWrap() {
+
+	_actor = NULL;
+	_animation = NULL;
+}
 
 void Actor::Initialize(Handle<Object> target)
 {
 	HandleScope scope;
 
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	/* Create a new JavaScript class */
 	Local<String> name = String::NewSymbol("Actor");
+	constructor_template = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
+	constructor_template->SetClassName(name);
 
-	PrototypeMethodsInit(tpl);
+	PrototypeMethodsInit(constructor_template);
 
-	target->Set(name, tpl->GetFunction());
+	target->Set(name, constructor_template->GetFunction());
 }
 
 void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 {
 	HandleScope scope;
+
+	constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("x"), Actor::XGetter, Actor::XSetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("y"), Actor::YGetter, Actor::YSetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
@@ -70,10 +82,6 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setDepth", Actor::SetDepth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getDepth", Actor::GetDepth);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setX", Actor::SetX);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getX", Actor::GetX);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setY", Actor::SetY);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getY", Actor::GetY);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
 	/* Scale */
@@ -293,52 +301,48 @@ Handle<Value> Actor::SetPosition(const Arguments &args)
 	return args.This();
 }
 
-Handle<Value> Actor::SetX(const Arguments &args)
+Handle<Value> Actor::XGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_actor_set_x(CLUTTER_ACTOR(instance), args[0]->NumberValue());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Actor::GetX(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 	return scope.Close(
 		Number::New(clutter_actor_get_x(CLUTTER_ACTOR(instance)))
 	);
 }
 
-Handle<Value> Actor::SetY(const Arguments &args)
+Handle<Value> Actor::YGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_actor_set_y(CLUTTER_ACTOR(instance), args[0]->NumberValue());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Actor::GetY(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 	return scope.Close(
 		Number::New(clutter_actor_get_y(CLUTTER_ACTOR(instance)))
 	);
+}
+
+void Actor::XSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_actor_set_x(CLUTTER_ACTOR(instance), value->NumberValue());
+	}
+}
+
+void Actor::YSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_actor_set_y(CLUTTER_ACTOR(instance), value->NumberValue());
+	}
 }
 
 Handle<Value> Actor::SetDepth(const Arguments &args)
@@ -885,7 +889,7 @@ Handle<Value> Actor::Animate(const Arguments &args)
 
 	if (names->Length() > 0) {
 		/* Stop current animation */
-		animation = clutter_actor_get_animation(instance);
+		animation = ObjectWrap::Unwrap<Actor>(args.This())->_animation;
 		if (animation) {
 			timeline = clutter_animation_get_timeline(animation);
 			if (timeline)
@@ -896,6 +900,7 @@ Handle<Value> Actor::Animate(const Arguments &args)
 
 		/* Create animation */
 		animation = clutter_animation_new();
+		ObjectWrap::Unwrap<Actor>(args.This())->_animation = animation;
 		clutter_animation_set_object(animation, G_OBJECT(instance));
 		clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
 		clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
@@ -937,6 +942,7 @@ Handle<Value> Actor::Animate(const Arguments &args)
 Handle<Value> Actor::SetAnimate(const Arguments &args)
 {
 	HandleScope scope;
+	ClutterActor *instance;
 	ClutterTimeline *timeline;
 	ClutterAnimation *animation;
 
@@ -944,10 +950,8 @@ Handle<Value> Actor::SetAnimate(const Arguments &args)
 		return ThrowException(Exception::TypeError(
 			String::New("first argument must be integer")));
 	
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-	animation = clutter_actor_get_animation(instance);
-
+	instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	animation = ObjectWrap::Unwrap<Actor>(args.This())->_animation;
 	if (animation) {
 		timeline = clutter_animation_get_timeline(animation);
 		if (timeline) {

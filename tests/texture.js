@@ -48,7 +48,7 @@ texture3.effect(clutter.EFFECT_DESATURATE, 0.5);
 stage.add(texture3);
 
 console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());
-console.log('texture3 (x, y) = (' + texture3.getX() + ', ' + texture3.getY() + ')');
+console.log('texture3 (x, y) = (' + texture3.x + ', ' + texture3.y + ')');
 console.log('texture3 (w, h) = (' + texture3.getWidth() + ', ' + texture3.getHeight() + ')');
 
 clutter.main();

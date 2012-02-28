@@ -20,14 +20,23 @@ struct PropertyDefine {
 
 class Actor : public node::ObjectWrap {
 public:
+	static v8::Persistent<v8::FunctionTemplate> constructor_template;
+
 	static void Initialize(v8::Handle<v8::Object> target);
 	static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
+
 	bool PropertyValueInit(GValue *gvalue, v8::Handle<v8::Value> property, v8::Handle<v8::Value> value);
 
 	ClutterActor *_actor;
+	ClutterAnimation *_animation;
 
 protected:
 	Actor();
+
+	static v8::Handle<v8::Value> XGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+	static v8::Handle<v8::Value> YGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+	static void XSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+	static void YSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Destroy(const v8::Arguments& args);
@@ -45,10 +54,6 @@ protected:
 	static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
 	static v8::Handle<v8::Value> SetDepth(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetDepth(const v8::Arguments& args);
-	static v8::Handle<v8::Value> SetX(const v8::Arguments& args);
-	static v8::Handle<v8::Value> GetX(const v8::Arguments& args);
-	static v8::Handle<v8::Value> SetY(const v8::Arguments& args);
-	static v8::Handle<v8::Value> GetY(const v8::Arguments& args);
 	static v8::Handle<v8::Value> Reactive(const v8::Arguments& args);
 
 	static v8::Handle<v8::Value> Scale(const v8::Arguments& args);
