@@ -11,7 +11,7 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 var stage = new clutter.Stage();
 stage.setTitle('node-clutter Demo');
 stage.useAlpha(true);
-stage.setOpacity(100);
+stage.opacity = 100;
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
 stage.on(clutter.EVENT_DESTROY, function() {

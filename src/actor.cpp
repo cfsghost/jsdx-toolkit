@@ -66,14 +66,13 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("x"), Actor::XGetter, Actor::XSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("y"), Actor::YGetter, Actor::YSetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("opacity"), Actor::OpacityGetter, Actor::OpacitySetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", Actor::ShowAll);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
 
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setOpacity", Actor::SetOpacity);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getOpacity", Actor::GetOpacity);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setWidth", Actor::SetWidth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getWidth", Actor::GetWidth);
@@ -203,30 +202,6 @@ Handle<Value> Actor::Hide(const Arguments &args)
 	return args.This();
 }
 
-Handle<Value> Actor::SetOpacity(const Arguments &args)
-{
-	HandleScope scope;
-
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_actor_set_opacity(CLUTTER_ACTOR(instance), args[0]->NumberValue());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Actor::GetOpacity(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-	return scope.Close(
-		Integer::New(clutter_actor_get_opacity(CLUTTER_ACTOR(instance)))
-	);
-}
-
 Handle<Value> Actor::Resize(const Arguments &args)
 {
 	HandleScope scope;
@@ -342,6 +317,28 @@ void Actor::YSetter(Local<String> name, Local<Value> value, const AccessorInfo& 
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 		clutter_actor_set_y(CLUTTER_ACTOR(instance), value->NumberValue());
+	}
+}
+
+Handle<Value> Actor::OpacityGetter(Local<String> name, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+	return scope.Close(
+		Integer::New(clutter_actor_get_opacity(CLUTTER_ACTOR(instance)))
+	);
+}
+
+void Actor::OpacitySetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_actor_set_opacity(CLUTTER_ACTOR(instance), value->ToInteger()->Value());
 	}
 }
 

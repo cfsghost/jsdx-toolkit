@@ -19,7 +19,7 @@ stage.show();
 var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
-texture1.setOpacity(150);
+texture1.opacity = 150;
 texture1.reactive(true);
 texture1.on(clutter.EVENT_ENTER, function(ev) {
 	console.log('texture1: enter');

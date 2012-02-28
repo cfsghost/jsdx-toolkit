@@ -19,12 +19,12 @@ stage.show();
 var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
-texture1.setOpacity(150);
+texture1.opacity = 150;
 //texture1.effect(clutter.EFFECT_BLUR);
 texture1.effect(clutter.EFFECT_PAGE_TURN, { period: 0.5, angle: 30, radius: 30 });
 stage.add(texture1);
 
-console.log('texture1 getOpacity() = ' + texture1.getOpacity());
+console.log('texture1 opacity = ' + texture1.opacity);
 
 /* Asynchronize */
 var texture2 = new clutter.Texture;
