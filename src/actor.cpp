@@ -613,7 +613,7 @@ void Actor::_DragActionEndCallback(ClutterClickAction *action,
 	Local<Object> o = Object::New();
 	o->Set(String::New("x"), Number::New(event_x));
 	o->Set(String::New("y"), Number::New(event_y));
-	o->Set(String::New("y"), Integer::New(modifiers));
+	o->Set(String::New("modifier"), Integer::New(modifiers));
 
 	Local<Value> argv[argc] = {
 		Local<Value>::New(String::New("end")),
