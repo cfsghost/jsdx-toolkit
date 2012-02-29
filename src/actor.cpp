@@ -67,6 +67,8 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("x"), Actor::XGetter, Actor::XSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("y"), Actor::YGetter, Actor::YSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("opacity"), Actor::OpacityGetter, Actor::OpacitySetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Actor::WidthGetter, Actor::WidthSetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Actor::HeightGetter, Actor::HeightSetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
@@ -74,10 +76,6 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setWidth", Actor::SetWidth);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getWidth", Actor::GetWidth);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setHeight", Actor::SetHeight);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHeight", Actor::GetHeight);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setDepth", Actor::SetDepth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getDepth", Actor::GetDepth);
@@ -215,52 +213,48 @@ Handle<Value> Actor::Resize(const Arguments &args)
 	return args.This();
 }
 
-Handle<Value> Actor::SetWidth(const Arguments &args)
+Handle<Value> Actor::WidthGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_actor_set_width(CLUTTER_ACTOR(instance), args[0]->NumberValue());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Actor::GetWidth(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 	return scope.Close(
 		Number::New(clutter_actor_get_width(CLUTTER_ACTOR(instance)))
 	);
 }
 
-Handle<Value> Actor::SetHeight(const Arguments &args)
+void Actor::WidthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
-		clutter_actor_set_height(CLUTTER_ACTOR(instance), args[0]->NumberValue());
+		clutter_actor_set_width(CLUTTER_ACTOR(instance), value->NumberValue());
 	}
-
-	return args.This();
 }
 
-Handle<Value> Actor::GetHeight(const Arguments &args)
+Handle<Value> Actor::HeightGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 	return scope.Close(
 		Number::New(clutter_actor_get_height(CLUTTER_ACTOR(instance)))
 	);
+}
+
+void Actor::HeightSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_actor_set_height(CLUTTER_ACTOR(instance), value->NumberValue());
+	}
 }
 
 Handle<Value> Actor::SetPosition(const Arguments &args)

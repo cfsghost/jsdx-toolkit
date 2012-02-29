@@ -56,7 +56,7 @@ stage.add(texture2);
 var texture3 = new clutter.Texture;
 texture3.keepAspectRatio(true);
 texture3.loadFile('fred.jpg');
-texture3.setWidth(50);
+texture3.width = 50;
 texture3.setPosition(50, 50);
 stage.add(texture3);
 
