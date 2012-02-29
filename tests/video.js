@@ -7,7 +7,7 @@ if (clutter.gst_init() != clutter.INIT_SUCCESS) {
 
 /* Create a new stage */
 var stage = new clutter.Stage();
-stage.setTitle('VideoTexture');
+stage.title = 'VideoTexture';
 stage.resize(400, 300);
 stage.setColor(0, 0, 0, 255);
 stage.on(clutter.EVENT_DESTROY, function() {

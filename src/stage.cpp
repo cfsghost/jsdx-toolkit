@@ -32,8 +32,7 @@ void Stage::Initialize(Handle<Object> target)
 	/* Methods */
 	Container::PrototypeMethodsInit(tpl);
 
-	NODE_SET_PROTOTYPE_METHOD(tpl, "setTitle", Stage::SetTitle);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "getTitle", Stage::GetTitle);
+	tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("title"), Stage::TitleGetter, Stage::TitleSetter);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setCursor", Stage::SetCursor);
@@ -60,26 +59,26 @@ Handle<Value> Stage::New(const Arguments& args)
 	return scope.Close(args.This());
 }
 
-Handle<Value> Stage::SetTitle(const Arguments &args)
+Handle<Value> Stage::TitleGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsString()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
-		clutter_stage_set_title(CLUTTER_STAGE(instance), *String::Utf8Value(args[0]->ToString()));
-	}
-
-	return args.This();
+	return scope.Close(
+		String::New(clutter_stage_get_title(CLUTTER_STAGE(instance)))
+	);
 }
 
-Handle<Value> Stage::GetTitle(const Arguments &args)
+void Stage::TitleSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	if (value->IsString()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
-	return scope.Close(String::New(clutter_stage_get_title(CLUTTER_STAGE(instance))));
+		clutter_stage_set_title(CLUTTER_STAGE(instance), *String::Utf8Value(value->ToString()));
+	}
 }
 
 Handle<Value> Stage::SetUseAlpha(const Arguments &args)

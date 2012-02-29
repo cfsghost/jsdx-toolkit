@@ -9,8 +9,8 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 
 /* Create a new stage */
 var stage = new clutter.Stage();
-stage.setTitle('This is a new stage');
-console.log(stage.getTitle());
+stage.title = 'This is a new stage';
+console.log(stage.title);
 stage.useAlpha(true);
 stage.opacity = 100;
 stage.resize(500, 500);
