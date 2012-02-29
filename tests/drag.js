@@ -29,7 +29,7 @@ stage.add(texture1);
 var texture2 = new clutter.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
-texture2.setDepth(-200);
+texture2.depth = -200;
 texture2.reactive(true);
 texture2.on(clutter.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
 	console.log(ev);

@@ -45,7 +45,7 @@ var texture2 = new clutter.Texture;
 texture2.setLoadAsync(true);
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
-texture2.setDepth(-200);
+texture2.depth = -200;
 texture2.reactive(true);
 texture2.on(clutter.EVENT_CLICK, function(ev) {
 	console.log('texture2: click');

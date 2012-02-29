@@ -66,6 +66,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("x"), Actor::XGetter, Actor::XSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("y"), Actor::YGetter, Actor::YSetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("depth"), Actor::DepthGetter, Actor::DepthSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("opacity"), Actor::OpacityGetter, Actor::OpacitySetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Actor::WidthGetter, Actor::WidthSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Actor::HeightGetter, Actor::HeightSetter);
@@ -77,8 +78,6 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setDepth", Actor::SetDepth);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getDepth", Actor::GetDepth);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
 	/* Scale */
@@ -336,28 +335,26 @@ void Actor::OpacitySetter(Local<String> name, Local<Value> value, const Accessor
 	}
 }
 
-Handle<Value> Actor::SetDepth(const Arguments &args)
+Handle<Value> Actor::DepthGetter(Local<String> name, const AccessorInfo& info)
 {
 	HandleScope scope;
 
-	if (args[0]->IsNumber()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_actor_set_depth(CLUTTER_ACTOR(instance), args[0]->NumberValue());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Actor::GetDepth(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 	return scope.Close(
 		Number::New(clutter_actor_get_depth(CLUTTER_ACTOR(instance)))
 	);
+}
+
+void Actor::DepthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_actor_set_depth(CLUTTER_ACTOR(instance), value->NumberValue());
+	}
 }
 
 Handle<Value> Actor::Scale(const Arguments &args)

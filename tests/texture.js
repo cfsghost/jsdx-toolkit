@@ -31,12 +31,12 @@ var texture2 = new clutter.Texture;
 texture2.setLoadAsync(true);
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
-texture2.setDepth(-200);
+texture2.depth = -200;
 texture2.effect(clutter.EFFECT_COLORIZE, [ 255, 255, 255, 255 ]);
 stage.add(texture2);
 
 console.log('texture2 getLoadAsync() = ' + texture2.getLoadAsync());
-console.log('texture2 getDepth() = ' + texture2.getDepth());
+console.log('texture2 depth = ' + texture2.depth);
 
 /* Keep aspect ratio */
 var texture3 = new clutter.Texture;
