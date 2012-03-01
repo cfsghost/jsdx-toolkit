@@ -19,6 +19,10 @@
 #include "gst/video-texture.hpp"
 #endif
 
+#if ENABLE_WIDGET
+#include "widgets/FlickView.hpp"
+#endif
+
 namespace clutter {
  
 using namespace node;
@@ -187,6 +191,10 @@ extern "C" {
 #if ENABLE_CLUTTER_GST
 		Gst::Initialize(target);
 		GstVideoTexture::Initialize(target);
+#endif
+
+#if ENABLE_WIDGET
+		FlickView::Initialize(target);
 #endif
 	}
 

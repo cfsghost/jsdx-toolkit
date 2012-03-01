@@ -9,6 +9,7 @@ VERSION = "0.0.1"
 def set_options(opt):
 	opt.tool_options("compiler_cxx")
 	opt.add_option('--enable-clutter-gst', action='store', default=1, help='Enable clutter-gst to support multimedia [Default: True]')
+	opt.add_option('--enable-widget', action='store', default=1, help='Enable widget support [Default: True]')
 
 def configure(conf):
 	conf.check_tool("compiler_cxx")
@@ -19,6 +20,10 @@ def configure(conf):
 		print "Enabled clutter-gst"
 		conf.env["ENABLE_CLUTTER_GST"] = True
 		conf.check_cfg(package='clutter-gst-1.0', uselib_store='CLUTTER_GST', args='--cflags --libs')
+
+	if Options.options.enable_widget:
+		print "Enabled Widget Support"
+		conf.env["ENABLE_WIDGET"] = True
 
 def build(bld):
 	obj = bld.new_task_gen("cxx", "shlib", "node_addon")
@@ -47,6 +52,12 @@ def build(bld):
 			"""
 
 		obj.uselib += " CLUTTER_GST"
+
+	if bld.env["ENABLE_WIDGET"]:
+		obj.cxxflags.append("-DENABLE_WIDGET");
+		obj.source += """
+			src/widgets/FlickView.cpp
+			"""
 
 def shutdown():
 	if Options.commands['clean']:
