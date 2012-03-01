@@ -82,9 +82,6 @@ namespace clutter {
 		FlickView* obj = new FlickView();
 		obj->Wrap(args.This());
 
-//		g_signal_connect(G_OBJECT(obj->_action), "drag-end", G_CALLBACK(FlickView::_DragActionEndCallback), obj);
-//		g_signal_connect(G_OBJECT(obj->_action), "drag-motion", G_CALLBACK(FlickView::_DragActionMotionCallback), obj);
-
 		return scope.Close(args.This());
 	}
 

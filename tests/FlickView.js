@@ -8,7 +8,7 @@ if (clutter.init() != clutter.INIT_SUCCESS) {
 /* Create a new stage */
 var stage = new clutter.Stage();
 stage.title = 'FlickView Widget';
-stage.resize(500, 500);
+stage.resize(800, 600);
 stage.setColor(0, 0, 0, 255);
 stage.on(clutter.EVENT_DESTROY, function() {
 	clutter.quit();
