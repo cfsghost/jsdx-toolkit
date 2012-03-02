@@ -17,8 +17,9 @@ namespace clutter {
 		HandleScope scope;
 
 		/* Initializing parameters */
-		Deceleration = 0.3;
+		Deceleration = 0.2;
 		StopFactor = 100;
+		Axis = NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS | NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS;
 
 		/* Initializing variable */
 		dx = dy = 0;
@@ -60,6 +61,11 @@ namespace clutter {
 
 		/* Methods */
 		FlickView::PrototypeMethodsInit(tpl);
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_x_axis"), FlickView::AllowXAxisGetter, FlickView::AllowXAxisSetter);
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_y_axis"), FlickView::AllowYAxisGetter, FlickView::AllowYAxisSetter);
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), FlickView::WidthGetter, FlickView::WidthSetter);
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), FlickView::HeightGetter, FlickView::HeightSetter);
+
 		NODE_SET_PROTOTYPE_METHOD(tpl, "add", FlickView::Add);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "remove", FlickView::Remove);
 
@@ -109,6 +115,144 @@ namespace clutter {
 		return args.This();
 	}
 
+	Handle<Value> FlickView::WidthGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Number::New(clutter_actor_get_width(CLUTTER_ACTOR(instance)))
+		);
+	}
+
+	void FlickView::WidthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_width(CLUTTER_ACTOR(instance), value->NumberValue());
+
+			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, value->NumberValue(), clutter_actor_get_height(CLUTTER_ACTOR(instance)));
+		}
+	}
+
+	Handle<Value> FlickView::HeightGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Number::New(clutter_actor_get_height(CLUTTER_ACTOR(instance)))
+		);
+	}
+
+	void FlickView::HeightSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_height(CLUTTER_ACTOR(instance), value->NumberValue());
+
+			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, clutter_actor_get_width(CLUTTER_ACTOR(instance)), value->NumberValue());
+		}
+	}
+
+	Handle<Value> FlickView::AllowXAxisGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+
+		return scope.Close(
+			Boolean::New((flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) ? True : False)
+		);
+	}
+
+	void FlickView::AllowXAxisSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+			if (value->ToBoolean()->Value()) {
+				flickview->Axis |= NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS;
+			} else {
+				flickview->Axis &= ~NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS;
+
+				clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(flickview->_drag_action), CLUTTER_DRAG_Y_AXIS);
+			}
+		}
+	}
+
+	Handle<Value> FlickView::AllowYAxisGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+
+		return scope.Close(
+			Boolean::New((flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) ? True : False)
+		);
+	}
+
+	void FlickView::AllowYAxisSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+			if (value->ToBoolean()->Value()) {
+				flickview->Axis |= NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS;
+			} else {
+				flickview->Axis &= ~NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS;
+
+				clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(flickview->_drag_action), CLUTTER_DRAG_X_AXIS);
+			}
+		}
+	}
+
+	void FlickView::AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview)
+	{
+		float x, y;
+
+		x = clutter_actor_get_x(flickview->_innerBox);
+		y = clutter_actor_get_y(flickview->_innerBox);
+
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
+			x += flickview->targetDx * flickview->Deceleration;
+
+			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) > clutter_actor_get_width(flickview->_actor)))
+				x = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor);
+			else if (x < 0 && x + clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
+				x = 0;
+		}
+
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
+			y += flickview->targetDy * flickview->Deceleration;
+
+			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) > clutter_actor_get_height(flickview->_actor))
+				y = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor);
+			else if (y < 0 && y + clutter_actor_get_height(flickview->_innerBox) < clutter_actor_get_height(flickview->_actor))
+				y = 0;
+		}
+
+		flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_QUAD, 1000,
+			"x", x,
+			"y", y,
+			NULL);
+		
+	}
+
 	#define FIGURE_DURATION_USEC(tv1, tv2) (((tv2).tv_usec - (tv1).tv_usec) / 1000)
 	#define FIGURE_DURATION_SEC(tv1, tv2) (((tv2).tv_sec - (tv1).tv_sec))
 	#define FIGURE_DURATION(tv1, tv2) (FIGURE_DURATION_SEC(tv1, tv2) * 1000 + FIGURE_DURATION_USEC(tv1, tv2))
@@ -121,10 +265,15 @@ namespace clutter {
 		gpointer user_data)
 	{
 		FlickView *flickview = (FlickView *)user_data;
+		ClutterActor *innerBox = flickview->_innerBox;
 		struct timeval currentTime;
 		long DurationX;
 		long DurationY;
-		ClutterActor *innerBox = flickview->_innerBox;
+		float DistanceRate;
+
+		/* Get currect position */
+		flickview->targetX = clutter_actor_get_x(innerBox);
+		flickview->targetY = clutter_actor_get_y(innerBox);
 
 		gettimeofday(&currentTime, NULL);
 
@@ -135,23 +284,45 @@ namespace clutter {
 			flickview->targetDx = flickview->targetDy = 0;
 		}
 
-		/* Figure duration  */
-		DurationX = FIGURE_DURATION(flickview->StartTimestampX, currentTime);
-		DurationY = FIGURE_DURATION(flickview->StartTimestampY, currentTime);
+		/* Rate */
+		DistanceRate = 1 - flickview->Deceleration;
 
-		/* Set minimal value if duration is too short */
-		if (DurationX == 0) DurationX = 1000;
-		if (DurationY == 0) DurationY = 1000;
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
+			/* Figure duration  */
+			DurationX = FIGURE_DURATION(flickview->StartTimestampX, currentTime);
 
-		/* Accumulation */
-		flickview->targetDx += 1000 / DurationX * flickview->dx;
-		flickview->targetDy += 1000 / DurationY * flickview->dy;
+			/* Accumulation */
+			if (DurationX == 0)
+				flickview->targetDx += flickview->dx;
+			else
+				flickview->targetDx += 1000 / DurationX * flickview->dx;
+
+			flickview->targetX += flickview->targetDx * DistanceRate;
+		}
+
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
+			/* Figure duration  */
+			DurationY = FIGURE_DURATION(flickview->StartTimestampY, currentTime);
+
+			/* Accumulation */
+			if (DurationY == 0)
+				flickview->targetDy += flickview->dy;
+			else
+				flickview->targetDy += 1000 / DurationY * flickview->dy;
+
+			flickview->targetY += flickview->targetDy * DistanceRate;
+		}
 
 		/* Animation */
-		flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_EASE_OUT_CUBIC, 1000,
+		flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 1000 * DistanceRate,
+			"x", flickview->targetX,
+			"y", flickview->targetY,
+			"signal-after::completed", AnimationStopCallback, flickview,
+			NULL);
+/*
 			"x", clutter_actor_get_x(innerBox) + flickview->targetDx * flickview->Deceleration,
 			"y", clutter_actor_get_y(innerBox) + flickview->targetDy * flickview->Deceleration,
-			NULL);
+*/
 	}
 
 	void FlickView::_DragActionMotionCallback(ClutterClickAction *action,
@@ -167,22 +338,26 @@ namespace clutter {
 		memcpy(&flickview->LastTimestampY, &(flickview->LastTimestampX), sizeof(struct timeval));
 
 		/* Reset delta and timer if they have different sign */
-		if (((flickview->dx >= 0 && delta_x >= 0) || (flickview->dx <= 0 && delta_x <= 0)) &&
-			((flickview->targetDx >= 0 && delta_x >= 0) || (flickview->targetDx <= 0 && delta_x <= 0))) {
-			flickview->dx += delta_x;
-		} else {
-			flickview->dx = delta_x;
-			memcpy(&flickview->StartTimestampX, &(flickview->LastTimestampX), sizeof(struct timeval));
-			flickview->targetDx = flickview->targetDy = 0;
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
+			if (((flickview->dx >= 0 && delta_x >= 0) || (flickview->dx <= 0 && delta_x <= 0)) &&
+				((flickview->targetDx >= 0 && delta_x >= 0) || (flickview->targetDx <= 0 && delta_x <= 0))) {
+				flickview->dx += delta_x;
+			} else {
+				flickview->dx = delta_x;
+				memcpy(&flickview->StartTimestampX, &(flickview->LastTimestampX), sizeof(struct timeval));
+				flickview->targetDx = flickview->targetDy = 0;
+			}
 		}
 
-		if (((flickview->dy >= 0 && delta_y >= 0) || (flickview->dy <= 0 && delta_y <= 0)) &&
-			((flickview->targetDy >= 0 && delta_y >= 0) || (flickview->targetDy <= 0 && delta_y <= 0))) {
-			flickview->dy += delta_y;
-		} else {
-			flickview->dy = delta_y;
-			memcpy(&flickview->StartTimestampY, &(flickview->LastTimestampY), sizeof(struct timeval));
-			flickview->targetDx = flickview->targetDy = 0;
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
+			if (((flickview->dy >= 0 && delta_y >= 0) || (flickview->dy <= 0 && delta_y <= 0)) &&
+				((flickview->targetDy >= 0 && delta_y >= 0) || (flickview->targetDy <= 0 && delta_y <= 0))) {
+				flickview->dy += delta_y;
+			} else {
+				flickview->dy = delta_y;
+				memcpy(&flickview->StartTimestampY, &(flickview->LastTimestampY), sizeof(struct timeval));
+				flickview->targetDx = flickview->targetDy = 0;
+			}
 		}
 	}
 

@@ -16,8 +16,12 @@ stage.on(clutter.EVENT_DESTROY, function() {
 stage.show();
 
 var flickView = new clutter.FlickView;
+flickView.width = 700;
+flickView.height = 500;
+flickView.allow_y_axis = false;
 stage.add(flickView);
 
+console.log(flickView.allow_x_axis);
 
 /* Create something in FlickView */
 var texture1 = new clutter.Texture;
