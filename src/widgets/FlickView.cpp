@@ -52,7 +52,6 @@ namespace clutter {
 
 		/* Allow user to stop animation with pressing */
 		g_signal_connect(G_OBJECT(_innerBox), "button-press-event", G_CALLBACK(FlickView::_PressCallback), this);
-		g_signal_connect(G_OBJECT(_innerBox), "button-release-event", G_CALLBACK(FlickView::_ReleaseCallback), this);
 	}
 
 	void FlickView::Initialize(Handle<Object> target)
@@ -500,11 +499,6 @@ namespace clutter {
 
 		/* Reset delta */
 		flickview->dx = flickview->dy = 0;
-	}
-
-	gboolean FlickView::_ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
-	{
-		FlickView *flickview = (FlickView *)user_data;
 	}
 
 	gboolean FlickView::_LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data)
