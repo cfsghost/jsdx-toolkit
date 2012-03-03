@@ -52,6 +52,7 @@ namespace clutter {
 
 		/* Allow user to stop animation with pressing */
 		g_signal_connect(G_OBJECT(_innerBox), "button-press-event", G_CALLBACK(FlickView::_PressCallback), this);
+		g_signal_connect(G_OBJECT(_innerBox), "button-release-event", G_CALLBACK(FlickView::_ReleaseCallback), this);
 	}
 
 	void FlickView::Initialize(Handle<Object> target)
@@ -251,24 +252,25 @@ namespace clutter {
 		}
 	}
 
-	void FlickView::AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview)
+	bool FlickView::AnimationCompleted(FlickView *flickview, float TargetX, float TargetY)
 	{
-		float x, y;
-
-		x = clutter_actor_get_x(flickview->_innerBox);
-		y = clutter_actor_get_y(flickview->_innerBox);
+		bool OutOfRange = False;
+		float x = TargetX;
+		float y = TargetY;
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
-			x += flickview->targetDx * flickview->Deceleration;
-
 			/* Out of range */
 			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) > clutter_actor_get_width(flickview->_actor))) {
+				OutOfRange = True;
+
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
 					x = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor);
 				else
 					x = 0;
 					
 			} else if (x < 0 && x + clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor)) {
+				OutOfRange = True;
+
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
 					x = 0;
 				else
@@ -277,15 +279,17 @@ namespace clutter {
 		}
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
-			y += flickview->targetDy * flickview->Deceleration;
-
 			/* Out of range */
 			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) > clutter_actor_get_height(flickview->_actor)) {
+				OutOfRange = True;
+
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
 					y = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor);
 				else
 					y = 0;
 			} else if (y < 0 && y + clutter_actor_get_height(flickview->_innerBox) < clutter_actor_get_height(flickview->_actor)) {
+				OutOfRange = True;
+
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
 					y = 0;
 				else
@@ -293,11 +297,34 @@ namespace clutter {
 			}
 		}
 
-		flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 600,
-			"x", x,
-			"y", y,
-			NULL);
-		
+		if (OutOfRange)
+			flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 415,
+				"x", x,
+				"y", y,
+				NULL);
+
+		return OutOfRange;
+	}
+
+	void FlickView::AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview)
+	{
+		float x, y;
+
+		x = clutter_actor_get_x(flickview->_innerBox);
+		y = clutter_actor_get_y(flickview->_innerBox);
+
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS)
+			x += flickview->targetDx * flickview->Deceleration;
+
+		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS)
+			y += flickview->targetDy * flickview->Deceleration;
+
+		/* No Out of range */
+		if (!AnimationCompleted(flickview, x, y))
+			flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 415,
+				"x", x,
+				"y", y,
+				NULL);
 	}
 
 	#define FIGURE_DURATION_USEC(tv1, tv2) (((tv2).tv_usec - (tv1).tv_usec) / 1000)
@@ -326,11 +353,16 @@ namespace clutter {
 
 		gettimeofday(&currentTime, NULL);
 
+		/* Out of range right now, so do not do anything and put it back in range */
+		if (AnimationCompleted(flickview, flickview->targetX, flickview->targetY))
+			return;
+
 		/* It has no action for a long time */
 		if (FIGURE_DURATION(flickview->LastTimestampX, currentTime) >= flickview->StopFactor ||
 			FIGURE_DURATION(flickview->LastTimestampY, currentTime) >= flickview->StopFactor) {
 			flickview->dx = flickview->dy = 0;
 			flickview->targetDx = flickview->targetDy = 0;
+			return;
 		}
 
 		/* Rate */
@@ -468,6 +500,11 @@ namespace clutter {
 
 		/* Reset delta */
 		flickview->dx = flickview->dy = 0;
+	}
+
+	gboolean FlickView::_ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+	{
+		FlickView *flickview = (FlickView *)user_data;
 	}
 
 	gboolean FlickView::_LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data)
