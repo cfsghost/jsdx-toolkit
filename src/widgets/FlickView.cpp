@@ -3,6 +3,7 @@
 #include <clutter/clutter.h>
 #include <sys/time.h>
 #include <string.h>
+#include <math.h>
 
 #include "../clutter.hpp"
 #include "../actor.hpp"
@@ -17,9 +18,11 @@ namespace clutter {
 		HandleScope scope;
 
 		/* Initializing parameters */
+		Mode = NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE;
 		Deceleration = 0.2;
 		StopFactor = 100;
 		Axis = NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS | NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS;
+		Threshold = 20;
 
 		/* Initializing variable */
 		dx = dy = 0;
@@ -61,6 +64,11 @@ namespace clutter {
 
 		/* Methods */
 		FlickView::PrototypeMethodsInit(tpl);
+
+		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
+		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
+
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("mode"), FlickView::ModeGetter, FlickView::ModeSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_x_axis"), FlickView::AllowXAxisGetter, FlickView::AllowXAxisSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_y_axis"), FlickView::AllowYAxisGetter, FlickView::AllowYAxisSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), FlickView::WidthGetter, FlickView::WidthSetter);
@@ -113,6 +121,28 @@ namespace clutter {
 		clutter_container_remove_actor(CLUTTER_CONTAINER(instance), CLUTTER_ACTOR(actor));
 
 		return args.This();
+	}
+
+	Handle<Value> FlickView::ModeGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+		return scope.Close(
+			Integer::New(flickview->Mode)
+		);
+	}
+
+	void FlickView::ModeSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+			flickview->Mode = (FlickViewMode)value->ToUint32()->Value();
+		}
 	}
 
 	Handle<Value> FlickView::WidthGetter(Local<String> name, const AccessorInfo& info)
@@ -231,22 +261,39 @@ namespace clutter {
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
 			x += flickview->targetDx * flickview->Deceleration;
 
-			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) > clutter_actor_get_width(flickview->_actor)))
-				x = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor);
-			else if (x < 0 && x + clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
-				x = 0;
+			/* Out of range */
+			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) > clutter_actor_get_width(flickview->_actor))) {
+				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
+					x = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor);
+				else
+					x = 0;
+					
+			} else if (x < 0 && x + clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor)) {
+				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
+					x = 0;
+				else
+					x = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor);
+			}
 		}
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
 			y += flickview->targetDy * flickview->Deceleration;
 
-			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) > clutter_actor_get_height(flickview->_actor))
-				y = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor);
-			else if (y < 0 && y + clutter_actor_get_height(flickview->_innerBox) < clutter_actor_get_height(flickview->_actor))
-				y = 0;
+			/* Out of range */
+			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) > clutter_actor_get_height(flickview->_actor)) {
+				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
+					y = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor);
+				else
+					y = 0;
+			} else if (y < 0 && y + clutter_actor_get_height(flickview->_innerBox) < clutter_actor_get_height(flickview->_actor)) {
+				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
+					y = 0;
+				else
+					y = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor);
+			}
 		}
 
-		flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_QUAD, 1000,
+		flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 600,
 			"x", x,
 			"y", y,
 			NULL);
@@ -270,6 +317,8 @@ namespace clutter {
 		long DurationX;
 		long DurationY;
 		float DistanceRate;
+		float FinalDx, FinalDy;
+		bool SwitchPage = False;
 
 		/* Get currect position */
 		flickview->targetX = clutter_actor_get_x(innerBox);
@@ -297,7 +346,27 @@ namespace clutter {
 			else
 				flickview->targetDx += 1000 / DurationX * flickview->dx;
 
-			flickview->targetX += flickview->targetDx * DistanceRate;
+			FinalDx = flickview->targetDx * DistanceRate;
+
+			/* Page style mode */
+			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+				/* Next or previous page */
+				if (fabs(FinalDx) >= flickview->Threshold) {
+					flickview->targetX += (FinalDx > 0) ? clutter_actor_get_width(flickview->_actor) : -clutter_actor_get_width(flickview->_actor);
+					SwitchPage = True;
+				} else {
+					flickview->targetX += FinalDx;
+				}
+
+				/* avoid to make it out of range for a long distance */
+				if (flickview->targetX > 0)
+					flickview->targetX = clutter_actor_get_width(flickview->_actor) * 0.1;
+				else if (flickview->targetX < -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor))
+					flickview->targetX = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor) * 0.9;
+			} else {
+				flickview->targetX += FinalDx;
+			}
+
 		}
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
@@ -310,19 +379,39 @@ namespace clutter {
 			else
 				flickview->targetDy += 1000 / DurationY * flickview->dy;
 
-			flickview->targetY += flickview->targetDy * DistanceRate;
+			FinalDy = flickview->targetDy * DistanceRate;
+
+			/* Page style mode */
+			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+				/* Next or previous page */
+				if (fabs(FinalDy) >= flickview->Threshold)
+					flickview->targetY += (FinalDy > 0) ? clutter_actor_get_height(flickview->_actor) : -clutter_actor_get_height(flickview->_actor);
+				else
+					flickview->targetY += FinalDy;
+
+				/* avoid to make it out of range for a long distance */
+				if (flickview->targetY > 0)
+					flickview->targetY = clutter_actor_get_height(flickview->_actor) * 0.1;
+				else if (flickview->targetY < -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor))
+					flickview->targetY = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor) * 0.9;
+			} else {
+				flickview->targetY += FinalDy;
+			}
 		}
 
 		/* Animation */
-		flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 1000 * DistanceRate,
-			"x", flickview->targetX,
-			"y", flickview->targetY,
-			"signal-after::completed", AnimationStopCallback, flickview,
-			NULL);
-/*
-			"x", clutter_actor_get_x(innerBox) + flickview->targetDx * flickview->Deceleration,
-			"y", clutter_actor_get_y(innerBox) + flickview->targetDy * flickview->Deceleration,
-*/
+		if (SwitchPage)
+			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 200,
+				"x", flickview->targetX,
+				"y", flickview->targetY,
+				"signal-after::completed", AnimationStopCallback, flickview,
+				NULL);
+		else
+			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 1000 * DistanceRate,
+				"x", flickview->targetX,
+				"y", flickview->targetY,
+				"signal-after::completed", AnimationStopCallback, flickview,
+				NULL);
 	}
 
 	void FlickView::_DragActionMotionCallback(ClutterClickAction *action,
