@@ -23,6 +23,10 @@ void Texture::Initialize(Handle<Object> target)
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	Local<String> name = String::NewSymbol("Texture");
 
+	CLUTTER_DEFINE_CONSTANT(tpl, "QUALITY_LOW", CLUTTER_TEXTURE_QUALITY_LOW);
+	CLUTTER_DEFINE_CONSTANT(tpl, "QUALITY_MEDIUM", CLUTTER_TEXTURE_QUALITY_MEDIUM);
+	CLUTTER_DEFINE_CONSTANT(tpl, "QUALITY_HIGH", CLUTTER_TEXTURE_QUALITY_HIGH);
+
 	/* Methods */
 	PrototypeMethodsInit(tpl);
 
@@ -34,6 +38,7 @@ void Texture::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template
 	HandleScope scope;
 
 	Actor::PrototypeMethodsInit(constructor_template);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("filterQuality"), Texture::FilterQualityGetter, Texture::FilterQualitySetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Texture::LoadFile);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setLoadAsync", Texture::SetLoadAsync);
@@ -74,6 +79,28 @@ Handle<Value> Texture::LoadFile(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+Handle<Value> Texture::FilterQualityGetter(Local<String> name, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+	return scope.Close(
+		Integer::New(clutter_texture_get_filter_quality(CLUTTER_TEXTURE(instance)))
+	);
+}
+
+void Texture::FilterQualitySetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_texture_set_filter_quality(CLUTTER_TEXTURE(instance), (ClutterTextureQuality)value->ToInteger()->Value());
+	}
 }
 
 Handle<Value> Texture::SetLoadAsync(const Arguments &args)
