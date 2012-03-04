@@ -80,6 +80,9 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
+	/* Anchor */
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnchorFromGravity", Actor::SetAnchorFromGravity);
+
 	/* Scale */
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setScaleGravity", Actor::SetScaleGravity);
@@ -355,6 +358,19 @@ void Actor::DepthSetter(Local<String> name, Local<Value> value, const AccessorIn
 
 		clutter_actor_set_depth(CLUTTER_ACTOR(instance), value->NumberValue());
 	}
+}
+
+Handle<Value> Actor::SetAnchorFromGravity(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_anchor_point_from_gravity(CLUTTER_ACTOR(instance), (ClutterGravity)args[0]->ToInteger()->Value());
+	}
+
+	return args.This();
 }
 
 Handle<Value> Actor::Scale(const Arguments &args)
