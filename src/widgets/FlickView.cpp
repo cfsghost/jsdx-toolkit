@@ -566,9 +566,11 @@ namespace clutter {
 				clutter_timeline_pause(timeline);
 		}
 
-		/* Figure page number */
 		if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			/* Figure page number */
 			FigurePage(flickview);
+
+			/* TODO: Hide something to improve performance */
 		}
 
 		/* Reset timer */
