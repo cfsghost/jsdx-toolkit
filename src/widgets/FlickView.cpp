@@ -167,7 +167,7 @@ namespace clutter {
 
 			clutter_actor_set_width(CLUTTER_ACTOR(instance), value->NumberValue());
 
-			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, value->NumberValue(), clutter_actor_get_height(CLUTTER_ACTOR(instance)));
+//			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, value->NumberValue(), clutter_actor_get_height(CLUTTER_ACTOR(instance)));
 		}
 	}
 
@@ -191,7 +191,7 @@ namespace clutter {
 
 			clutter_actor_set_height(CLUTTER_ACTOR(instance), value->NumberValue());
 
-			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, clutter_actor_get_width(CLUTTER_ACTOR(instance)), value->NumberValue());
+//			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, clutter_actor_get_width(CLUTTER_ACTOR(instance)), value->NumberValue());
 		}
 	}
 

@@ -33,9 +33,12 @@ void Stage::Initialize(Handle<Object> target)
 	Container::PrototypeMethodsInit(tpl);
 
 	tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("title"), Stage::TitleGetter, Stage::TitleSetter);
+	tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("useFog"), Stage::UseFogGetter, Stage::UseFogSetter);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "setCursor", Stage::SetCursor);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "getFog", Stage::GetFog);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "setFog", Stage::SetFog);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "fullscreen", Stage::Fullscreen);
 
 	target->Set(name, tpl->GetFunction());
@@ -78,6 +81,62 @@ void Stage::TitleSetter(Local<String> name, Local<Value> value, const AccessorIn
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 		clutter_stage_set_title(CLUTTER_STAGE(instance), *String::Utf8Value(value->ToString()));
+	}
+}
+
+Handle<Value> Stage::UseFogGetter(Local<String> name, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+	return scope.Close(
+		Boolean::New(clutter_stage_get_use_fog(CLUTTER_STAGE(instance)))
+	);
+}
+
+void Stage::UseFogSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	if (value->IsBoolean()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_stage_set_use_fog(CLUTTER_STAGE(instance), value->ToBoolean()->Value());
+	}
+}
+
+Handle<Value> Stage::GetFog(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterFog fog;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+	clutter_stage_get_fog(CLUTTER_STAGE(instance), &fog);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("z_near"), Number::New(fog.z_near));
+	o->Set(String::New("z_far"), Number::New(fog.z_far));
+
+	return scope.Close(
+		o
+	);
+}
+
+Handle<Value> Stage::SetFog(const Arguments &args)
+{
+	HandleScope scope;
+	ClutterFog fog;
+
+	if (args[0]->IsNumber() && args[1]->IsNumber()) {
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		fog.z_near = args[0]->NumberValue();
+		fog.z_far = args[1]->NumberValue();
+
+		clutter_stage_set_fog(CLUTTER_STAGE(instance), &fog);
 	}
 }
 
