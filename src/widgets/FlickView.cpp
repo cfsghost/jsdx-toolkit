@@ -22,12 +22,14 @@ namespace clutter {
 		Deceleration = 0.2;
 		StopFactor = 100;
 		Axis = NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS | NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS;
-		Threshold = 20;
+		Threshold = 100;
 
 		/* Initializing variable */
 		dx = dy = 0;
 		targetDx = targetDy = 0;
 		_animation = NULL;
+		TotalPageX = 0;
+		PageX = 0;
 
 		/* Create FlickView */
 		_actor = clutter_group_new();
@@ -259,7 +261,7 @@ namespace clutter {
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
 			/* Out of range */
-			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) > clutter_actor_get_width(flickview->_actor))) {
+			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) >= clutter_actor_get_width(flickview->_actor))) {
 				OutOfRange = True;
 
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
@@ -279,7 +281,7 @@ namespace clutter {
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
 			/* Out of range */
-			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) > clutter_actor_get_height(flickview->_actor)) {
+			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) >= clutter_actor_get_height(flickview->_actor)) {
 				OutOfRange = True;
 
 				if (clutter_actor_get_width(flickview->_innerBox) < clutter_actor_get_width(flickview->_actor))
@@ -296,11 +298,18 @@ namespace clutter {
 			}
 		}
 
-		if (OutOfRange)
-			flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 415,
-				"x", x,
-				"y", y,
-				NULL);
+		if (OutOfRange) {
+			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
+				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
+					"x", (gfloat)x,
+					"y", (gfloat)y,
+					NULL);
+			else
+				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 664,
+					"x", (gfloat)x,
+					"y", (gfloat)y,
+					NULL);
+		}
 
 		return OutOfRange;
 	}
@@ -319,11 +328,48 @@ namespace clutter {
 			y += flickview->targetDy * flickview->Deceleration;
 
 		/* No Out of range */
-		if (!AnimationCompleted(flickview, x, y))
+		if (!AnimationCompleted(flickview, x, y)) {
 			flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 415,
-				"x", x,
-				"y", y,
+				"x", (gfloat)x,
+				"y", (gfloat)y,
 				NULL);
+		}
+	}
+
+	int FlickView::FigurePage(FlickView *flickview)
+	{
+		float pos;
+		int check;
+
+		if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
+				flickview->TotalPageX = ceil(clutter_actor_get_width(flickview->_innerBox) / clutter_actor_get_width(flickview->_actor));
+				clutter_actor_set_width(flickview->_innerBox, flickview->TotalPageX * clutter_actor_get_width(flickview->_actor));
+
+				/* Get current page */
+				pos = fabs(clutter_actor_get_x(flickview->_innerBox)) / clutter_actor_get_width(flickview->_actor);
+				check = floor(pos);
+
+				if (pos + 1 >= check)
+					flickview->PageX = check + 1;
+				else
+					flickview->PageX = check;
+			}
+
+			if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS) {
+				flickview->TotalPageY = ceil(clutter_actor_get_height(flickview->_innerBox) / clutter_actor_get_height(flickview->_actor));
+				clutter_actor_set_height(flickview->_innerBox, flickview->TotalPageY * clutter_actor_get_height(flickview->_actor));
+
+				/* Get current page */
+				pos = fabs(clutter_actor_get_y(flickview->_innerBox)) / clutter_actor_get_height(flickview->_actor);
+				check = floor(pos);
+
+				if (pos + 1 >= check)
+					flickview->PageY = check + 1;
+				else
+					flickview->PageY = check;
+			}
+		}
 	}
 
 	#define FIGURE_DURATION_USEC(tv1, tv2) (((tv2).tv_usec - (tv1).tv_usec) / 1000)
@@ -346,11 +392,11 @@ namespace clutter {
 		float FinalDx, FinalDy;
 		bool SwitchPage = False;
 
+		gettimeofday(&currentTime, NULL);
+
 		/* Get currect position */
 		flickview->targetX = clutter_actor_get_x(innerBox);
 		flickview->targetY = clutter_actor_get_y(innerBox);
-
-		gettimeofday(&currentTime, NULL);
 
 		/* Out of range right now, so do not do anything and put it back in range */
 		if (AnimationCompleted(flickview, flickview->targetX, flickview->targetY))
@@ -361,6 +407,20 @@ namespace clutter {
 			FIGURE_DURATION(flickview->LastTimestampY, currentTime) >= flickview->StopFactor) {
 			flickview->dx = flickview->dy = 0;
 			flickview->targetDx = flickview->targetDy = 0;
+
+			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+				if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS)
+					flickview->targetX = round(flickview->targetX / clutter_actor_get_width(flickview->_actor)) * clutter_actor_get_width(flickview->_actor);
+
+				if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_Y_AXIS)
+					flickview->targetY = round(flickview->targetY / clutter_actor_get_height(flickview->_actor)) * clutter_actor_get_height(flickview->_actor);
+
+				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
+					"x", (gfloat)flickview->targetX,
+					"y", (gfloat)flickview->targetY,
+					NULL);
+			}
+
 			return;
 		}
 
@@ -383,11 +443,16 @@ namespace clutter {
 			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
 				/* Next or previous page */
 				if (fabs(FinalDx) >= flickview->Threshold) {
-					flickview->targetX += (FinalDx > 0) ? clutter_actor_get_width(flickview->_actor) : -clutter_actor_get_width(flickview->_actor);
+					flickview->PageX = flickview->PageX + ((FinalDx > 0) ? -1 : 1);
+					if (flickview->PageX <= 0)
+						flickview->PageX = 1;
+					else if (flickview->PageX > flickview->TotalPageX)
+						flickview->PageX = flickview->TotalPageX;
+
 					SwitchPage = True;
-				} else {
-					flickview->targetX += FinalDx;
 				}
+
+				flickview->targetX = (flickview->PageX-1) * -clutter_actor_get_width(flickview->_actor);
 
 				/* avoid to make it out of range for a long distance */
 				if (flickview->targetX > 0)
@@ -415,10 +480,19 @@ namespace clutter {
 			/* Page style mode */
 			if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
 				/* Next or previous page */
-				if (fabs(FinalDy) >= flickview->Threshold)
-					flickview->targetY += (FinalDy > 0) ? clutter_actor_get_height(flickview->_actor) : -clutter_actor_get_height(flickview->_actor);
-				else
-					flickview->targetY += FinalDy;
+				if (fabs(FinalDy) >= flickview->Threshold) {
+					flickview->PageY = flickview->PageY + ((FinalDy > 0) ? -1 : 1);
+					if (flickview->PageY <= 0)
+						flickview->PageY = 1;
+					else if (flickview->PageY > flickview->TotalPageY)
+						flickview->PageY = flickview->TotalPageY;
+
+					SwitchPage = True;
+				}
+
+				flickview->targetX = (flickview->PageX-1) * -clutter_actor_get_width(flickview->_actor);
+
+
 
 				/* avoid to make it out of range for a long distance */
 				if (flickview->targetY > 0)
@@ -432,15 +506,14 @@ namespace clutter {
 
 		/* Animation */
 		if (SwitchPage)
-			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 200,
-				"x", flickview->targetX,
-				"y", flickview->targetY,
-				"signal-after::completed", AnimationStopCallback, flickview,
+			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_EASE_OUT_BACK, 415,
+				"x", (gfloat)flickview->targetX,
+				"y", (gfloat)flickview->targetY,
 				NULL);
 		else
 			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 1000 * DistanceRate,
-				"x", flickview->targetX,
-				"y", flickview->targetY,
+				"x", (gfloat)flickview->targetX,
+				"y", (gfloat)flickview->targetY,
 				"signal-after::completed", AnimationStopCallback, flickview,
 				NULL);
 	}
@@ -491,6 +564,11 @@ namespace clutter {
 			timeline = clutter_animation_get_timeline(flickview->_animation);
 			if (timeline)
 				clutter_timeline_pause(timeline);
+		}
+
+		/* Figure page number */
+		if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			FigurePage(flickview);
 		}
 
 		/* Reset timer */

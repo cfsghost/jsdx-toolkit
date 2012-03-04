@@ -28,6 +28,10 @@ public:
 	float Deceleration;
 	float Threshold;
 
+	int TotalPageX;
+	int TotalPageY;
+	int PageX;
+	int PageY;
 	struct timeval StartTimestampX;
 	struct timeval StartTimestampY;
 	struct timeval LastTimestampX;
@@ -64,6 +68,7 @@ protected:
 	static void WidthSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 	static void HeightSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
+	static int FigurePage(FlickView *flickview);
 	static bool AnimationCompleted(FlickView *flickview, float TargetX, float TargetY);
 	static void AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview);
 	static void _DragActionEndCallback(ClutterClickAction *action,
