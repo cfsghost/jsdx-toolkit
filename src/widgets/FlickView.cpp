@@ -18,6 +18,7 @@ namespace clutter {
 		HandleScope scope;
 
 		/* Initializing parameters */
+		ClipArea = True;
 		Mode = NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE;
 		Deceleration = 0.2;
 		StopFactor = 100;
@@ -70,6 +71,7 @@ namespace clutter {
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
 
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("clipArea"), FlickView::ClipAreaGetter, FlickView::ClipAreaSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("mode"), FlickView::ModeGetter, FlickView::ModeSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_x_axis"), FlickView::AllowXAxisGetter, FlickView::AllowXAxisSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_y_axis"), FlickView::AllowYAxisGetter, FlickView::AllowYAxisSetter);
@@ -125,6 +127,33 @@ namespace clutter {
 		return args.This();
 	}
 
+	Handle<Value> FlickView::ClipAreaGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+		return scope.Close(
+			Boolean::New(flickview->ClipArea)
+		);
+	}
+
+	void FlickView::ClipAreaSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
+
+			flickview->ClipArea = (FlickViewMode)value->ToBoolean()->Value();
+
+			if (flickview->ClipArea)
+				clutter_actor_set_clip(CLUTTER_ACTOR(flickview->_actor),
+					0, 0,
+					clutter_actor_get_width(CLUTTER_ACTOR(flickview->_actor)), clutter_actor_get_height(CLUTTER_ACTOR(flickview->_actor)));
+		}
+	}
+
 	Handle<Value> FlickView::ModeGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
@@ -167,7 +196,8 @@ namespace clutter {
 
 			clutter_actor_set_width(CLUTTER_ACTOR(instance), value->NumberValue());
 
-//			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, value->NumberValue(), clutter_actor_get_height(CLUTTER_ACTOR(instance)));
+			if (ObjectWrap::Unwrap<FlickView>(info.This())->ClipArea)
+				clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, value->NumberValue(), clutter_actor_get_height(CLUTTER_ACTOR(instance)));
 		}
 	}
 
@@ -191,7 +221,8 @@ namespace clutter {
 
 			clutter_actor_set_height(CLUTTER_ACTOR(instance), value->NumberValue());
 
-//			clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, clutter_actor_get_width(CLUTTER_ACTOR(instance)), value->NumberValue());
+			if (ObjectWrap::Unwrap<FlickView>(info.This())->ClipArea)
+				clutter_actor_set_clip(CLUTTER_ACTOR(instance), 0, 0, clutter_actor_get_width(CLUTTER_ACTOR(instance)), value->NumberValue());
 		}
 	}
 
