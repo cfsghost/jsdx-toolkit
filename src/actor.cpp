@@ -399,15 +399,15 @@ Handle<Value> Actor::Scale(const Arguments &args)
 		} else if (args.Length() == 3) {
 			if (args[2]->IsNumber())
 				clutter_actor_set_scale_with_gravity(CLUTTER_ACTOR(instance),
-					args[0]->NumberValue(),
-					args[1]->NumberValue(), 
+					(gfloat)args[0]->NumberValue(),
+					(gfloat)args[1]->NumberValue(), 
 					(ClutterGravity)args[2]->ToInteger()->Value());
 
 		} else if (args.Length() == 4) {
 			if (args[2]->IsNumber() && args[3]->IsNumber())
 				clutter_actor_set_scale_full(CLUTTER_ACTOR(instance),
-					args[0]->NumberValue(),
-					args[1]->NumberValue(), 
+					(gfloat)args[0]->NumberValue(),
+					(gfloat)args[1]->NumberValue(), 
 					args[2]->NumberValue(), 
 					args[3]->NumberValue()); 
 
