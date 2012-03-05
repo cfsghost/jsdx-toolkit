@@ -456,7 +456,10 @@ namespace clutter {
 		}
 
 		/* Rate */
-		DistanceRate = 1 - flickview->Deceleration;
+		if (flickview->Mode == NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
+			DistanceRate = 1.0;
+		else
+			DistanceRate = 1 - flickview->Deceleration;
 
 		if (flickview->Axis & NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS) {
 			/* Figure duration  */
@@ -475,6 +478,8 @@ namespace clutter {
 				/* Next or previous page */
 				if (fabs(FinalDx) >= flickview->Threshold) {
 					flickview->PageX = flickview->PageX + ((FinalDx > 0) ? -1 : 1);
+
+					/* Avoiding out of range */
 					if (flickview->PageX <= 0)
 						flickview->PageX = 1;
 					else if (flickview->PageX > flickview->TotalPageX)
@@ -484,12 +489,6 @@ namespace clutter {
 				}
 
 				flickview->targetX = (flickview->PageX-1) * -clutter_actor_get_width(flickview->_actor);
-
-				/* avoid to make it out of range for a long distance */
-				if (flickview->targetX > 0)
-					flickview->targetX = clutter_actor_get_width(flickview->_actor) * 0.1;
-				else if (flickview->targetX < -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor))
-					flickview->targetX = -clutter_actor_get_width(flickview->_innerBox) + clutter_actor_get_width(flickview->_actor) * 0.9;
 			} else {
 				flickview->targetX += FinalDx;
 			}
@@ -513,6 +512,8 @@ namespace clutter {
 				/* Next or previous page */
 				if (fabs(FinalDy) >= flickview->Threshold) {
 					flickview->PageY = flickview->PageY + ((FinalDy > 0) ? -1 : 1);
+
+					/* Avoiding out of range */
 					if (flickview->PageY <= 0)
 						flickview->PageY = 1;
 					else if (flickview->PageY > flickview->TotalPageY)
@@ -522,14 +523,6 @@ namespace clutter {
 				}
 
 				flickview->targetX = (flickview->PageX-1) * -clutter_actor_get_width(flickview->_actor);
-
-
-
-				/* avoid to make it out of range for a long distance */
-				if (flickview->targetY > 0)
-					flickview->targetY = clutter_actor_get_height(flickview->_actor) * 0.1;
-				else if (flickview->targetY < -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor))
-					flickview->targetY = -clutter_actor_get_height(flickview->_innerBox) + clutter_actor_get_height(flickview->_actor) * 0.9;
 			} else {
 				flickview->targetY += FinalDy;
 			}
