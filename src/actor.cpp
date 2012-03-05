@@ -822,6 +822,8 @@ Handle<Value> Actor::Off(const Arguments &args)
 
 	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
+	/* TODO: remove event handler */
+
 	return args.This();
 }
 
