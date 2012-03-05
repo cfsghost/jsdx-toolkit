@@ -505,6 +505,26 @@ gboolean Actor::_PressCallback(ClutterActor *actor, ClutterEvent *event, gpointe
 	return (*ret)->IsTrue();
 }
 
+gboolean Actor::_ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+{
+	const unsigned argc = 2;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	/* create a JavaScript Object */
+	Local<Object> o = Object::New();
+	o->Set(String::New("x"), Number::New(event->button.x));
+	o->Set(String::New("y"), Number::New(event->button.y));
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_RELEASE)),
+		o
+	};
+
+	Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+	return (*ret)->IsTrue();
+}
+
 void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
 {
 	const unsigned argc = 1;
@@ -705,6 +725,11 @@ Handle<Value> Actor::On(const Arguments &args)
 
 	case NODE_CLUTTER_EVENT_PRESS:
 		g_signal_connect(G_OBJECT(instance), "button-press-event", G_CALLBACK(Actor::_PressCallback), (gpointer)callback);
+
+		break;
+
+	case NODE_CLUTTER_EVENT_RELEASE:
+		g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_ReleaseCallback), (gpointer)callback);
 
 		break;
 

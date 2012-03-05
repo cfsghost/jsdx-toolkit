@@ -79,6 +79,7 @@ protected:
 	static void _ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data);
 	static gboolean _LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data);
 	static gboolean _PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
+	static gboolean _ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
