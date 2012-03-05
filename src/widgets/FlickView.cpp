@@ -678,10 +678,6 @@ namespace clutter {
 				String::New("Second argument must be a callback function")));
 		}
 
-/*
-		Persistent<Function> *callback = new Persistent<Function>();
-		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
-*/
 		switch(Event->ToInteger()->Value()) {
 		case NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED:
 			flickview->_AnimationCompletedCallback = new Persistent<Function>();
