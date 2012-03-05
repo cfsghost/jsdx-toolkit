@@ -74,11 +74,16 @@ Handle<Value> Texture::LoadFile(const Arguments &args)
 	if (args[0]->IsString()) {
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
-		clutter_texture_set_from_file(CLUTTER_TEXTURE(instance), *String::Utf8Value(args[0]->ToString()), NULL);
+		return scope.Close(
+			Boolean::New(clutter_texture_set_from_file(CLUTTER_TEXTURE(instance), *String::Utf8Value(args[0]->ToString()), NULL))
+		);
+
 		/* TODO: Need callback function for file loaded */
 	}
 
-	return args.This();
+	return scope.Close(
+		Boolean::New(False)
+	);
 }
 
 Handle<Value> Texture::FilterQualityGetter(Local<String> name, const AccessorInfo& info)
