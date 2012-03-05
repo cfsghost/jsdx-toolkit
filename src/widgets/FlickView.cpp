@@ -44,6 +44,7 @@ namespace clutter {
 		clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(_drag_action), CLUTTER_DRAG_AXIS_NONE);
 		clutter_actor_add_action(_innerBox, _drag_action);
 
+		g_signal_connect(G_OBJECT(_drag_action), "drag-begin", G_CALLBACK(FlickView::_DragActionBeginCallback), this);
 		g_signal_connect(G_OBJECT(_drag_action), "drag-end", G_CALLBACK(FlickView::_DragActionEndCallback), this);
 		g_signal_connect(G_OBJECT(_drag_action), "drag-motion", G_CALLBACK(FlickView::_DragActionMotionCallback), this);
 
@@ -57,6 +58,7 @@ namespace clutter {
 		g_signal_connect(G_OBJECT(_innerBox), "button-press-event", G_CALLBACK(FlickView::_PressCallback), this);
 
 		/* Initializing events */
+		_DragBeginCallback = NULL;
 		_AnimationCompletedCallback = NULL;
 	}
 
@@ -74,6 +76,7 @@ namespace clutter {
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
 
+		CLUTTER_DEFINE_CONSTANT(tpl, "EVENT_DRAG_BEGIN", NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN);
 		CLUTTER_DEFINE_CONSTANT(tpl, "EVENT_ANIMATION_COMPLETED", NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED);
 
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("clipArea"), FlickView::ClipAreaGetter, FlickView::ClipAreaSetter);
@@ -421,6 +424,18 @@ namespace clutter {
 	#define FIGURE_DURATION_SEC(tv1, tv2) (((tv2).tv_sec - (tv1).tv_sec))
 	#define FIGURE_DURATION(tv1, tv2) (FIGURE_DURATION_SEC(tv1, tv2) * 1000 + FIGURE_DURATION_USEC(tv1, tv2))
 
+	void FlickView::_DragActionBeginCallback(ClutterClickAction *action,
+		ClutterActor *actor,
+		gfloat event_x,
+		gfloat event_y,
+		ClutterModifierType modifiers,
+		gpointer user_data)
+	{
+		FlickView *flickview = (FlickView *)user_data;
+
+		FlickView::DragBeginEvent(flickview, NULL);
+	}
+
 	void FlickView::_DragActionEndCallback(ClutterClickAction *action,
 		ClutterActor *actor,
 		gfloat event_x,
@@ -639,6 +654,14 @@ namespace clutter {
 	}
 
 	/* Event handlers */
+	void FlickView::DragBeginEvent(FlickView *flickview, gpointer userdata)
+	{
+		HandleScope scope;
+
+		if (flickview->_DragBeginCallback)
+			(*(flickview->_DragBeginCallback))->Call(Context::GetCurrent()->Global(), 0, NULL);
+	}
+
 	void FlickView::AnimationCompletedEvent(FlickView *flickview, gpointer userdata)
 	{
 		HandleScope scope;
@@ -679,6 +702,11 @@ namespace clutter {
 		}
 
 		switch(Event->ToInteger()->Value()) {
+		case NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN:
+			flickview->_DragBeginCallback = new Persistent<Function>();
+			*(flickview->_DragBeginCallback) = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+			break;
+
 		case NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED:
 			flickview->_AnimationCompletedCallback = new Persistent<Function>();
 			*(flickview->_AnimationCompletedCallback) = Persistent<Function>::New(Handle<Function>::Cast(Callback));

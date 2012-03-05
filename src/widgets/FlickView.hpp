@@ -19,7 +19,8 @@ typedef enum {
 } FlickViewMode;
 
 typedef enum {
-	NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED = 1000
+	NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN = 1000,
+	NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED
 } FlickViewEvent;
 
 class FlickView : public Actor {
@@ -53,6 +54,7 @@ public:
 	ClutterAction *_long_press_action;
 	ClutterAnimation *_animation;
 
+	v8::Persistent<v8::Function> *_DragBeginCallback;
 	v8::Persistent<v8::Function> *_AnimationCompletedCallback;
 
 protected:
@@ -82,6 +84,12 @@ protected:
 	static bool AnimationCompleted(FlickView *flickview, float TargetX, float TargetY);
 	static void AnimationCompletedCallback(ClutterAnimation *animation, FlickView *flickview);
 	static void AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview);
+	static void _DragActionBeginCallback(ClutterClickAction *action,
+		ClutterActor *actor,
+		gfloat event_x,
+		gfloat event_y,
+		ClutterModifierType modifiers,
+		gpointer user_data);
 	static void _DragActionEndCallback(ClutterClickAction *action,
 		ClutterActor *actor,
 		gfloat event_x,
@@ -98,6 +106,7 @@ protected:
 	static gboolean _LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data);
 
 	/* Event handlers */
+	static void DragBeginEvent(FlickView *flickview, gpointer userdata);
 	static void AnimationCompletedEvent(FlickView *flickview, gpointer userdata);
 	static v8::Handle<v8::Value> On(const v8::Arguments& args);
 };
