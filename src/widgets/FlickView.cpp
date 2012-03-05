@@ -603,6 +603,8 @@ namespace clutter {
 
 		/* Reset delta */
 		flickview->dx = flickview->dy = 0;
+
+		return False;
 	}
 
 	gboolean FlickView::_LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data)
