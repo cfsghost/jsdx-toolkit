@@ -18,6 +18,10 @@ typedef enum {
 	NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE
 } FlickViewMode;
 
+typedef enum {
+	NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED = 1000
+} FlickViewEvent;
+
 class FlickView : public Actor {
 public:
 	static void Initialize(v8::Handle<v8::Object> target);
@@ -49,6 +53,8 @@ public:
 	ClutterAction *_long_press_action;
 	ClutterAnimation *_animation;
 
+	v8::Persistent<v8::Function> *_AnimationCompletedCallback;
+
 protected:
 	FlickView();
 
@@ -74,6 +80,7 @@ protected:
 
 	static int FigurePage(FlickView *flickview);
 	static bool AnimationCompleted(FlickView *flickview, float TargetX, float TargetY);
+	static void AnimationCompletedCallback(ClutterAnimation *animation, FlickView *flickview);
 	static void AnimationStopCallback(ClutterAnimation *animation, FlickView *flickview);
 	static void _DragActionEndCallback(ClutterClickAction *action,
 		ClutterActor *actor,
@@ -89,6 +96,10 @@ protected:
 
 	static gboolean _PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	static gboolean _LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data);
+
+	/* Event handlers */
+	static void AnimationCompletedEvent(FlickView *flickview, gpointer userdata);
+	static v8::Handle<v8::Value> On(const v8::Arguments& args);
 };
 
 }

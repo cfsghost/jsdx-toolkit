@@ -55,6 +55,9 @@ namespace clutter {
 
 		/* Allow user to stop animation with pressing */
 		g_signal_connect(G_OBJECT(_innerBox), "button-press-event", G_CALLBACK(FlickView::_PressCallback), this);
+
+		/* Initializing events */
+		_AnimationCompletedCallback = NULL;
 	}
 
 	void FlickView::Initialize(Handle<Object> target)
@@ -71,6 +74,8 @@ namespace clutter {
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
 		CLUTTER_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", NODE_CLUTTER_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
 
+		CLUTTER_DEFINE_CONSTANT(tpl, "EVENT_ANIMATION_COMPLETED", NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED);
+
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("clipArea"), FlickView::ClipAreaGetter, FlickView::ClipAreaSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("mode"), FlickView::ModeGetter, FlickView::ModeSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("allow_x_axis"), FlickView::AllowXAxisGetter, FlickView::AllowXAxisSetter);
@@ -80,6 +85,7 @@ namespace clutter {
 
 		NODE_SET_PROTOTYPE_METHOD(tpl, "add", FlickView::Add);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "remove", FlickView::Remove);
+		NODE_SET_PROTOTYPE_METHOD(tpl, "on", FlickView::On);
 
 		target->Set(name, tpl->GetFunction());
 	}
@@ -284,6 +290,11 @@ namespace clutter {
 		}
 	}
 
+	void FlickView::AnimationCompletedCallback(ClutterAnimation *animation, FlickView *flickview)
+	{
+		FlickView::AnimationCompletedEvent(flickview, NULL);
+	}
+
 	bool FlickView::AnimationCompleted(FlickView *flickview, float TargetX, float TargetY)
 	{
 		bool OutOfRange = False;
@@ -334,11 +345,13 @@ namespace clutter {
 				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
 					"x", (gfloat)x,
 					"y", (gfloat)y,
+					"signal-after::completed", AnimationCompletedCallback, flickview,
 					NULL);
 			else
 				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 664,
 					"x", (gfloat)x,
 					"y", (gfloat)y,
+					"signal-after::completed", AnimationCompletedCallback, flickview,
 					NULL);
 		}
 
@@ -363,6 +376,7 @@ namespace clutter {
 			flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_SINE, 415,
 				"x", (gfloat)x,
 				"y", (gfloat)y,
+				"signal-after::completed", AnimationCompletedCallback, flickview,
 				NULL);
 		}
 	}
@@ -449,6 +463,7 @@ namespace clutter {
 				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
 					"x", (gfloat)flickview->targetX,
 					"y", (gfloat)flickview->targetY,
+					"signal-after::completed", AnimationCompletedCallback, flickview,
 					NULL);
 			}
 
@@ -533,6 +548,7 @@ namespace clutter {
 			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_EASE_OUT_BACK, 415,
 				"x", (gfloat)flickview->targetX,
 				"y", (gfloat)flickview->targetY,
+				"signal-after::completed", AnimationCompletedCallback, flickview,
 				NULL);
 		else
 			flickview->_animation = clutter_actor_animate(innerBox, CLUTTER_LINEAR, 1000 * DistanceRate,
@@ -621,4 +637,57 @@ namespace clutter {
 
 		return false;
 	}
+
+	/* Event handlers */
+	void FlickView::AnimationCompletedEvent(FlickView *flickview, gpointer userdata)
+	{
+		HandleScope scope;
+
+		if (flickview->_AnimationCompletedCallback)
+			(*(flickview->_AnimationCompletedCallback))->Call(Context::GetCurrent()->Global(), 0, NULL);
+	}
+
+	Handle<Value> FlickView::On(const Arguments &args)
+	{
+		HandleScope scope;
+		Local<Value> Event;
+		Local<Value> Options;
+		Local<Value> Callback;
+		FlickView *flickview = ObjectWrap::Unwrap<FlickView>(args.This());
+
+		Actor::On(args);
+
+		/* Check arguments */
+		if (args.Length() == 2) {
+			Event = args[0];
+			Callback = args[1];
+		} else if (args.Length() == 3) {
+			Event = args[0];
+			Options = args[1];
+			Callback = args[2];
+		} else
+			return args.This();
+
+		if (!Event->IsNumber()) {
+			return ThrowException(Exception::TypeError(
+				String::New("first argument must be integer")));
+		}
+
+		if (!Callback->IsFunction()) {
+			return ThrowException(Exception::TypeError(
+				String::New("Second argument must be a callback function")));
+		}
+
+/*
+		Persistent<Function> *callback = new Persistent<Function>();
+		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+*/
+		switch(Event->ToInteger()->Value()) {
+		case NODE_CLUTTER_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED:
+			flickview->_AnimationCompletedCallback = new Persistent<Function>();
+			*(flickview->_AnimationCompletedCallback) = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+			break;
+		}
+	}
+
 }
