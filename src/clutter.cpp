@@ -184,8 +184,6 @@ static Handle<Value> SetUseARGBVisual(const Arguments& args)
 
 static Handle<Value> ClutterMainQuit(const Arguments& args)
 {
-	clutter_main_quit();
-
 	ev_unref(EV_DEFAULT_UC);
 
 	return Undefined();

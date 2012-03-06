@@ -650,8 +650,6 @@ namespace clutter {
 			return true;
 		}
 
-		FlickView::AnimationCompletedEvent(flickview, NULL);
-
 		return false;
 	}
 

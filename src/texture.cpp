@@ -205,7 +205,7 @@ Handle<Value> Texture::On(const Arguments &args)
 
 	switch(Event->ToInteger()->Value()) {
 	case NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED:
-		g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
+		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
 		break;
 	}
 }
