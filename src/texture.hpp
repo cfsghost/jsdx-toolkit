@@ -6,6 +6,10 @@
 
 namespace clutter {
 
+typedef enum {
+	NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED = 100
+} NodeClutterTextureEvent;
+
 class Texture : public Actor {
 public:
 	static void Initialize(v8::Handle<v8::Object> target);
@@ -23,6 +27,9 @@ protected:
 	static v8::Handle<v8::Value> SetLoadAsync(const v8::Arguments& args);
 	static v8::Handle<v8::Value> GetLoadAsync(const v8::Arguments& args);
 	static v8::Handle<v8::Value> KeepAspectRatio(const v8::Arguments& args);
+	static v8::Handle<v8::Value> On(const v8::Arguments& args);
+
+	static void _LoadFinishedCallback(ClutterTexture *texture, GError *error, gpointer user_data);
 };
 
 }

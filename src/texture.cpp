@@ -27,6 +27,9 @@ void Texture::Initialize(Handle<Object> target)
 	CLUTTER_DEFINE_CONSTANT(tpl, "QUALITY_MEDIUM", CLUTTER_TEXTURE_QUALITY_MEDIUM);
 	CLUTTER_DEFINE_CONSTANT(tpl, "QUALITY_HIGH", CLUTTER_TEXTURE_QUALITY_HIGH);
 
+	/* Event */
+	CLUTTER_DEFINE_CONSTANT(tpl, "EVENT_LOAD_FINISHED", NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED);
+
 	/* Methods */
 	PrototypeMethodsInit(tpl);
 
@@ -44,6 +47,7 @@ void Texture::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setLoadAsync", Texture::SetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getLoadAsync", Texture::GetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "keepAspectRatio", Texture::KeepAspectRatio);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Texture::On);
 }
 
 /* ECMAScript constructor */
@@ -149,6 +153,61 @@ Handle<Value> Texture::KeepAspectRatio(const Arguments &args)
 	}
 
 	return args.This();
+}
+
+/* Event handlers */
+void Texture::_LoadFinishedCallback(ClutterTexture *texture, GError *error, gpointer user_data)
+{
+	const unsigned argc = 1;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+
+	Local<Value> argv[argc] = {
+		Local<Value>::New(Integer::New(NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED))
+	};
+
+	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+}
+
+Handle<Value> Texture::On(const Arguments &args)
+{
+	HandleScope scope;
+	Local<Value> Event;
+	Local<Value> Options;
+	Local<Value> Callback;
+	ClutterActor *instance = ObjectWrap::Unwrap<Texture>(args.This())->_actor;
+
+	Actor::On(args);
+
+	/* Check arguments */
+	if (args.Length() == 2) {
+		Event = args[0];
+		Callback = args[1];
+	} else if (args.Length() == 3) {
+		Event = args[0];
+		Options = args[1];
+		Callback = args[2];
+	} else
+		return args.This();
+
+	if (!Event->IsNumber()) {
+		return ThrowException(Exception::TypeError(
+			String::New("first argument must be integer")));
+	}
+
+	if (!Callback->IsFunction()) {
+		return ThrowException(Exception::TypeError(
+			String::New("Second argument must be a callback function")));
+	}
+
+	/* Get callback function */
+	Persistent<Function> *callback = new Persistent<Function>();
+	*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+	switch(Event->ToInteger()->Value()) {
+	case NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED:
+		g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
+		break;
+	}
 }
 
 }
