@@ -8,6 +8,10 @@
 #include "../clutter.hpp"
 #include "../actor.hpp"
 #include "widget.hpp"
+#include "bin.hpp"
+#include "viewport.hpp"
+#include "scrollview.hpp"
+#include "kinetic_scrollview.hpp"
 
 namespace clutter {
  
@@ -20,14 +24,21 @@ namespace clutter {
 	{
 		HandleScope scope;
 
+		/* Create a new class */
+		Local<Object> ClassObject = Object::New();
+		Local<String> name = String::NewSymbol("Widget");
+		target->Set(name, ClassObject);
+
+		/* Initializing Widget Class  */
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
-		Local<String> name = String::NewSymbol("Widget");
 
-		/* Methods */
-		Widget::PrototypeMethodsInit(tpl);
+		/* Widgets */
+		Viewport::Initialize(ClassObject);
+		ScrollView::Initialize(ClassObject);
+		KineticScrollView::Initialize(ClassObject);
 
-		target->Set(name, tpl->GetFunction());
+		ClassObject->Set(name, tpl->GetFunction());
 	}
 
 	/* ECMAScript constructor */
@@ -48,5 +59,4 @@ namespace clutter {
 
 		return scope.Close(args.This());
 	}
-
 }
