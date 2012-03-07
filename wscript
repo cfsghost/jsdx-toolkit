@@ -24,6 +24,7 @@ def configure(conf):
 	if Options.options.enable_widget:
 		print "Enabled Widget Support"
 		conf.env["ENABLE_WIDGET"] = True
+		conf.check_cfg(package='mx-1.0', uselib_store='MX', args='--cflags --libs')
 
 def build(bld):
 	obj = bld.new_task_gen("cxx", "shlib", "node_addon")
@@ -56,8 +57,15 @@ def build(bld):
 	if bld.env["ENABLE_WIDGET"]:
 		obj.cxxflags.append("-DENABLE_WIDGET");
 		obj.source += """
+			src/widgets/widget.cpp
+			src/widgets/bin.cpp
+			src/widgets/viewport.cpp
+			src/widgets/scrollview.cpp
+			src/widgets/kinetic_scrollview.cpp
 			src/widgets/FlickView.cpp
 			"""
+
+		obj.uselib += " MX"
 
 def shutdown():
 	if Options.commands['clean']:

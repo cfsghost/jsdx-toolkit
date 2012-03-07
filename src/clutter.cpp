@@ -22,6 +22,11 @@
 #endif
 
 #if ENABLE_WIDGET
+#include "widgets/widget.hpp"
+#include "widgets/bin.hpp"
+#include "widgets/viewport.hpp"
+#include "widgets/scrollview.hpp"
+#include "widgets/kinetic_scrollview.hpp"
 #include "widgets/FlickView.hpp"
 #endif
 
@@ -326,6 +331,9 @@ extern "C" {
 #endif
 
 #if ENABLE_WIDGET
+		Viewport::Initialize(target);
+		ScrollView::Initialize(target);
+		KineticScrollView::Initialize(target);
 		FlickView::Initialize(target);
 #endif
 
