@@ -42,7 +42,6 @@ stage.add(texture1);
 
 /* Asynchronize */
 var texture2 = new clutter.Texture;
-texture2.setLoadAsync(true);
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;

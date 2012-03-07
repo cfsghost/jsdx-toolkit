@@ -48,8 +48,6 @@ void Texture::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Texture::LoadFile);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileSync", Texture::LoadFileSync);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setLoadAsync", Texture::SetLoadAsync);
-	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getLoadAsync", Texture::GetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "keepAspectRatio", Texture::KeepAspectRatio);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Texture::On);
 }
@@ -147,30 +145,6 @@ void Texture::FilterQualitySetter(Local<String> name, Local<Value> value, const 
 
 		clutter_texture_set_filter_quality(CLUTTER_TEXTURE(instance), (ClutterTextureQuality)value->ToInteger()->Value());
 	}
-}
-
-Handle<Value> Texture::SetLoadAsync(const Arguments &args)
-{
-	HandleScope scope;
-
-	if (args[0]->IsBoolean()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		clutter_texture_set_load_async(CLUTTER_TEXTURE(instance), args[0]->ToBoolean()->Value());
-	}
-
-	return args.This();
-}
-
-Handle<Value> Texture::GetLoadAsync(const Arguments &args)
-{
-	HandleScope scope;
-
-	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-	return scope.Close(
-		Boolean::New(clutter_texture_get_load_async(CLUTTER_TEXTURE(instance)))
-	);
 }
 
 Handle<Value> Texture::KeepAspectRatio(const Arguments &args)
