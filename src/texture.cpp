@@ -13,6 +13,9 @@ using namespace v8;
 
 Texture::Texture() : Actor() {
 	HandleScope scope;
+
+	_actor = NULL;
+	LoadFinishedFunc = new Persistent<Function>();
 }
 
 void Texture::Initialize(Handle<Object> target)
@@ -44,6 +47,7 @@ void Texture::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("filterQuality"), Texture::FilterQualityGetter, Texture::FilterQualitySetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Texture::LoadFile);
+	NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileSync", Texture::LoadFileSync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "setLoadAsync", Texture::SetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "getLoadAsync", Texture::GetLoadAsync);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "keepAspectRatio", Texture::KeepAspectRatio);
@@ -71,13 +75,46 @@ Handle<Value> Texture::New(const Arguments& args)
 	return scope.Close(args.This());
 }
 
+void Texture::_LoadFile(Texture *texture, const char *filename, bool hasCallback)
+{
+	CoglHandle cogltex;
+	ClutterActor *instance = texture->_actor;
+
+	if (hasCallback)
+		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)texture);
+
+	clutter_texture_set_load_async(CLUTTER_TEXTURE(instance), TRUE);
+
+	clutter_texture_set_from_file(CLUTTER_TEXTURE(instance), filename, NULL);
+}
+
 Handle<Value> Texture::LoadFile(const Arguments &args)
 {
 	HandleScope scope;
 
 	if (args[0]->IsString()) {
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		Texture *texture = ObjectWrap::Unwrap<Texture>(args.This());
 
+		if (args[1]->IsFunction()) {
+			*(texture->LoadFinishedFunc) = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+			_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), True);
+		} else {
+			_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), False);
+		}
+	}
+
+	return args.This();
+}
+
+Handle<Value> Texture::LoadFileSync(const Arguments &args)
+{
+	HandleScope scope;
+
+	if (args[0]->IsString()) {
+		Actor *actor = ObjectWrap::Unwrap<Actor>(args.This());
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		clutter_texture_set_load_async(CLUTTER_TEXTURE(instance), FALSE);
+		
 		return scope.Close(
 			Boolean::New(clutter_texture_set_from_file(CLUTTER_TEXTURE(instance), *String::Utf8Value(args[0]->ToString()), NULL))
 		);
@@ -156,16 +193,12 @@ Handle<Value> Texture::KeepAspectRatio(const Arguments &args)
 }
 
 /* Event handlers */
-void Texture::_LoadFinishedCallback(ClutterTexture *texture, GError *error, gpointer user_data)
+void Texture::_LoadFinishedCallback(ClutterTexture *tex, GError *error, gpointer user_data)
 {
-	const unsigned argc = 1;
-	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+	Texture *texture = (Texture *)user_data;
+	Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(texture->LoadFinishedFunc);
 
-	Local<Value> argv[argc] = {
-		Local<Value>::New(Integer::New(NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED))
-	};
-
-	(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+	(*callback)->Call(Context::GetCurrent()->Global(), 0, 0);
 }
 
 Handle<Value> Texture::On(const Arguments &args)
@@ -205,7 +238,7 @@ Handle<Value> Texture::On(const Arguments &args)
 
 	switch(Event->ToInteger()->Value()) {
 	case NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED:
-		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
+//		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
 		break;
 	}
 }
