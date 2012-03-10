@@ -65,7 +65,7 @@ namespace clutter {
 
 		/* Initializing sub-objects */
 		AdjustmentObject = Adjustment::New(MX_ADJUSTMENT(obj->hadjust));
-		ObjectInstance->Set(String::NewSymbol("horizental"), AdjustmentObject);
+		ObjectInstance->Set(String::NewSymbol("horizontal"), AdjustmentObject);
 
 		AdjustmentObject = Adjustment::New(MX_ADJUSTMENT(obj->vadjust));
 		ObjectInstance->Set(String::NewSymbol("vertical"), AdjustmentObject);

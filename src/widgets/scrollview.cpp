@@ -31,6 +31,9 @@ namespace clutter {
 		/* Methods */
 		Bin::PrototypeMethodsInit(tpl);
 
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_horizontal"), ScrollView::PolicyHorizontalGetter, ScrollView::PolicyHorizontalSetter);
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_vertical"), ScrollView::PolicyVerticalGetter, ScrollView::PolicyVerticalSetter);
+
 		target->Set(name, tpl->GetFunction());
 	}
 
@@ -52,4 +55,80 @@ namespace clutter {
 		return scope.Close(args.This());
 	}
 
+	Handle<Value> ScrollView::PolicyHorizontalGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		MxScrollPolicy policy;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<ScrollView>(info.This())->_actor;
+
+		policy = mx_scroll_view_get_scroll_policy(MX_SCROLL_VIEW(instance));
+		if (policy == MX_SCROLL_POLICY_HORIZONTAL || policy == MX_SCROLL_POLICY_BOTH) {
+			return scope.Close(Boolean::New(True));
+		}
+
+		return scope.Close(Boolean::New(False));
+	}
+
+	void ScrollView::PolicyHorizontalSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		MxScrollPolicy policy;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<ScrollView>(info.This())->_actor;
+
+			policy = mx_scroll_view_get_scroll_policy(MX_SCROLL_VIEW(instance));
+
+			if (value->ToBoolean()->Value()) {
+				if (policy == MX_SCROLL_POLICY_VERTICAL)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_BOTH);
+				else if (policy == MX_SCROLL_POLICY_NONE)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_HORIZONTAL);
+			} else {
+				if (policy == MX_SCROLL_POLICY_HORIZONTAL)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_NONE);
+				else if (policy == MX_SCROLL_POLICY_BOTH)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_VERTICAL);
+			}
+		}
+	}
+
+	Handle<Value> ScrollView::PolicyVerticalGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		MxScrollPolicy policy;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<ScrollView>(info.This())->_actor;
+
+		policy = mx_scroll_view_get_scroll_policy(MX_SCROLL_VIEW(instance));
+		if (policy == MX_SCROLL_POLICY_VERTICAL || policy == MX_SCROLL_POLICY_BOTH) {
+			return scope.Close(Boolean::New(True));
+		}
+
+		return scope.Close(Boolean::New(False));
+	}
+
+	void ScrollView::PolicyVerticalSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		MxScrollPolicy policy;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<ScrollView>(info.This())->_actor;
+
+			policy = mx_scroll_view_get_scroll_policy(MX_SCROLL_VIEW(instance));
+			if (value->ToBoolean()->Value()) {
+				if (policy == MX_SCROLL_POLICY_HORIZONTAL)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_BOTH);
+				else if (policy == MX_SCROLL_POLICY_NONE)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_VERTICAL);
+			} else {
+				if (policy == MX_SCROLL_POLICY_VERTICAL)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_NONE);
+				else if (policy == MX_SCROLL_POLICY_BOTH)
+					mx_scroll_view_set_scroll_policy(MX_SCROLL_VIEW(instance), MX_SCROLL_POLICY_HORIZONTAL);
+			}
+		}
+	}
 }
