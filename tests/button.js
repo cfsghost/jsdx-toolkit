@@ -17,6 +17,13 @@ stage.show();
 
 /* Button Widget */
 var button = new clutter.Widget.Button('I am a button');
+console.log(button.label);
 stage.add(button);
+
+/* Button Widget */
+var button2 = new clutter.Widget.Button();
+button2.label = 'second button!'
+button2.y = 50;
+stage.add(button2);
 
 clutter.main();

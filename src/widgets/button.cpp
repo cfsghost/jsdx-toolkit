@@ -41,6 +41,8 @@ namespace clutter {
 
 		Widget::PrototypeMethodsInit(constructor_template);
 		Bin::PrototypeMethodsInit(constructor_template);
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("label"), Button::LabelGetter, Button::LabelSetter);
 	}
 
 	/* ECMAScript constructor */
@@ -63,6 +65,28 @@ namespace clutter {
 		}
 
 		return scope.Close(args.This());
+	}
+
+	Handle<Value> Button::LabelGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Button>(info.This())->_actor;
+
+		return scope.Close(
+			String::New(mx_button_get_label(MX_BUTTON(instance)))
+		);
+	}
+
+	void Button::LabelSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsString()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Button>(info.This())->_actor;
+
+			mx_button_set_label(MX_BUTTON(instance), *String::Utf8Value(value->ToString()));
+		}
 	}
 
 }
