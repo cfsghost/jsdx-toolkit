@@ -41,6 +41,7 @@ namespace clutter {
 	{
 		HandleScope scope;
 
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "run", Application::Run);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "createWindow", Application::CreateWindow);
 	}
 
@@ -65,6 +66,15 @@ namespace clutter {
 		obj->Wrap(args.This());
 
 		return scope.Close(args.This());
+	}
+
+	Handle<Value> Application::Run(const Arguments &args)
+	{
+		Application *application = ObjectWrap::Unwrap<Application>(args.This());
+
+		ev_ref(EV_DEFAULT_UC);
+
+		return Undefined();
 	}
 
 	Handle<Value> Application::CreateWindow(const Arguments &args)

@@ -23,6 +23,7 @@ protected:
 
 	static v8::Handle<v8::Value> New(const v8::Arguments& args);
 
+	static v8::Handle<v8::Value> Run(const v8::Arguments &args);
 	static v8::Handle<v8::Value> CreateWindow(const v8::Arguments &args);
 };
 

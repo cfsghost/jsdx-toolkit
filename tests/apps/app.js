@@ -7,4 +7,5 @@ app.createWindow(function(window) {
 	window.show();
 });
 
-clutter.main();
+app.run();
+
