@@ -15,6 +15,7 @@
 #include "texture.hpp"
 #include "state.hpp"
 #include "media.hpp"
+#include "application.hpp"
 
 #if ENABLE_CLUTTER_GST
 #include "gst/gst.hpp"
@@ -311,6 +312,9 @@ namespace clutter {
 			NODE_SET_METHOD(target, "main", ClutterMain);
 			NODE_SET_METHOD(target, "quit", ClutterMainQuit);
 			NODE_SET_METHOD(target, "useARGB", SetUseARGBVisual);
+
+			/* Application */
+			Application::Initialize(target);
 
 			Actor::Initialize(target);
 			Container::Initialize(target);

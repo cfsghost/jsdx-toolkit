@@ -23,6 +23,7 @@ def configure(conf):
 
 	if Options.options.enable_widget:
 		print "Enabled Widget Support"
+		conf.env["ENABLE_MX"] = True
 		conf.env["ENABLE_WIDGET"] = True
 		conf.check_cfg(package='mx-1.0', uselib_store='MX', args='--cflags --libs')
 
@@ -31,6 +32,7 @@ def build(bld):
 	obj.cxxflags = ["-Wall", "-ansi", "-pedantic"]
 	obj.target = "clutter"
 	obj.source = """
+		src/application.cpp
 		src/clutter.cpp
 		src/actor.cpp
 		src/media.cpp
@@ -53,6 +55,9 @@ def build(bld):
 			"""
 
 		obj.uselib += " CLUTTER_GST"
+
+	if bld.env["ENABLE_MX"]:
+		obj.cxxflags.append("-DENABLE_MX");
 
 	if bld.env["ENABLE_WIDGET"]:
 		obj.cxxflags.append("-DENABLE_WIDGET");
