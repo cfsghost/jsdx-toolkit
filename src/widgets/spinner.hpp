@@ -1,4 +1,4 @@
-#ifndef NODE_CLUTTER_WIDGET_SPINNEG_H_
+#ifndef NODE_CLUTTER_WIDGET_SPINNER_H_
 #define NODE_CLUTTER_WIDGET_SPINNER_H_
 
 #include <clutter/clutter.h>
