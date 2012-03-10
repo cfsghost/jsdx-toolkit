@@ -33,6 +33,7 @@ def build(bld):
 	obj.target = "clutter"
 	obj.source = """
 		src/application.cpp
+		src/window.cpp
 		src/clutter.cpp
 		src/actor.cpp
 		src/media.cpp

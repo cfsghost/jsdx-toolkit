@@ -16,6 +16,7 @@
 #include "state.hpp"
 #include "media.hpp"
 #include "application.hpp"
+#include "window.hpp"
 
 #if ENABLE_CLUTTER_GST
 #include "gst/gst.hpp"
@@ -315,6 +316,7 @@ namespace clutter {
 
 			/* Application */
 			Application::Initialize(target);
+			Window::Initialize(target);
 
 			Actor::Initialize(target);
 			Container::Initialize(target);

@@ -4,12 +4,16 @@
 #include <clutter/clutter.h>
 #include <v8.h>
 #include <node.h>
+#include "container.hpp"
 
 namespace clutter {
 
 class Stage : public Container {
 public:
+	static v8::Persistent<v8::FunctionTemplate> constructor;
 	static void Initialize(v8::Handle<v8::Object> target);
+	static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
+	static v8::Local<v8::Object> New(void);
 
 protected:
 	Stage();

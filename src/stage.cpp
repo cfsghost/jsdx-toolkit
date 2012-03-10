@@ -12,6 +12,8 @@ namespace clutter {
 	using namespace node;
 	using namespace v8;
 
+	Persistent<FunctionTemplate> Stage::constructor;
+
 	Stage::Stage() : Container() {
 		HandleScope scope;
 
@@ -29,19 +31,39 @@ namespace clutter {
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 		Local<String> name = String::NewSymbol("Stage");
 
+		constructor = Persistent<FunctionTemplate>::New(tpl);
+		constructor->InstanceTemplate()->SetInternalFieldCount(1);
+		constructor->SetClassName(name);
+
 		/* Methods */
-		Container::PrototypeMethodsInit(tpl);
+		Stage::PrototypeMethodsInit(constructor);
 
-		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("title"), Stage::TitleGetter, Stage::TitleSetter);
-		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("useFog"), Stage::UseFogGetter, Stage::UseFogSetter);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "useAlpha", Stage::SetUseAlpha);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Stage::SetColor);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setCursor", Stage::SetCursor);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "getFog", Stage::GetFog);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setFog", Stage::SetFog);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "fullscreen", Stage::Fullscreen);
+		target->Set(name, constructor->GetFunction());
+	}
 
-		target->Set(name, tpl->GetFunction());
+	void Stage::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	{
+		HandleScope scope;
+
+		Container::PrototypeMethodsInit(constructor_template);
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("title"), Stage::TitleGetter, Stage::TitleSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("useFog"), Stage::UseFogGetter, Stage::UseFogSetter);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "useAlpha", Stage::SetUseAlpha);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setColor", Stage::SetColor);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setCursor", Stage::SetCursor);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getFog", Stage::GetFog);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setFog", Stage::SetFog);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "fullscreen", Stage::Fullscreen);
+	}
+
+	Local<Object> Stage::New(void)
+	{
+		Local<Object> ObjectInstance = Stage::constructor->GetFunction()->NewInstance();
+		Stage* obj = new Stage();
+		obj->Wrap(ObjectInstance);
+
+		return ObjectInstance;
 	}
 
 	/* ECMAScript constructor */

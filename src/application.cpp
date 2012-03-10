@@ -7,6 +7,7 @@
 
 #include "clutter.hpp"
 #include "application.hpp"
+#include "window.hpp"
 
 namespace clutter {
  
@@ -40,7 +41,7 @@ namespace clutter {
 	{
 		HandleScope scope;
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "create_window", Application::CreateWindow);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "createWindow", Application::CreateWindow);
 	}
 
 	/* ECMAScript constructor */
@@ -75,9 +76,17 @@ namespace clutter {
 			Persistent<Function> *callback = new Persistent<Function>();
 			*callback = Persistent<Function>::New(Handle<Function>::Cast(args[0]));
 
-//			MxWindow *window = mx_application_create_window(application->_application);
+			/* Create a new window */
+			Local<Object> WindowObject = Window::New();
+			Window *window = ObjectWrap::Unwrap<Window>(WindowObject);
+			mx_application_add_window(application->_application, window->_window);
 
-			(*callback)->Call(Context::GetCurrent()->Global(), 0, 0);
+			/* Prepare arguments */
+			Local<Value> argv[1] = {
+				scope.Close(WindowObject)
+			};
+
+			(*callback)->Call(Context::GetCurrent()->Global(), 1, argv);
 		}
 
 		return args.This();
