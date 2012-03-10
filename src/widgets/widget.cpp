@@ -12,6 +12,7 @@
 #include "scrollable.hpp"
 #include "button.hpp"
 #include "label.hpp"
+#include "spinner.hpp"
 #include "image.hpp"
 #include "bin.hpp"
 #include "viewport.hpp"
@@ -46,6 +47,7 @@ namespace clutter {
 		Scrollable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
+		Spinner::Initialize(ClassObject);
 		Image::Initialize(ClassObject);
 		Viewport::Initialize(ClassObject);
 		ScrollView::Initialize(ClassObject);

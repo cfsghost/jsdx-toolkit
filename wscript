@@ -63,6 +63,7 @@ def build(bld):
 			src/widgets/scrollable.cpp
 			src/widgets/button.cpp
 			src/widgets/label.cpp
+			src/widgets/spinner.cpp
 			src/widgets/image.cpp
 			src/widgets/viewport.cpp
 			src/widgets/scrollview.cpp
