@@ -6,9 +6,9 @@
 #endif
 
 #include "clutter.hpp"
-#include "window.hpp"
 #include "actor.hpp"
 #include "stage.hpp"
+#include "window.hpp"
 
 namespace clutter {
  
@@ -17,13 +17,14 @@ namespace clutter {
 
 	Persistent<FunctionTemplate> Window::constructor;
 
-	Window::Window() : ObjectWrap()
+	Window::Window() : Stage()
 	{
 		/* Create a new stage */
-		StageObject = Stage::New();
+		_actor = clutter_stage_new();
+		clutter_stage_set_title(CLUTTER_STAGE(_actor), "Default");
 
 #if ENABLE_MX
-		_window = mx_window_new_with_clutter_stage(CLUTTER_STAGE(ObjectWrap::Unwrap<Actor>(StageObject)->_actor));
+		_window = mx_window_new_with_clutter_stage(CLUTTER_STAGE(_actor));
 #endif
 	}
 
@@ -47,6 +48,10 @@ namespace clutter {
 	void Window::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	{
 		HandleScope scope;
+
+		Stage::PrototypeMethodsInit(constructor_template);
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
 	}
 
 	Local<Object> Window::New(void)
@@ -74,5 +79,34 @@ namespace clutter {
 		obj->Wrap(args.This());
 
 		return scope.Close(args.This());
+	}
+
+	/* Accessors */
+	Handle<Value> Window::HasToolbarGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+
+		return scope.Close(
+			Boolean::New(mx_window_get_has_toolbar(MX_WINDOW(instance)))
+		);
+#else
+		return scope.Close(Boolean::New(False));
+#endif
+	}
+
+	void Window::HasToolbarSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		if (value->IsBoolean()) {
+			MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+
+			mx_window_set_has_toolbar(MX_WINDOW(instance), value->ToBoolean()->Value());
+		}
+#endif
 	}
 }

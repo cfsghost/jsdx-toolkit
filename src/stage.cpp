@@ -14,7 +14,7 @@ namespace clutter {
 
 	Persistent<FunctionTemplate> Stage::constructor;
 
-	Stage::Stage() : Container() {
+	Stage::Stage() : Actor() {
 		HandleScope scope;
 
 		/* Create Stage */

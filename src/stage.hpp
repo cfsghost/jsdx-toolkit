@@ -4,11 +4,11 @@
 #include <clutter/clutter.h>
 #include <v8.h>
 #include <node.h>
-#include "container.hpp"
+#include "actor.hpp"
 
 namespace clutter {
 
-class Stage : public Container {
+class Stage : public Actor {
 public:
 	static v8::Persistent<v8::FunctionTemplate> constructor;
 	static void Initialize(v8::Handle<v8::Object> target);
