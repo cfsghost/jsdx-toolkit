@@ -8,6 +8,9 @@
 #include "../clutter.hpp"
 #include "../actor.hpp"
 #include "widget.hpp"
+#include "adjustment.hpp"
+#include "scrollable.hpp"
+#include "image.hpp"
 #include "bin.hpp"
 #include "viewport.hpp"
 #include "scrollview.hpp"
@@ -24,9 +27,12 @@ namespace clutter {
 	{
 		HandleScope scope;
 
-		/* Create a new class */
-		Local<Object> ClassObject = Object::New();
 		Local<String> name = String::NewSymbol("Widget");
+
+		/* Create a new class */
+		Handle<ObjectTemplate> ObjectTpl = ObjectTemplate::New();
+		ObjectTpl->SetInternalFieldCount(1);
+		Local<Object> ClassObject = ObjectTpl->NewInstance();
 		target->Set(name, ClassObject);
 
 		/* Initializing Widget Class  */
@@ -34,11 +40,21 @@ namespace clutter {
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 		/* Widgets */
+		Adjustment::Initialize(ClassObject);
+		Scrollable::Initialize(ClassObject);
+		Image::Initialize(ClassObject);
 		Viewport::Initialize(ClassObject);
 		ScrollView::Initialize(ClassObject);
 		KineticScrollView::Initialize(ClassObject);
 
 		ClassObject->Set(name, tpl->GetFunction());
+	}
+
+	void Widget::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	{
+		HandleScope scope;
+
+		Actor::PrototypeMethodsInit(constructor_template);
 	}
 
 	/* ECMAScript constructor */

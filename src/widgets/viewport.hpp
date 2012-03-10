@@ -3,12 +3,16 @@
 
 #include <clutter/clutter.h>
 #include <v8.h>
+#include "scrollable.hpp"
 
 namespace clutter {
 
 class Viewport : public Bin {
 public:
+	static v8::Persistent<v8::FunctionTemplate> constructor;
 	static void Initialize(v8::Handle<v8::Object> target);
+
+	Scrollable *scrollable;
 
 protected:
 	Viewport();

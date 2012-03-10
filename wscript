@@ -59,6 +59,9 @@ def build(bld):
 		obj.source += """
 			src/widgets/widget.cpp
 			src/widgets/bin.cpp
+			src/widgets/adjustment.cpp
+			src/widgets/scrollable.cpp
+			src/widgets/image.cpp
 			src/widgets/viewport.cpp
 			src/widgets/scrollview.cpp
 			src/widgets/kinetic_scrollview.cpp

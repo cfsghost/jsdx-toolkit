@@ -9,6 +9,7 @@
 #include "../clutter.hpp"
 #include "../actor.hpp"
 #include "bin.hpp"
+#include "scrollable.hpp"
 #include "viewport.hpp"
 
 namespace clutter {
@@ -16,29 +17,31 @@ namespace clutter {
 	using namespace node;
 	using namespace v8;
 
+	Persistent<FunctionTemplate> Viewport::constructor;
+
 	Viewport::Viewport() : Bin() {
 		MxAdjustment *hadjust, *vadjust;
 
 		_actor = mx_viewport_new();
-
-		/* Elesticity */
-		mx_scrollable_get_adjustments(MX_SCROLLABLE(_actor), &hadjust, &vadjust);
-		mx_adjustment_set_elastic(hadjust, TRUE);
-		mx_adjustment_set_elastic(vadjust, TRUE);
 	}
 
 	void Viewport::Initialize(Handle<Object> target)
 	{
 		HandleScope scope;
 
+		/* Template */
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 		Local<String> name = String::NewSymbol("Viewport");
 
-		/* Methods */
-		Bin::PrototypeMethodsInit(tpl);
+		/* Constructor */
+		constructor = Persistent<FunctionTemplate>::New(tpl);
+		constructor->InstanceTemplate()->SetInternalFieldCount(1);
+		constructor->SetClassName(name);
 
-		target->Set(name, tpl->GetFunction());
+		/* Methods */
+		Bin::PrototypeMethodsInit(constructor);
+
+		target->Set(name, constructor->GetFunction());
 	}
 
 	/* ECMAScript constructor */
@@ -56,6 +59,10 @@ namespace clutter {
 		// Creates a new instance object of this type and wraps it.
 		Viewport* obj = new Viewport();
 		obj->Wrap(args.This());
+
+		/* Initializing sub-objects */
+		Local<Object> ScrollableObject = Scrollable::New(MX_SCROLLABLE(obj->_actor));
+		args.Holder()->Set(String::NewSymbol("scroll"), ScrollableObject);
 
 		return scope.Close(args.This());
 	}
