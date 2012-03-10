@@ -12,6 +12,7 @@
 #include "scrollable.hpp"
 #include "button.hpp"
 #include "label.hpp"
+#include "slider.hpp"
 #include "toggle.hpp"
 #include "spinner.hpp"
 #include "image.hpp"
@@ -48,6 +49,7 @@ namespace clutter {
 		Scrollable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
+		Slider::Initialize(ClassObject);
 		Toggle::Initialize(ClassObject);
 		Spinner::Initialize(ClassObject);
 		Image::Initialize(ClassObject);
