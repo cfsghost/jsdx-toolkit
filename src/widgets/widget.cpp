@@ -11,6 +11,7 @@
 #include "adjustment.hpp"
 #include "scrollable.hpp"
 #include "button.hpp"
+#include "frame.hpp"
 #include "label.hpp"
 #include "slider.hpp"
 #include "toggle.hpp"
@@ -45,9 +46,11 @@ namespace clutter {
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 		/* Widgets */
+		Bin::Initialize(ClassObject);
 		Adjustment::Initialize(ClassObject);
 		Scrollable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
+		Frame::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
 		Slider::Initialize(ClassObject);
 		Toggle::Initialize(ClassObject);

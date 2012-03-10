@@ -62,6 +62,7 @@ def build(bld):
 			src/widgets/adjustment.cpp
 			src/widgets/scrollable.cpp
 			src/widgets/button.cpp
+			src/widgets/frame.cpp
 			src/widgets/label.cpp
 			src/widgets/slider.cpp
 			src/widgets/toggle.cpp

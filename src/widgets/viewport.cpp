@@ -20,8 +20,6 @@ namespace clutter {
 	Persistent<FunctionTemplate> Viewport::constructor;
 
 	Viewport::Viewport() : Bin() {
-		MxAdjustment *hadjust, *vadjust;
-
 		_actor = mx_viewport_new();
 
 		mx_viewport_set_sync_adjustments(MX_VIEWPORT(_actor), TRUE);
