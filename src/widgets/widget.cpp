@@ -10,6 +10,7 @@
 #include "widget.hpp"
 #include "adjustment.hpp"
 #include "scrollable.hpp"
+#include "button.hpp"
 #include "image.hpp"
 #include "bin.hpp"
 #include "viewport.hpp"
@@ -42,6 +43,7 @@ namespace clutter {
 		/* Widgets */
 		Adjustment::Initialize(ClassObject);
 		Scrollable::Initialize(ClassObject);
+		Button::Initialize(ClassObject);
 		Image::Initialize(ClassObject);
 		Viewport::Initialize(ClassObject);
 		ScrollView::Initialize(ClassObject);
