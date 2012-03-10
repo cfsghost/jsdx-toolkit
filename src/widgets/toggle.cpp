@@ -40,7 +40,6 @@ namespace clutter {
 		HandleScope scope;
 
 		Widget::PrototypeMethodsInit(constructor_template);
-		Bin::PrototypeMethodsInit(constructor_template);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("active"), Toggle::ActiveGetter, Toggle::ActiveSetter);
 	}
