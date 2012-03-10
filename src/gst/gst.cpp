@@ -9,32 +9,32 @@
 
 namespace clutter {
  
-using namespace node;
-using namespace v8;
+	using namespace node;
+	using namespace v8;
 
-Gst::Gst() : Texture() {}
+	Gst::Gst() : Texture() {}
 
-void Gst::Initialize(Handle<Object> target)
-{
-	HandleScope scope;
+	void Gst::Initialize(Handle<Object> target)
+	{
+		HandleScope scope;
 
-	/* Add gst_init() to module */
-	NODE_SET_METHOD(target, "gst_init", Gst::Init);
-}
+		/* Add gst_init() to module */
+		NODE_SET_METHOD(target, "gst_init", Gst::Init);
+	}
 
-void Gst::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
-{
-	HandleScope scope;
+	void Gst::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	{
+		HandleScope scope;
 
-	Texture::PrototypeMethodsInit(constructor_template);
-	Media::PrototypeMethodsInit(constructor_template);
-}
+		Texture::PrototypeMethodsInit(constructor_template);
+		Media::PrototypeMethodsInit(constructor_template);
+	}
 
-Handle<Value> Gst::Init(const Arguments& args)
-{
-	HandleScope scope;
+	Handle<Value> Gst::Init(const Arguments& args)
+	{
+		HandleScope scope;
 
-	return scope.Close(Integer::New(clutter_gst_init(NULL, NULL)));
-}
+		return scope.Close(Integer::New(clutter_gst_init(NULL, NULL)));
+	}
 
 }

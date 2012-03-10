@@ -9,48 +9,48 @@
 
 namespace clutter {
  
-using namespace node;
-using namespace v8;
+	using namespace node;
+	using namespace v8;
 
-Group::Group() : Container() {
-	HandleScope scope;
+	Group::Group() : Container() {
+		HandleScope scope;
 
-	/* Create Group */
-	_actor = clutter_group_new();
+		/* Create Group */
+		_actor = clutter_group_new();
 
-	/* TODO: Binding destroy event */
-}
-
-void Group::Initialize(Handle<Object> target)
-{
-	HandleScope scope;
-
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-	Local<String> name = String::NewSymbol("Group");
-
-	/* Methods */
-	Container::PrototypeMethodsInit(tpl);
-
-	target->Set(name, tpl->GetFunction());
-}
-
-/* ECMAScript constructor */
-Handle<Value> Group::New(const Arguments& args)
-{
-	HandleScope scope;
-
-	if (!args.IsConstructCall()) {
-		return ThrowException(Exception::TypeError(
-			String::New("Use the new operator to create instances of this object."))
-		);
+		/* TODO: Binding destroy event */
 	}
 
-	// Creates a new instance object of this type and wraps it.
-	Group* obj = new Group();
-	obj->Wrap(args.This());
+	void Group::Initialize(Handle<Object> target)
+	{
+		HandleScope scope;
 
-	return scope.Close(args.This());
-}
+		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+		tpl->InstanceTemplate()->SetInternalFieldCount(1);
+		Local<String> name = String::NewSymbol("Group");
+
+		/* Methods */
+		Container::PrototypeMethodsInit(tpl);
+
+		target->Set(name, tpl->GetFunction());
+	}
+
+	/* ECMAScript constructor */
+	Handle<Value> Group::New(const Arguments& args)
+	{
+		HandleScope scope;
+
+		if (!args.IsConstructCall()) {
+			return ThrowException(Exception::TypeError(
+				String::New("Use the new operator to create instances of this object."))
+			);
+		}
+
+		// Creates a new instance object of this type and wraps it.
+		Group* obj = new Group();
+		obj->Wrap(args.This());
+
+		return scope.Close(args.This());
+	}
 
 }

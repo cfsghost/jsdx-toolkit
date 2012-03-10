@@ -23,6 +23,8 @@ namespace clutter {
 		MxAdjustment *hadjust, *vadjust;
 
 		_actor = mx_viewport_new();
+
+		mx_viewport_set_sync_adjustments(MX_VIEWPORT(_actor), TRUE);
 	}
 
 	void Viewport::Initialize(Handle<Object> target)
