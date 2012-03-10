@@ -70,6 +70,7 @@ void Actor::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("opacity"), Actor::OpacityGetter, Actor::OpacitySetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Actor::WidthGetter, Actor::WidthSetter);
 	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Actor::HeightGetter, Actor::HeightSetter);
+	constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasClip"), Actor::HasClipGetter, Actor::HasClipSetter);
 
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
@@ -358,6 +359,22 @@ void Actor::DepthSetter(Local<String> name, Local<Value> value, const AccessorIn
 
 		clutter_actor_set_depth(CLUTTER_ACTOR(instance), value->NumberValue());
 	}
+}
+
+Handle<Value> Actor::HasClipGetter(Local<String> name, const AccessorInfo& info)
+{
+	HandleScope scope;
+
+	ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+	return scope.Close(
+		Boolean::New(clutter_actor_has_clip(CLUTTER_ACTOR(instance)))
+	);
+}
+
+void Actor::HasClipSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+{
+	/* Do nothing */
 }
 
 Handle<Value> Actor::SetAnchorFromGravity(const Arguments &args)
