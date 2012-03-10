@@ -43,6 +43,8 @@ namespace clutter {
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "run", Application::Run);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "createWindow", Application::CreateWindow);
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("isRunning"), Application::IsRunningGetter, Application::IsRunningSetter);
 	}
 
 	/* ECMAScript constructor */
@@ -68,6 +70,30 @@ namespace clutter {
 		return scope.Close(args.This());
 	}
 
+	/* Accessors */
+	Handle<Value> Application::IsRunningGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		MxApplication *instance = ObjectWrap::Unwrap<Application>(info.This())->_application;
+
+		return scope.Close(
+			Boolean::New(mx_application_is_running(MX_APPLICATION(instance)))
+		);
+#else
+		return scope.Close(Boolean::New(True));
+#endif
+	}
+
+	void Application::IsRunningSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		/* Do nothing */
+	}
+
+	/* Methods */
 	Handle<Value> Application::Run(const Arguments &args)
 	{
 		Application *application = ObjectWrap::Unwrap<Application>(args.This());
