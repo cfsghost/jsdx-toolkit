@@ -50,7 +50,6 @@ namespace clutter {
 	Handle<Value> Image::New(const Arguments& args)
 	{
 		HandleScope scope;
-		static ClutterColor color;
 
 		if (!args.IsConstructCall()) {
 			return ThrowException(Exception::TypeError(

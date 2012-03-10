@@ -44,7 +44,6 @@ namespace clutter {
 	Handle<Value> Bin::New(const Arguments& args)
 	{
 		HandleScope scope;
-		static ClutterColor color;
 
 		if (!args.IsConstructCall()) {
 			return ThrowException(Exception::TypeError(
