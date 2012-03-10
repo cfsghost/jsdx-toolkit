@@ -22,7 +22,7 @@ stage.add(label);
 
 /* Label Widget */
 var label2 = new clutter.Widget.Label();
-label2.text = 'second button!'
+label2.text = 'second Label!';
 label2.y = 50;
 stage.add(label2);
 
