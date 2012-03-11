@@ -64,13 +64,14 @@ namespace clutter {
 		return scope.Close(args.This());
 	}
 
-	void Image::_LoadFile(Image *image, const char *filename, bool hasCallback)
+	void Image::_LoadFile(Image *image, const char *filename, ImageCallback *imgcb)
 	{
 		CoglHandle cogltex;
 		MxImage *instance = MX_IMAGE(image->_actor);
 
-		if (hasCallback)
-			g_signal_connect(G_OBJECT(instance), "image-loaded", G_CALLBACK(Image::_ImageLoadedCallback), (gpointer)image);
+		if (imgcb) {
+			g_signal_connect(G_OBJECT(instance), "image-loaded", G_CALLBACK(Image::_ImageLoadedCallback), (gpointer)imgcb);
+		}
 
 		mx_image_set_load_async(MX_IMAGE(instance), TRUE);
 		mx_image_set_scale_mode(MX_IMAGE(instance), MX_IMAGE_SCALE_FIT);
@@ -85,11 +86,15 @@ namespace clutter {
 			Image *image = ObjectWrap::Unwrap<Image>(args.This());
 
 			if (args[1]->IsFunction()) {
-				*(image->ImageLoadedFunc) = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
-				_LoadFile(image, *String::Utf8Value(args[0]->ToString()), True);
+				/* Create a callback object */
+				ImageCallback *imgcb = new ImageCallback();
+				imgcb->object = image;
+				imgcb->callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+
+				_LoadFile(image, *String::Utf8Value(args[0]->ToString()), imgcb);
 
 			} else {
-				_LoadFile(image, *String::Utf8Value(args[0]->ToString()), False);
+				_LoadFile(image, *String::Utf8Value(args[0]->ToString()), NULL);
 			}
 		}
 
@@ -99,10 +104,17 @@ namespace clutter {
 	/* Event Handlers */
 	void Image::_ImageLoadedCallback(MxImage *img, gpointer user_data)
 	{
-		Image *image = (Image *)user_data;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(image->ImageLoadedFunc);
+		ImageCallback *imgcb = (ImageCallback *)user_data;
 
-		(*callback)->Call(Context::GetCurrent()->Global(), 0, 0);
+		TryCatch try_catch;
+		imgcb->callback->Call(Context::GetCurrent()->Global(), 0, 0);
+		if (try_catch.HasCaught()) {
+			node::FatalException(try_catch);
+		}
+
+		imgcb->callback.Dispose();
+
+		delete imgcb;
 	}
 
 }
