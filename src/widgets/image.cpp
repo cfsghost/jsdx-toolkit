@@ -73,7 +73,7 @@ namespace clutter {
 			g_signal_connect(G_OBJECT(instance), "image-loaded", G_CALLBACK(Image::_ImageLoadedCallback), (gpointer)image);
 
 		mx_image_set_load_async(MX_IMAGE(instance), TRUE);
-
+		mx_image_set_scale_mode(MX_IMAGE(instance), MX_IMAGE_SCALE_FIT);
 		mx_image_set_from_file(MX_IMAGE(instance), filename, NULL);
 	}
 
