@@ -65,6 +65,7 @@ def build(bld):
 		obj.source += """
 			src/widgets/widget.cpp
 			src/widgets/bin.cpp
+			src/widgets/box_layout.cpp
 			src/widgets/grid.cpp
 			src/widgets/table.cpp
 			src/widgets/adjustment.cpp

@@ -18,6 +18,7 @@
 #include "spinner.hpp"
 #include "image.hpp"
 #include "bin.hpp"
+#include "box_layout.hpp"
 #include "grid.hpp"
 #include "table.hpp"
 #include "viewport.hpp"
@@ -49,6 +50,7 @@ namespace clutter {
 
 		/* Widgets */
 		Bin::Initialize(ClassObject);
+		BoxLayout::Initialize(ClassObject);
 		Grid::Initialize(ClassObject);
 		Table::Initialize(ClassObject);
 		Adjustment::Initialize(ClassObject);

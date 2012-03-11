@@ -1,0 +1,139 @@
+#include <v8.h>
+#include <node.h>
+#include <clutter/clutter.h>
+#include <mx/mx.h>
+#include <sys/time.h>
+#include <string.h>
+#include <math.h>
+
+#include "../clutter.hpp"
+#include "../actor.hpp"
+#include "../container.hpp"
+#include "widget.hpp"
+#include "bin.hpp"
+#include "box_layout.hpp"
+
+namespace clutter {
+ 
+	using namespace node;
+	using namespace v8;
+
+	Persistent<FunctionTemplate> BoxLayout::constructor;
+
+	BoxLayout::BoxLayout() : Widget() {
+		_actor = mx_box_layout_new();
+	}
+
+	void BoxLayout::Initialize(Handle<Object> target)
+	{
+		HandleScope scope;
+
+		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+		Local<String> name = String::NewSymbol("BoxLayout");
+
+		/* Constructor */
+		constructor = Persistent<FunctionTemplate>::New(tpl);
+		constructor->InstanceTemplate()->SetInternalFieldCount(1);
+		constructor->SetClassName(name);
+
+		/* Methods */
+		BoxLayout::PrototypeMethodsInit(constructor);
+
+		target->Set(name, constructor->GetFunction());
+	}
+
+	void BoxLayout::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	{
+		HandleScope scope;
+
+		/* Inherit methods from Actor */
+		Container::PrototypeMethodsInit(constructor_template);
+
+		/* Accessor */
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("spacing"), BoxLayout::SpacingGetter, BoxLayout::SpacingSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("enableAnimations"), BoxLayout::EnableAnimationsGetter, BoxLayout::EnableAnimationsSetter);
+
+		/* Methods */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", BoxLayout::Add);
+	}
+
+	/* ECMAScript constructor */
+	Handle<Value> BoxLayout::New(const Arguments& args)
+	{
+		HandleScope scope;
+
+		if (!args.IsConstructCall()) {
+			return ThrowException(Exception::TypeError(
+				String::New("Use the new operator to create instances of this object."))
+			);
+		}
+
+		// Creates a new instance object of this type and wraps it.
+		BoxLayout* obj = new BoxLayout();
+		obj->Wrap(args.This());
+
+		return scope.Close(args.This());
+	}
+
+	/* Accessor */
+	Handle<Value> BoxLayout::SpacingGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+		return scope.Close(
+			Integer::New(mx_box_layout_get_spacing(MX_BOX_LAYOUT(instance)))
+		);
+	}
+
+	void BoxLayout::SpacingSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+			mx_box_layout_set_spacing(MX_BOX_LAYOUT(instance), value->ToInteger()->Value());
+		}
+	}
+
+	Handle<Value> BoxLayout::EnableAnimationsGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(mx_box_layout_get_enable_animations(MX_BOX_LAYOUT(instance)))
+		);
+	}
+
+	void BoxLayout::EnableAnimationsSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+			mx_box_layout_set_enable_animations(MX_BOX_LAYOUT(instance), value->ToBoolean()->Value());
+		}
+	}
+
+	/* Methods */
+	Handle<Value> BoxLayout::Add(const Arguments &args)
+	{
+		HandleScope scope;
+
+		if (args[0]->IsObject() && args[1]->IsNumber()) {
+			gint row, col;
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+
+			mx_box_layout_add_actor(MX_BOX_LAYOUT(instance), CLUTTER_ACTOR(actor), args[1]->ToInteger()->Value());
+		}
+
+		return args.This();
+	}
+
+}
