@@ -17,7 +17,7 @@ namespace clutter {
 	Application::Application(const char *name) : ObjectWrap()
 	{
 #if ENABLE_MX
-		_application = mx_application_new(NULL, NULL, name, (MxApplicationFlags)0);
+		_application = mx_application_new(NULL, NULL, name, MX_APPLICATION_KEEP_ALIVE);
 #else
 		clutter_init(NULL, NULL);
 #endif
@@ -42,6 +42,7 @@ namespace clutter {
 		HandleScope scope;
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "run", Application::Run);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "quit", Application::Quit);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "createWindow", Application::CreateWindow);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("isRunning"), Application::IsRunningGetter, Application::IsRunningSetter);
@@ -99,6 +100,15 @@ namespace clutter {
 		Application *application = ObjectWrap::Unwrap<Application>(args.This());
 
 		ev_ref(EV_DEFAULT_UC);
+
+		return Undefined();
+	}
+
+	Handle<Value> Application::Quit(const Arguments &args)
+	{
+		Application *application = ObjectWrap::Unwrap<Application>(args.This());
+
+		ev_unref(EV_DEFAULT_UC);
 
 		return Undefined();
 	}

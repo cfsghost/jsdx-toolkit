@@ -29,6 +29,7 @@ protected:
 
 	/* Methods */
 	static v8::Handle<v8::Value> Run(const v8::Arguments &args);
+	static v8::Handle<v8::Value> Quit(const v8::Arguments &args);
 	static v8::Handle<v8::Value> CreateWindow(const v8::Arguments &args);
 };
 
