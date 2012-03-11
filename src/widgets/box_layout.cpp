@@ -11,6 +11,7 @@
 #include "../container.hpp"
 #include "widget.hpp"
 #include "bin.hpp"
+#include "scrollable.hpp"
 #include "box_layout.hpp"
 
 namespace clutter {
@@ -71,6 +72,10 @@ namespace clutter {
 		// Creates a new instance object of this type and wraps it.
 		BoxLayout* obj = new BoxLayout();
 		obj->Wrap(args.This());
+
+		/* Initializing sub-objects */
+		Local<Object> ScrollableObject = Scrollable::New(MX_SCROLLABLE(obj->_actor));
+		args.Holder()->Set(String::NewSymbol("scroll"), ScrollableObject);
 
 		return scope.Close(args.This());
 	}
