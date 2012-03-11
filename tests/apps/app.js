@@ -6,6 +6,7 @@ app.createWindow(function(window) {
 	window.on(clutter.EVENT_DESTROY, function() {
 		app.quit();
 	});
+
 	window.title = 'Test Window';
 	window.hasToolbar = false;
 	window.show();
