@@ -6,15 +6,15 @@
 
 namespace clutter {
 
-class Group : public Container {
-public:
-	static void Initialize(v8::Handle<v8::Object> target);
+	class Group : public Container {
+	public:
+		static void Initialize(v8::Handle<v8::Object> target);
 
-protected:
-	Group();
+	protected:
+		Group();
 
-	static v8::Handle<v8::Value> New(const v8::Arguments& args);
-};
+		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+	};
 
 }
 
