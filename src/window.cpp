@@ -51,6 +51,8 @@ namespace clutter {
 
 		Stage::PrototypeMethodsInit(constructor_template);
 
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Window::WidthGetter, Window::WidthSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Window::HeightGetter, Window::HeightSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setChild", Window::SetChild);
@@ -84,6 +86,78 @@ namespace clutter {
 	}
 
 	/* Accessors */
+	Handle<Value> Window::WidthGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		Window *window = ObjectWrap::Unwrap<Window>(info.This());
+
+#if ENABLE_MX
+		gint width, height;
+		mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+		return scope.Close(Number::New(width));
+#else
+		Actor::WidthGetter(name, info);
+#endif
+	}
+
+	void Window::WidthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			Window *window = ObjectWrap::Unwrap<Window>(info.This());
+
+#if ENABLE_MX
+			gint width, height;
+			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+			width = value->ToInteger()->Value();
+
+			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
+#else
+		Actor::WidthSetter(name, info);
+#endif
+		}
+	}
+
+	Handle<Value> Window::HeightGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		Window *window = ObjectWrap::Unwrap<Window>(info.This());
+
+#if ENABLE_MX
+		gint width, height;
+		mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+		return scope.Close(Number::New(height));
+#else
+		Actor::WidthGetter(name, info);
+#endif
+	}
+
+	void Window::HeightSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			Window *window = ObjectWrap::Unwrap<Window>(info.This());
+
+#if ENABLE_MX
+			gint width, height;
+			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+			height = value->ToInteger()->Value();
+
+			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
+#else
+		Actor::WidthSetter(name, info);
+#endif
+		}
+	}
+
 	Handle<Value> Window::HasToolbarGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;

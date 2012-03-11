@@ -7,7 +7,7 @@ app.createWindow(function(window) {
 		app.quit();
 	});
 	window.title = 'Test Window';
-	window.hasToolbar = true;
+	window.hasToolbar = false;
 	window.show();
 });
 
