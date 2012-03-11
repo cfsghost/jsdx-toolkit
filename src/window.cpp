@@ -25,6 +25,9 @@ namespace clutter {
 
 #if ENABLE_MX
 		_window = mx_window_new_with_clutter_stage(CLUTTER_STAGE(_actor));
+
+		/* No toolbar by default */
+		mx_window_set_has_toolbar(MX_WINDOW(_window), FALSE);
 #endif
 	}
 
