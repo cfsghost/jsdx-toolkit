@@ -52,6 +52,8 @@ namespace clutter {
 		Stage::PrototypeMethodsInit(constructor_template);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
+
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setChild", Window::SetChild);
 	}
 
 	Local<Object> Window::New(void)
@@ -108,5 +110,23 @@ namespace clutter {
 			mx_window_set_has_toolbar(MX_WINDOW(instance), value->ToBoolean()->Value());
 		}
 #endif
+	}
+
+	/* Methods */
+	Handle<Value> Window::SetChild(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+
+#if ENABLE_MX
+		MxWindow *instance = ObjectWrap::Unwrap<Window>(args.This())->_window;
+
+		mx_window_set_child(MX_WINDOW(instance), CLUTTER_ACTOR(actor));
+#else
+		Container::Add(args);
+#endif
+
+		return args.This();
 	}
 }
