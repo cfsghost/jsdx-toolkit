@@ -7,6 +7,7 @@
 
 #include "../clutter.hpp"
 #include "../actor.hpp"
+#include "style.hpp"
 #include "widget.hpp"
 #include "adjustment.hpp"
 #include "scrollable.hpp"
@@ -49,6 +50,7 @@ namespace clutter {
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 		/* Widgets */
+		Style::Initialize(ClassObject);
 		Bin::Initialize(ClassObject);
 		BoxLayout::Initialize(ClassObject);
 		Grid::Initialize(ClassObject);

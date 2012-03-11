@@ -63,6 +63,7 @@ def build(bld):
 	if bld.env["ENABLE_WIDGET"]:
 		obj.cxxflags.append("-DENABLE_WIDGET");
 		obj.source += """
+			src/widgets/style.cpp
 			src/widgets/widget.cpp
 			src/widgets/bin.cpp
 			src/widgets/box_layout.cpp
