@@ -133,7 +133,7 @@ namespace clutter {
 				scope.Close(WindowObject)
 			};
 
-			(*callback)->Call(Context::GetCurrent()->Global(), 1, argv);
+			(*callback)->Call(args.This(), 1, argv);
 		}
 
 		return args.This();
