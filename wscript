@@ -66,6 +66,7 @@ def build(bld):
 			src/widgets/widget.cpp
 			src/widgets/bin.cpp
 			src/widgets/grid.cpp
+			src/widgets/table.cpp
 			src/widgets/adjustment.cpp
 			src/widgets/scrollable.cpp
 			src/widgets/button.cpp

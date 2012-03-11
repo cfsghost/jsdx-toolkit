@@ -19,6 +19,7 @@
 #include "image.hpp"
 #include "bin.hpp"
 #include "grid.hpp"
+#include "table.hpp"
 #include "viewport.hpp"
 #include "scrollview.hpp"
 #include "kinetic_scrollview.hpp"
@@ -49,6 +50,7 @@ namespace clutter {
 		/* Widgets */
 		Bin::Initialize(ClassObject);
 		Grid::Initialize(ClassObject);
+		Table::Initialize(ClassObject);
 		Adjustment::Initialize(ClassObject);
 		Scrollable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
