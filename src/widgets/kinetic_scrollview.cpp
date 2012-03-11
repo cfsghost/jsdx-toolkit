@@ -9,12 +9,15 @@
 #include "../clutter.hpp"
 #include "../actor.hpp"
 #include "bin.hpp"
+#include "scrollable.hpp"
 #include "kinetic_scrollview.hpp"
 
 namespace clutter {
  
 	using namespace node;
 	using namespace v8;
+
+	Persistent<FunctionTemplate> KineticScrollView::constructor;
 
 	KineticScrollView::KineticScrollView() : Bin() {
 		_actor = mx_kinetic_scroll_view_new();
@@ -27,16 +30,20 @@ namespace clutter {
 		HandleScope scope;
 
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 		Local<String> name = String::NewSymbol("KineticScrollView");
 
+		/* Constructor */
+		constructor = Persistent<FunctionTemplate>::New(tpl);
+		constructor->InstanceTemplate()->SetInternalFieldCount(1);
+		constructor->SetClassName(name);
+
 		/* Methods */
-		Bin::PrototypeMethodsInit(tpl);
+		Bin::PrototypeMethodsInit(constructor);
 
-		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_horizontal"), KineticScrollView::PolicyHorizontalGetter, KineticScrollView::PolicyHorizontalSetter);
-		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_vertical"), KineticScrollView::PolicyVerticalGetter, KineticScrollView::PolicyVerticalSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_horizontal"), KineticScrollView::PolicyHorizontalGetter, KineticScrollView::PolicyHorizontalSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_vertical"), KineticScrollView::PolicyVerticalGetter, KineticScrollView::PolicyVerticalSetter);
 
-		target->Set(name, tpl->GetFunction());
+		target->Set(name, constructor->GetFunction());
 	}
 
 	/* ECMAScript constructor */

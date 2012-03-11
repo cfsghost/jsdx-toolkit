@@ -8,6 +8,7 @@ namespace clutter {
 
 class KineticScrollView : public Bin {
 public:
+	static v8::Persistent<v8::FunctionTemplate> constructor;
 	static void Initialize(v8::Handle<v8::Object> target);
 
 protected:
