@@ -125,8 +125,9 @@ namespace clutter {
 			/* Create a new window */
 			Local<Object> WindowObject = Window::New();
 			Window *window = ObjectWrap::Unwrap<Window>(WindowObject);
+#if ENABLE_MX
 			mx_application_add_window(application->_application, window->_window);
-
+#endif
 			/* Prepare arguments */
 			Local<Value> argv[1] = {
 				scope.Close(WindowObject)
