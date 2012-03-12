@@ -80,6 +80,8 @@ namespace clutter {
 		HandleScope scope;
 
 		Actor::PrototypeMethodsInit(constructor_template);
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("disabled"), Widget::DisabledGetter, Widget::DisabledSetter);
 	}
 
 	/* ECMAScript constructor */
@@ -98,5 +100,27 @@ namespace clutter {
 		obj->Wrap(args.This());
 
 		return scope.Close(args.This());
+	}
+
+	Handle<Value> Widget::DisabledGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(mx_widget_get_disabled(MX_WIDGET(instance)))
+		);
+	}
+
+	void Widget::DisabledSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			mx_widget_set_disabled(MX_WIDGET(instance), value->ToBoolean()->Value());
+		}
 	}
 }
