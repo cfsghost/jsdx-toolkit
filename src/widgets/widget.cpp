@@ -12,6 +12,7 @@
 #include "adjustment.hpp"
 #include "scrollable.hpp"
 #include "button.hpp"
+#include "entry.hpp"
 #include "frame.hpp"
 #include "label.hpp"
 #include "progress_bar.hpp"
@@ -59,6 +60,7 @@ namespace clutter {
 		Adjustment::Initialize(ClassObject);
 		Scrollable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
+		Entry::Initialize(ClassObject);
 		Frame::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
 		ProgressBar::Initialize(ClassObject);
