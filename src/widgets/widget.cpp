@@ -14,6 +14,7 @@
 #include "button.hpp"
 #include "frame.hpp"
 #include "label.hpp"
+#include "progress_bar.hpp"
 #include "slider.hpp"
 #include "toggle.hpp"
 #include "spinner.hpp"
@@ -60,6 +61,7 @@ namespace clutter {
 		Button::Initialize(ClassObject);
 		Frame::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
+		ProgressBar::Initialize(ClassObject);
 		Slider::Initialize(ClassObject);
 		Toggle::Initialize(ClassObject);
 		Spinner::Initialize(ClassObject);
