@@ -15,6 +15,7 @@
 #include "entry.hpp"
 #include "frame.hpp"
 #include "label.hpp"
+#include "dialog.hpp"
 #include "progress_bar.hpp"
 #include "slider.hpp"
 #include "toggle.hpp"
@@ -63,6 +64,7 @@ namespace clutter {
 		Entry::Initialize(ClassObject);
 		Frame::Initialize(ClassObject);
 		Label::Initialize(ClassObject);
+		Dialog::Initialize(ClassObject);
 		ProgressBar::Initialize(ClassObject);
 		Slider::Initialize(ClassObject);
 		Toggle::Initialize(ClassObject);

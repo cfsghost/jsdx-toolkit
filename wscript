@@ -75,6 +75,7 @@ def build(bld):
 			src/widgets/entry.cpp
 			src/widgets/frame.cpp
 			src/widgets/label.cpp
+			src/widgets/dialog.cpp
 			src/widgets/progress_bar.cpp
 			src/widgets/slider.cpp
 			src/widgets/toggle.cpp
