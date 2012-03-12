@@ -18,7 +18,7 @@ stage.show();
 var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
-texture1.reactive(true);
+texture1.reactive = true;
 stage.add(texture1);
 
 clutter.main();

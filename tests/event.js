@@ -20,7 +20,7 @@ var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.opacity = 150;
-texture1.reactive(true);
+texture1.reactive = true;
 texture1.on(clutter.EVENT_ENTER, function(ev) {
 	console.log('texture1: enter');
 
@@ -45,7 +45,7 @@ var texture2 = new clutter.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
-texture2.reactive(true);
+texture2.reactive = true;
 texture2.on(clutter.EVENT_CLICK, function(ev) {
 	console.log('texture2: click');
 });

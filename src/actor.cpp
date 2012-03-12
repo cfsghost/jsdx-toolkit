@@ -71,6 +71,7 @@ namespace clutter {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Actor::WidthGetter, Actor::WidthSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Actor::HeightGetter, Actor::HeightSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasClip"), Actor::HasClipGetter, Actor::HasClipSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("reactive"), Actor::ReactiveGetter, Actor::ReactiveSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
@@ -79,7 +80,6 @@ namespace clutter {
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "reactive", Actor::Reactive);
 
 		/* Anchor */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnchorFromGravity", Actor::SetAnchorFromGravity);
@@ -377,6 +377,28 @@ namespace clutter {
 		/* Do nothing */
 	}
 
+	Handle<Value> Actor::ReactiveGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(clutter_actor_get_reactive(CLUTTER_ACTOR(instance)))
+		);
+	}
+
+	void Actor::ReactiveSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_reactive(CLUTTER_ACTOR(instance), value->ToBoolean()->Value());
+		}
+	}
+
 	Handle<Value> Actor::SetAnchorFromGravity(const Arguments &args)
 	{
 		HandleScope scope;
@@ -471,25 +493,6 @@ namespace clutter {
 
 			}
 		}
-
-		return args.This();
-	}
-
-	Handle<Value> Actor::Reactive(const Arguments &args)
-	{
-		HandleScope scope;
-
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		if (args[0]->IsUndefined() || args[0]->IsNull()) {
-			return scope.Close(
-				Boolean::New(clutter_actor_get_reactive(CLUTTER_ACTOR(instance)))
-			);
-		}
-
-		if (args[0]->IsBoolean())
-			clutter_actor_set_reactive(CLUTTER_ACTOR(instance), args[0]->ToBoolean()->Value());
-
 
 		return args.This();
 	}

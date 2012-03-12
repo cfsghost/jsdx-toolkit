@@ -18,7 +18,7 @@ stage.show();
 var texture1 = new clutter.Texture;
 texture1.loadFile('fred.jpg');
 texture1.opacity = 150;
-texture1.reactive(true);
+texture1.reactive = true;
 stage.add(texture1);
 
 var flickable = {
@@ -133,7 +133,7 @@ var texture2 = new clutter.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
-texture2.reactive(true);
+texture2.reactive = true;
 texture2.on(clutter.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
 	console.log(ev);
 	console.log(data);

@@ -32,7 +32,7 @@ var texture2 = new clutter.Texture;
 texture2.loadFileSync('fred.jpg');
 texture2.setPosition(200, 150);
 texture2.rotate(30, clutter.GRAVITY_CENTER);
-texture2.reactive(true);
+texture2.reactive = true;
 texture2.on(clutter.EVENT_CLICK, function(ev) {
 	console.log('Clicked texture2!');
 });
