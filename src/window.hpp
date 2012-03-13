@@ -36,6 +36,9 @@ namespace clutter {
 		static v8::Handle<v8::Value> HasToolbarGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 		static void HasToolbarSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
+		static v8::Handle<v8::Value> RotationGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+		static void RotationSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
 		/* Methods */
 		static v8::Handle<v8::Value> SetChild(const v8::Arguments& args);
 	};

@@ -57,6 +57,7 @@ namespace clutter {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Window::WidthGetter, Window::WidthSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Window::HeightGetter, Window::HeightSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rotation"), Window::RotationGetter, Window::RotationSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setChild", Window::SetChild);
 	}
@@ -185,6 +186,63 @@ namespace clutter {
 			MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
 
 			mx_window_set_has_toolbar(MX_WINDOW(instance), value->ToBoolean()->Value());
+		}
+#endif
+	}
+
+	Handle<Value> Window::RotationGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+
+		switch(mx_window_get_window_rotation(MX_WINDOW(instance))) {
+		case MX_WINDOW_ROTATION_0:
+			return scope.Close(Integer::New(0));
+			break;
+
+		case MX_WINDOW_ROTATION_90:
+			return scope.Close(Integer::New(90));
+			break;
+
+		case MX_WINDOW_ROTATION_180:
+			return scope.Close(Integer::New(180));
+			break;
+
+		case MX_WINDOW_ROTATION_270:
+			return scope.Close(Integer::New(270));
+		}
+#else
+		return scope.Close(Integer::New(0));
+#endif
+	}
+
+	void Window::RotationSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		if (value->IsNumber()) {
+			MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+
+			switch(value->ToInteger()->Value()) {
+			case 0:
+				mx_window_set_window_rotation(MX_WINDOW(instance), MX_WINDOW_ROTATION_0);
+				break;
+
+			case 90:
+				mx_window_set_window_rotation(MX_WINDOW(instance), MX_WINDOW_ROTATION_90);
+				break;
+
+			case 180:
+				mx_window_set_window_rotation(MX_WINDOW(instance), MX_WINDOW_ROTATION_180);
+				break;
+
+			case 270:
+				mx_window_set_window_rotation(MX_WINDOW(instance), MX_WINDOW_ROTATION_270);
+				break;
+			}
 		}
 #endif
 	}
