@@ -1,3 +1,10 @@
+/*
+ * JSDX Framework
+ *
+ * Copyright(c) 2012 Fred Chien <fred@mandice.com>
+ *
+ */
+
 #include <v8.h>
 #include <node.h>
 #include <ev.h>
