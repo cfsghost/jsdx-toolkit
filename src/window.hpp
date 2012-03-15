@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_WINDOW_H_
-#define NODE_CLUTTER_WINDOW_H_
+#ifndef JDDX_TOOLKIT_WINDOW_H_
+#define JDDX_TOOLKIT_WINDOW_H_
 
 #include <clutter/clutter.h>
 #if ENABLE_MX

@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_WIDGET_ENTRY_H_
-#define NODE_CLUTTER_WIDGET_ENTRY_H_
+#ifndef JDDX_TOOLKIT_WIDGET_ENTRY_H_
+#define JDDX_TOOLKIT_WIDGET_ENTRY_H_
 
 #include <clutter/clutter.h>
 #include <mx/mx.h>

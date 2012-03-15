@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_GST_H_
-#define NODE_CLUTTER_GST_H_
+#ifndef JDDX_TOOLKIT_GST_H_
+#define JDDX_TOOLKIT_GST_H_
 
 #include <v8.h>
 #include <node.h>

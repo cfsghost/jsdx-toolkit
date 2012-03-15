@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_TEXTURE_H_
-#define NODE_CLUTTER_TEXTURE_H_
+#ifndef JDDX_TOOLKIT_TEXTURE_H_
+#define JDDX_TOOLKIT_TEXTURE_H_
 
 #include <v8.h>
 #include <node.h>
@@ -7,7 +7,7 @@
 namespace JSDXToolkit {
 
 	typedef enum {
-		NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED = 100
+		JDDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED = 100
 	} NodeClutterTextureEvent;
 
 	class Texture : public Actor {

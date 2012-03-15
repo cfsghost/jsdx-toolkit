@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_ACTOR_H_
-#define NODE_CLUTTER_ACTOR_H_
+#ifndef JDDX_TOOLKIT_ACTOR_H_
+#define JDDX_TOOLKIT_ACTOR_H_
 
 #include <clutter/clutter.h>
 #include <v8.h>
@@ -8,9 +8,9 @@
 namespace JSDXToolkit {
 
 	typedef enum {
-		NODE_CLUTTER_ANIMATION_PLAY,
-		NODE_CLUTTER_ANIMATION_PAUSE,
-		NODE_CLUTTER_ANIMATION_STOP
+		JDDX_TOOLKIT_ANIMATION_PLAY,
+		JDDX_TOOLKIT_ANIMATION_PAUSE,
+		JDDX_TOOLKIT_ANIMATION_STOP
 	} NodeClutterAnimationCommand;
 
 	struct PropertyDefine {

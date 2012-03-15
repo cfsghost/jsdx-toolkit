@@ -1,5 +1,5 @@
-#ifndef NODE_CLUTTER_MEDIA_H_
-#define NODE_CLUTTER_MEDIA_H_
+#ifndef JDDX_TOOLKIT_MEDIA_H_
+#define JDDX_TOOLKIT_MEDIA_H_
 
 #include <clutter/clutter.h>
 #include <v8.h>

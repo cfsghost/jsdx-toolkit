@@ -523,7 +523,7 @@ namespace JSDXToolkit {
 		o->Set(String::New("y"), Number::New(event->button.y));
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_PRESS)),
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_PRESS)),
 			o
 		};
 
@@ -543,7 +543,7 @@ namespace JSDXToolkit {
 		o->Set(String::New("y"), Number::New(event->button.y));
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_RELEASE)),
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_RELEASE)),
 			o
 		};
 
@@ -558,7 +558,7 @@ namespace JSDXToolkit {
 		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_CLICK))
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_CLICK))
 		};
 
 		(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
@@ -580,7 +580,7 @@ namespace JSDXToolkit {
 		o->Set(String::New("y"), Number::New(y));
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_LONG_PRESS)),
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_LONG_PRESS)),
 			o
 		};
 
@@ -595,7 +595,7 @@ namespace JSDXToolkit {
 		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_ENTER))
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_ENTER))
 		};
 
 		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
@@ -609,7 +609,7 @@ namespace JSDXToolkit {
 		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_LEAVE))
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_LEAVE))
 		};
 
 		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
@@ -629,7 +629,7 @@ namespace JSDXToolkit {
 		o->Set(String::New("time"), Uint32::New(event->motion.time));
 
 		Local<Value> argv[argc] = {
-			Local<Value>::New(Integer::New(NODE_CLUTTER_EVENT_MOTION)),
+			Local<Value>::New(Integer::New(JDDX_TOOLKIT_EVENT_MOTION)),
 			o
 		};
 
@@ -745,22 +745,22 @@ namespace JSDXToolkit {
 		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
 		switch(Event->ToInteger()->Value()) {
-		case NODE_CLUTTER_EVENT_DESTROY:
+		case JDDX_TOOLKIT_EVENT_DESTROY:
 			g_signal_connect(G_OBJECT(instance), "destroy", G_CALLBACK(Actor::_DestroyCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_PRESS:
+		case JDDX_TOOLKIT_EVENT_PRESS:
 			g_signal_connect(G_OBJECT(instance), "button-press-event", G_CALLBACK(Actor::_PressCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_RELEASE:
+		case JDDX_TOOLKIT_EVENT_RELEASE:
 			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_ReleaseCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_LONG_PRESS:
+		case JDDX_TOOLKIT_EVENT_LONG_PRESS:
 			action = clutter_click_action_new();
 			clutter_actor_add_action(instance, action);
 
@@ -783,7 +783,7 @@ namespace JSDXToolkit {
 
 			break;
 
-		case NODE_CLUTTER_EVENT_CLICK:
+		case JDDX_TOOLKIT_EVENT_CLICK:
 			action = clutter_click_action_new();
 			clutter_actor_add_action(instance, action);
 
@@ -791,22 +791,22 @@ namespace JSDXToolkit {
 
 			break;
 
-		case NODE_CLUTTER_EVENT_ENTER:
+		case JDDX_TOOLKIT_EVENT_ENTER:
 			g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Actor::_EnterCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_LEAVE:
+		case JDDX_TOOLKIT_EVENT_LEAVE:
 			g_signal_connect(G_OBJECT(instance), "leave-event", G_CALLBACK(Actor::_LeaveCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_MOTION:
+		case JDDX_TOOLKIT_EVENT_MOTION:
 			g_signal_connect(G_OBJECT(instance), "motion-event", G_CALLBACK(Actor::_MotionCallback), (gpointer)callback);
 
 			break;
 
-		case NODE_CLUTTER_EVENT_DRAG:
+		case JDDX_TOOLKIT_EVENT_DRAG:
 			gint x_threshold = 0;
 			gint y_threshold = 0;
 			ClutterDragAxis axis = CLUTTER_DRAG_AXIS_NONE;
@@ -864,15 +864,15 @@ namespace JSDXToolkit {
 
 		if (args[0]->IsNumber()) {
 			switch(args[0]->ToInteger()->Value()) {
-			case NODE_CLUTTER_EFFECT_CUSTOM:
+			case JDDX_TOOLKIT_EFFECT_CUSTOM:
 				/* TODO: Apply custom effect */
 				break;
 
-			case NODE_CLUTTER_EFFECT_BLUR:
+			case JDDX_TOOLKIT_EFFECT_BLUR:
 				clutter_actor_add_effect(instance, clutter_blur_effect_new());
 				break;
 
-			case NODE_CLUTTER_EFFECT_COLORIZE:
+			case JDDX_TOOLKIT_EFFECT_COLORIZE:
 				if (args[1]->IsObject()) {
 					color.red = args[1]->ToObject()->Get(0)->ToInteger()->Value();
 					color.green = args[1]->ToObject()->Get(1)->ToInteger()->Value();
@@ -883,13 +883,13 @@ namespace JSDXToolkit {
 				}
 				break;
 
-			case NODE_CLUTTER_EFFECT_DESATURATE:
+			case JDDX_TOOLKIT_EFFECT_DESATURATE:
 				if (args[1]->IsNumber()) {
 					clutter_actor_add_effect(instance, clutter_desaturate_effect_new(args[1]->NumberValue()));
 				}
 				break;
 
-			case NODE_CLUTTER_EFFECT_PAGE_TURN:
+			case JDDX_TOOLKIT_EFFECT_PAGE_TURN:
 				if (args[1]->IsObject()) {
 					gdouble period = (gdouble)args[1]->ToObject()->Get(String::New("period"))->NumberValue();
 					gdouble angle = (gdouble)args[1]->ToObject()->Get(String::New("angle"))->NumberValue();
@@ -1014,15 +1014,15 @@ namespace JSDXToolkit {
 			timeline = clutter_animation_get_timeline(animation);
 			if (timeline) {
 				switch(args[0]->ToInteger()->Value()) {
-				case NODE_CLUTTER_ANIMATION_PLAY:
+				case JDDX_TOOLKIT_ANIMATION_PLAY:
 					clutter_timeline_start(timeline);
 					break;
 
-				case NODE_CLUTTER_ANIMATION_PAUSE:
+				case JDDX_TOOLKIT_ANIMATION_PAUSE:
 					clutter_timeline_pause(timeline);
 					break;
 
-				case NODE_CLUTTER_ANIMATION_STOP:
+				case JDDX_TOOLKIT_ANIMATION_STOP:
 					clutter_timeline_stop(timeline);
 					break;
 
