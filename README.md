@@ -1,6 +1,6 @@
 jsdx-toolkit
 ---
-A graphic toolkit on JSDX framework. It aims to provide a node.js module for 3D user interface development.
+A graphical toolkit on JSDX framework. It aims to provide a node.js module for 3D user interface development.
 
 
 License

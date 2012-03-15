@@ -1,1 +1,1 @@
-var clutter = module.exports = require('./build/Release/clutter');
+var toolkit = module.exports = require('./build/Release/jsdx-toolkit');

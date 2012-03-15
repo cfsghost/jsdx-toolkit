@@ -30,7 +30,7 @@ def configure(conf):
 def build(bld):
 	obj = bld.new_task_gen("cxx", "shlib", "node_addon")
 	obj.cxxflags = ["-Wall", "-ansi", "-pedantic"]
-	obj.target = "clutter"
+	obj.target = "jsdx-toolkit"
 	obj.source = """
 		src/application.cpp
 		src/window.cpp
@@ -91,7 +91,7 @@ def build(bld):
 
 def shutdown():
 	if Options.commands['clean']:
-		if exists('clutter.node'): unlink('clutter.node')
+		if exists('jsdx-toolkit.node'): unlink('jsdx-toolkit.node')
 	else:
-		if exists('build/default/clutter.node') and not exists('clutter.node'):
-			symlink('build/default/clutter.node', 'clutter.node')
+		if exists('build/default/jsdx-toolkit.node') and not exists('jsdx-toolkit.node'):
+			symlink('build/default/jsdx-toolkit.node', 'jsdx-toolkit.node')

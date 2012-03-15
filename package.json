@@ -1,7 +1,7 @@
 {
-	"name": "clutter",
+	"name": "jsdx-toolkit",
 	"version": "0.0.1",
-	"description": "Node.js binding for Clutter Toolkit",
+	"description": "Graphical toolkit on JSDX framework",
 	"keywords": [
 		"clutter",
 		"gui"
@@ -14,7 +14,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:cfsghost/node-clutter.git"
+		"url": "git@github.com:cfsghost/jsdx-toolkit.git"
 	},
 	"directories": {
 		"tests": "tests"
