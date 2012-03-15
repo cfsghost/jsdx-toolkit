@@ -1,6 +1,6 @@
-node-clutter
+jsdx-toolkit
 ---
-Node.js binding for Clutter Toolkit. It aims to provide a node.js module for 3D user interface development.
+A graphic toolkit on JSDX framework. It aims to provide a node.js module for 3D user interface development.
 
 
 License
@@ -11,16 +11,16 @@ Get Started
 -
 It's easy to write a new application in Node.js:
   
-    var clutter = require('clutter');
+    var toolkit = require('jsdx-toolkit');
     
     /* Create a new application */
-    var app = new clutter.Application('Clutter Application');
+    var app = new toolkit.Application('Clutter Application');
     
     /* Create a new window */
     app.createWindow(function(window) {
     
       /* Quit current application when this window is destroyed */
-      window.on(clutter.EVENT_DESTORY, function() {
+      window.on(toolkit.EVENT_DESTORY, function() {
         app.quit();
       });
 
