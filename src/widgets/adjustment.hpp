@@ -5,7 +5,7 @@
 #include <node.h>
 #include <mx/mx.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Adjustment : public node::ObjectWrap {
 public:

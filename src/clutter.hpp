@@ -4,7 +4,7 @@
 #include <v8.h>
 #include <clutter/clutter.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 #define CLUTTER_DEFINE_CONSTANT(target, name, constant)					\
 	(target)->Set(v8::String::NewSymbol(name),							\

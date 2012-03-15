@@ -12,7 +12,7 @@
 #include "scrollable.hpp"
 #include "viewport.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

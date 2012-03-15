@@ -30,7 +30,7 @@ def configure(conf):
 def build(bld):
 	obj = bld.new_task_gen("cxx", "shlib", "node_addon")
 	obj.cxxflags = ["-Wall", "-ansi", "-pedantic"]
-	obj.target = "jsdx-toolkit"
+	obj.target = "jsdx_toolkit"
 	obj.source = """
 		src/application.cpp
 		src/window.cpp
@@ -91,7 +91,7 @@ def build(bld):
 
 def shutdown():
 	if Options.commands['clean']:
-		if exists('jsdx-toolkit.node'): unlink('jsdx-toolkit.node')
+		if exists('jsdx_toolkit.node'): unlink('jsdx_toolkit.node')
 	else:
-		if exists('build/default/jsdx-toolkit.node') and not exists('jsdx-toolkit.node'):
-			symlink('build/default/jsdx-toolkit.node', 'jsdx-toolkit.node')
+		if exists('build/default/jsdx_toolkit.node') and not exists('jsdx_toolkit.node'):
+			symlink('build/default/jsdx_toolkit.node', 'jsdx_toolkit.node')

@@ -5,7 +5,7 @@
 #include <node.h>
 #include "adjustment.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Scrollable : public node::ObjectWrap {
 public:

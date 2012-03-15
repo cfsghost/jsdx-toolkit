@@ -6,7 +6,7 @@
 #include <v8.h>
 #include "widget.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class ProgressBar : public Widget {
 public:

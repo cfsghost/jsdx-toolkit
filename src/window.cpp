@@ -17,7 +17,7 @@
 #include "stage.hpp"
 #include "window.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

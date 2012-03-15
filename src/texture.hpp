@@ -4,7 +4,7 @@
 #include <v8.h>
 #include <node.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	typedef enum {
 		NODE_CLUTTER_TEXTURE_EVENT_LOAD_FINISHED = 100

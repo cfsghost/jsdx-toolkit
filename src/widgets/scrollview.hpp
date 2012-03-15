@@ -4,7 +4,7 @@
 #include <clutter/clutter.h>
 #include <v8.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class ScrollView : public Bin {
 public:

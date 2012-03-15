@@ -6,7 +6,7 @@
 #include <v8.h>
 #include "widget.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Button : public Widget {
 public:

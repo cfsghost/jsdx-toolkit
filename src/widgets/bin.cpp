@@ -18,7 +18,7 @@
 #include "widget.hpp"
 #include "bin.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

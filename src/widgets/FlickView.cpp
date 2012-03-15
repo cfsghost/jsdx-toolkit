@@ -9,7 +9,7 @@
 #include "../actor.hpp"
 #include "FlickView.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

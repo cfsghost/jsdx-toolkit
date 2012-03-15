@@ -6,7 +6,7 @@
 #include <node.h>
 #include "actor.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	class Stage : public Actor {
 	public:

@@ -21,7 +21,7 @@
 #include "scrollable.hpp"
 #include "box_layout.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

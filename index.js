@@ -1,1 +1,1 @@
-var toolkit = module.exports = require('./build/Release/jsdx-toolkit');
+var toolkit = module.exports = require('./build/Release/jsdx_toolkit');

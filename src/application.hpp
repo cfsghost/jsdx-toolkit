@@ -7,7 +7,7 @@
 #endif
 #include <v8.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	class Application : public node::ObjectWrap {
 	public:

@@ -6,7 +6,7 @@
 #include <node.h>
 #include <sys/time.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 typedef enum {
 	NODE_CLUTTER_WIDGET_FLICKVIEW_X_AXIS = (1 << 0),

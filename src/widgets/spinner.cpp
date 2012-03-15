@@ -19,7 +19,7 @@
 #include "bin.hpp"
 #include "spinner.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

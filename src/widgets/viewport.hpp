@@ -5,7 +5,7 @@
 #include <v8.h>
 #include "scrollable.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Viewport : public Bin {
 public:

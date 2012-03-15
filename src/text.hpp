@@ -5,7 +5,7 @@
 #include <v8.h>
 #include <node.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	class Text : public Actor {
 	public:

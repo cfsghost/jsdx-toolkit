@@ -18,7 +18,7 @@
 #include "bin.hpp"
 #include "scrollview.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

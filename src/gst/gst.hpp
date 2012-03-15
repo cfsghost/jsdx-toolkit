@@ -8,7 +8,7 @@
 #include "../texture.hpp"
 #include "../media.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Gst : public Texture {
 public:

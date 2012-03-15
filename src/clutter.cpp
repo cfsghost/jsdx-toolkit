@@ -35,7 +35,7 @@
 #include "widgets/FlickView.hpp"
 #endif
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;
@@ -347,7 +347,7 @@ namespace clutter {
 			ContextInit();
 		}
 
-		NODE_MODULE(clutter, init);
+		NODE_MODULE(jsdx_toolkit, init);
 	}
 
 }

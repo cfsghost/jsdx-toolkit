@@ -13,7 +13,7 @@
 #include "actor.hpp"
 #include "rectangle.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;

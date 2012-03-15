@@ -4,7 +4,7 @@
 #include <v8.h>
 #include <node.h>
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	class Group : public Container {
 	public:

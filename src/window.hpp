@@ -8,7 +8,7 @@
 #include <v8.h>
 #include "stage.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 	class Window : public Stage {
 	public:

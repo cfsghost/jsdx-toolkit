@@ -5,7 +5,7 @@
 #include <v8.h>
 #include "widget.hpp"
 
-namespace clutter {
+namespace JSDXToolkit {
 
 class Bin : public Widget {
 public:
