@@ -34,7 +34,7 @@ def build(bld):
 	obj.source = """
 		src/application.cpp
 		src/window.cpp
-		src/clutter.cpp
+		src/jsdx_toolkit.cpp
 		src/actor.cpp
 		src/media.cpp
 		src/container.cpp

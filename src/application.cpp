@@ -5,7 +5,7 @@
 	#include <mx/mx.h>
 #endif
 
-#include "clutter.hpp"
+#include "jsdx_toolkit.hpp"
 #include "application.hpp"
 #include "window.hpp"
 

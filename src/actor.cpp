@@ -10,7 +10,7 @@
 #include <clutter/clutter.h>
 #include <string.h>
 
-#include "clutter.hpp"
+#include "jsdx_toolkit.hpp"
 #include "actor.hpp"
 
 namespace JSDXToolkit {

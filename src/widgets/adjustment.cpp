@@ -10,7 +10,7 @@
 #include <clutter/clutter.h>
 #include <mx/mx.h>
 
-#include "../clutter.hpp"
+#include "../jsdx_toolkit.hpp"
 #include "adjustment.hpp"
 
 namespace JSDXToolkit {

@@ -9,7 +9,7 @@
 #include <node.h>
 #include <clutter/clutter.h>
 
-#include "clutter.hpp"
+#include "jsdx_toolkit.hpp"
 #include "actor.hpp"
 #include "container.hpp"
 #include "group.hpp"

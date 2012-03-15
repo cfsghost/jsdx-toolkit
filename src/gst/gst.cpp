@@ -10,7 +10,7 @@
 #include <clutter/clutter.h>
 #include <clutter-gst/clutter-gst.h>
 
-#include "../clutter.hpp"
+#include "../jsdx_toolkit.hpp"
 #include "../actor.hpp"
 #include "gst.hpp"
 

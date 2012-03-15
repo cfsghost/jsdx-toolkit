@@ -13,7 +13,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "../clutter.hpp"
+#include "../jsdx_toolkit.hpp"
 #include "../actor.hpp"
 #include "bin.hpp"
 #include "scrollable.hpp"
