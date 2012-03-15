@@ -1,14 +1,14 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-clutter.useARGB(true);
+toolkit.useARGB(true);
 
-if (clutter.init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'This is a new stage';
 console.log(stage.title);
 stage.useAlpha(true);
@@ -17,12 +17,12 @@ stage.resize(500, 500);
 stage.setColor(255, 0, 0, 255);
 stage.setCursor(false);
 
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 
 stage.show();
 stage.hide();
 stage.showAll();
 
-clutter.main();
+toolkit.main();

@@ -1,27 +1,27 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-if (clutter.gst_init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.gst_init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'VideoTexture';
 stage.resize(400, 300);
 stage.setColor(0, 0, 0, 255);
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 stage.show();
 
 /* Create a video texture */
-var video = new clutter.GstVideoTexture;
+var video = new toolkit.GstVideoTexture;
 video.setPosition(50, 50);
 video.loadFile('jushelf-demo.ogv');
-video.rotate(clutter.Y_AXIS, 30, 0, 0, 0);
+video.rotate(toolkit.Y_AXIS, 30, 0, 0, 0);
 stage.add(video);
 
 video.play();
 
-clutter.main();
+toolkit.main();

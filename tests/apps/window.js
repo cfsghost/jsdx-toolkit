@@ -1,9 +1,9 @@
-var clutter = require('../../index');
+var toolkit = require('../../index');
 
-var app = new clutter.Application('Test Application');
+var app = new toolkit.Application('Test Application');
 
 app.createWindow(function(window) {
-	window.on(clutter.EVENT_DESTROY, function() {
+	window.on(toolkit.EVENT_DESTROY, function() {
 		app.quit();
 	});
 
@@ -13,7 +13,7 @@ app.createWindow(function(window) {
 	window.show();
 
 	/* Label Widget */
-	var label = new clutter.Widget.Label('Label!!');
+	var label = new toolkit.Widget.Label('Label!!');
 	window.setChild(label);
 });
 

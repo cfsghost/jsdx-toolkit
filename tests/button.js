@@ -1,29 +1,29 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-if (clutter.init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'Button Widget';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 stage.show();
 
 /* Button Widget */
-var button = new clutter.Widget.Button('I am a button');
+var button = new toolkit.Widget.Button('I am a button');
 console.log(button.label);
 stage.add(button);
 
 /* Button Widget */
-var button2 = new clutter.Widget.Button();
+var button2 = new toolkit.Widget.Button();
 button2.label = 'second button!';
 button2.y = 50;
 stage.add(button2);
 
-clutter.main();
+toolkit.main();

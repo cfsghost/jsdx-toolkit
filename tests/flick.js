@@ -1,21 +1,21 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-if (clutter.init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'Flick';
 stage.resize(1000, 800);
 stage.setColor(0, 0, 0, 255);
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 stage.show();
 
-var texture1 = new clutter.Texture;
+var texture1 = new toolkit.Texture;
 texture1.loadFile('fred.jpg');
 texture1.opacity = 150;
 texture1.reactive = true;
@@ -38,32 +38,32 @@ var lastTimestampX;
 var lastTimestampY;
 
 /* Do not speed up with long press */
-texture1.on(clutter.EVENT_LONG_PRESS, { duration: stopFactor }, function(ev, data) {
+texture1.on(toolkit.EVENT_LONG_PRESS, { duration: stopFactor }, function(ev, data) {
 	switch(data.state) {
-	case clutter.ACTION_STATE_LONG_PRESS_QUERY:
+	case toolkit.ACTION_STATE_LONG_PRESS_QUERY:
 		return true;
 
-	case clutter.ACTION_STATE_LONG_PRESS_ACTIVATE:
+	case toolkit.ACTION_STATE_LONG_PRESS_ACTIVATE:
 		targetDx = 0;
 		targetDy = 0;
 		return true;
 
-	case clutter.ACTION_STATE_LONG_PRESS_CANCEL:
+	case toolkit.ACTION_STATE_LONG_PRESS_CANCEL:
 		return false;
 
 	}
 
 });
 
-texture1.on(clutter.EVENT_PRESS, function(ev, data) {
-	texture1.setAnimate(clutter.ANIMATION_PAUSE);
+texture1.on(toolkit.EVENT_PRESS, function(ev, data) {
+	texture1.setAnimate(toolkit.ANIMATION_PAUSE);
 	timeX = new Date().getTime();
 	timeY = timeX;
 	dx = 0;
 	dy = 0;
 });
 
-texture1.on(clutter.EVENT_DRAG, function(ev, data) {
+texture1.on(toolkit.EVENT_DRAG, function(ev, data) {
 	var durationX;
 	var durationY;
 
@@ -91,7 +91,7 @@ texture1.on(clutter.EVENT_DRAG, function(ev, data) {
 		targetDx += Math.round(1000 / durationX) * dx;
 		targetDy += Math.round(1000 / durationY) * dy;
 
-		texture1.animate(clutter.EASE_OUT_CUBIC, 1000, {
+		texture1.animate(toolkit.EASE_OUT_CUBIC, 1000, {
 			x: texture1.x + targetDx * deceleration,
 			y: texture1.y + targetDy * deceleration
 		});
@@ -129,12 +129,12 @@ texture1.on(clutter.EVENT_DRAG, function(ev, data) {
 	}
 });
 
-var texture2 = new clutter.Texture;
+var texture2 = new toolkit.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
 texture2.reactive = true;
-texture2.on(clutter.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
+texture2.on(toolkit.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
 	console.log(ev);
 	console.log(data);
 });
@@ -142,4 +142,4 @@ stage.add(texture2);
 
 //console.log(texture2.getX);
 
-clutter.main();
+toolkit.main();

@@ -1,61 +1,61 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-if (clutter.init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'State Manchine';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 stage.show();
 
 /* Create two actors */
-var texture1 = new clutter.Texture;
+var texture1 = new toolkit.Texture;
 texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.reactive = true;
-texture1.scale(0.5, 0.5, clutter.GRAVITY_CENTER);
+texture1.scale(0.5, 0.5, toolkit.GRAVITY_CENTER);
 stage.add(texture1);
 
-var texture2 = new clutter.Texture;
+var texture2 = new toolkit.Texture;
 texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
-texture2.scale(0.5, 0.5, clutter.GRAVITY_CENTER);
+texture2.scale(0.5, 0.5, toolkit.GRAVITY_CENTER);
 stage.add(texture2);
 
 /* Create state manchine */
-var state = new clutter.State(400);
+var state = new toolkit.State(400);
 state.set('focus', [
-	[ texture1, 'scale-x', clutter.EASE_OUT_CUBIC, 1.0 ],
-	[ texture1, 'scale-y', clutter.EASE_OUT_CUBIC, 1.0 ],
-	[ texture2, 'scale-x', clutter.EASE_OUT_CUBIC, 1.5 ],
-	[ texture2, 'scale-y', clutter.EASE_OUT_CUBIC, 1.5 ]
+	[ texture1, 'scale-x', toolkit.EASE_OUT_CUBIC, 1.0 ],
+	[ texture1, 'scale-y', toolkit.EASE_OUT_CUBIC, 1.0 ],
+	[ texture2, 'scale-x', toolkit.EASE_OUT_CUBIC, 1.5 ],
+	[ texture2, 'scale-y', toolkit.EASE_OUT_CUBIC, 1.5 ]
 ]);
 
 state.set('blur', [
-	[ texture1, 'scale-x', clutter.EASE_OUT_CUBIC, 0.5 ],
-	[ texture1, 'scale-y', clutter.EASE_OUT_CUBIC, 0.5 ],
-	[ texture2, 'scale-x', clutter.EASE_OUT_CUBIC, 0.5 ],
-	[ texture2, 'scale-y', clutter.EASE_OUT_CUBIC, 0.5 ]
+	[ texture1, 'scale-x', toolkit.EASE_OUT_CUBIC, 0.5 ],
+	[ texture1, 'scale-y', toolkit.EASE_OUT_CUBIC, 0.5 ],
+	[ texture2, 'scale-x', toolkit.EASE_OUT_CUBIC, 0.5 ],
+	[ texture2, 'scale-y', toolkit.EASE_OUT_CUBIC, 0.5 ]
 ]);
 
-texture1.on(clutter.EVENT_ENTER, function(ev) {
+texture1.on(toolkit.EVENT_ENTER, function(ev) {
 	state.setState('focus');
 
 	return true;
 });
 
-texture1.on(clutter.EVENT_LEAVE, function(ev) {
+texture1.on(toolkit.EVENT_LEAVE, function(ev) {
 	state.setState('blur');
 
 	return true;
 });
 
 
-clutter.main();
+toolkit.main();

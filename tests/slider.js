@@ -1,23 +1,23 @@
-var clutter = require('../index');
+var toolkit = require('../index');
 
-if (clutter.init() != clutter.INIT_SUCCESS) {
-	console.log("Failed to initialize clutter.");
+if (toolkit.init() != toolkit.INIT_SUCCESS) {
+	console.log("Failed to initialize toolkit.");
 	process.exit();
 }
 
 /* Create a new stage */
-var stage = new clutter.Stage();
+var stage = new toolkit.Stage();
 stage.title = 'Slider Widget';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(clutter.EVENT_DESTROY, function() {
-	clutter.quit();
+stage.on(toolkit.EVENT_DESTROY, function() {
+	toolkit.quit();
 });
 stage.show();
 
 /* Slider Widget */
-var slider = new clutter.Widget.Slider();
+var slider = new toolkit.Widget.Slider();
 stage.add(slider);
 slider.value = 0.1;
 
-clutter.main();
+toolkit.main();
