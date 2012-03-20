@@ -31,7 +31,7 @@ It's the simple way to write a new application in Node.js:
     app.createWindow(function(window) {
     
       /* Quit current application when this window is destroyed */
-      window.on(toolkit.EVENT_DESTORY, function() {
+      window.on(toolkit.EVENT_DESTROY, function() {
         app.quit();
       });
 
