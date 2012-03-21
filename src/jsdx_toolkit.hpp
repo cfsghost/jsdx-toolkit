@@ -6,7 +6,7 @@
 
 namespace JSDXToolkit {
 
-#define CLUTTER_DEFINE_CONSTANT(target, name, constant)					\
+#define JSDX_TOOLKIT_DEFINE_CONSTANT(target, name, constant)					\
 	(target)->Set(v8::String::NewSymbol(name),							\
 	v8::Integer::New(constant),											\
 	static_cast<v8::PropertyAttribute>(v8::ReadOnly|v8::DontDelete))
