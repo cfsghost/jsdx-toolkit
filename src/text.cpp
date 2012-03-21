@@ -37,10 +37,11 @@ namespace JSDXToolkit {
 		Actor::PrototypeMethodsInit(tpl);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Text::SetColor);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "getColor", Text::GetColor);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setText", Text::SetText);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "getText", Text::GetText);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "setFontName", Text::SetFontName);
 		NODE_SET_PROTOTYPE_METHOD(tpl, "getFontName", Text::GetFontName);
+
+		/* Accessor */
+		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("text"), Text::TextGetter, Text::TextSetter);
 
 		target->Set(name, tpl->GetFunction());
 	}
@@ -70,6 +71,29 @@ namespace JSDXToolkit {
 		}
 
 		return scope.Close(args.This());
+	}
+
+	/* Accessor */
+	Handle<Value> Text::TextGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			String::New(clutter_text_get_text(CLUTTER_TEXT(instance)))
+		);
+	}
+
+	void Text::TextSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsString()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_text_set_text(CLUTTER_TEXT(instance), *String::Utf8Value(value->ToString()));
+		}
 	}
 
 	Handle<Value> Text::SetColor(const Arguments &args)
@@ -109,31 +133,6 @@ namespace JSDXToolkit {
 		o->Set(String::New("a"), Integer::New(color.alpha));
 
 		return scope.Close(o);
-	}
-
-	Handle<Value> Text::SetText(const Arguments &args)
-	{
-		HandleScope scope;
-		static ClutterColor color;
-
-		if (args[0]->IsString()) {
-			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-			clutter_text_set_text(CLUTTER_TEXT(instance), *String::Utf8Value(args[0]->ToString()));
-		}
-
-		return args.This();
-	}
-
-	Handle<Value> Text::GetText(const Arguments &args)
-	{
-		HandleScope scope;
-
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-		return scope.Close(
-			String::New(clutter_text_get_text(CLUTTER_TEXT(instance)))
-		);
 	}
 
 	Handle<Value> Text::SetFontName(const Arguments &args)
