@@ -81,6 +81,10 @@ namespace JSDXToolkit {
 		ScrollView::Initialize(ClassObject);
 		KineticScrollView::Initialize(ClassObject);
 
+		/* Constants */
+		CLUTTER_DEFINE_CONSTANT(ClassObject, "ORIENTATION_HORIZONTAL", JDDX_TOOLKIT_WIDGET_ORIENTATION_HORIZONTAL);
+		CLUTTER_DEFINE_CONSTANT(ClassObject, "ORIENTATION_VERTICAL", JDDX_TOOLKIT_WIDGET_ORIENTATION_VERTICAL);
+
 		ClassObject->Set(name, tpl->GetFunction());
 	}
 

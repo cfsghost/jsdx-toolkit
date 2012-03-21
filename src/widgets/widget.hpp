@@ -4,6 +4,11 @@
 #include <clutter/clutter.h>
 #include <v8.h>
 
+typedef enum {
+	JDDX_TOOLKIT_WIDGET_ORIENTATION_HORIZONTAL,
+	JDDX_TOOLKIT_WIDGET_ORIENTATION_VERTICAL
+} JSDXToolkitWidgetOrientation;
+
 namespace JSDXToolkit {
 
 class Widget : public Actor {

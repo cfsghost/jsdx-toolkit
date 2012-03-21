@@ -58,6 +58,7 @@ namespace JSDXToolkit {
 		Container::PrototypeMethodsInit(constructor_template);
 
 		/* Accessor */
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("orientation"), BoxLayout::OrientationGetter, BoxLayout::OrientationSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("spacing"), BoxLayout::SpacingGetter, BoxLayout::SpacingSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("enableAnimations"), BoxLayout::EnableAnimationsGetter, BoxLayout::EnableAnimationsSetter);
 
@@ -88,6 +89,28 @@ namespace JSDXToolkit {
 	}
 
 	/* Accessor */
+	Handle<Value> BoxLayout::OrientationGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+		return scope.Close(
+			Integer::New(mx_box_layout_get_orientation(MX_BOX_LAYOUT(instance)))
+		);
+	}
+
+	void BoxLayout::OrientationSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+			mx_box_layout_set_orientation(MX_BOX_LAYOUT(instance), (MxOrientation)value->ToInteger()->Value());
+		}
+	}
+
 	Handle<Value> BoxLayout::SpacingGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
