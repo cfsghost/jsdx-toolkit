@@ -1,5 +1,5 @@
-#ifndef JDDX_TOOLKIT_WIDGET_SPINNER_H_
-#define JDDX_TOOLKIT_WIDGET_SPINNER_H_
+#ifndef JSDX_TOOLKIT_WIDGET_SPINNER_H_
+#define JSDX_TOOLKIT_WIDGET_SPINNER_H_
 
 #include <clutter/clutter.h>
 #include <mx/mx.h>

@@ -38,7 +38,7 @@ namespace JSDXToolkit {
 		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "QUALITY_HIGH", CLUTTER_TEXTURE_QUALITY_HIGH);
 
 		/* Event */
-		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_LOAD_FINISHED", JDDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED);
+		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_LOAD_FINISHED", JSDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED);
 
 		/* Methods */
 		PrototypeMethodsInit(tpl);
@@ -218,7 +218,7 @@ namespace JSDXToolkit {
 		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
 		switch(Event->ToInteger()->Value()) {
-		case JDDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED:
+		case JSDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED:
 	//		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
 			break;
 		}

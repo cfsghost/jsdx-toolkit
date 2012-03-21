@@ -1,5 +1,5 @@
-#ifndef JDDX_TOOLKIT_WIDGET_BOX_LAYOUT_H_
-#define JDDX_TOOLKIT_WIDGET_BOX_LAYOUT_H_
+#ifndef JSDX_TOOLKIT_WIDGET_BOX_LAYOUT_H_
+#define JSDX_TOOLKIT_WIDGET_BOX_LAYOUT_H_
 
 #include <clutter/clutter.h>
 #include <mx/mx.h>

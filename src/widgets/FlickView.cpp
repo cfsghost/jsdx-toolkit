@@ -19,10 +19,10 @@ namespace JSDXToolkit {
 
 		/* Initializing parameters */
 		ClipArea = True;
-		Mode = JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_FREE_STYLE;
+		Mode = JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_FREE_STYLE;
 		Deceleration = 0.2;
 		StopFactor = 100;
-		Axis = JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS | JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
+		Axis = JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS | JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
 		Threshold = 100;
 
 		/* Initializing variable */
@@ -73,11 +73,11 @@ namespace JSDXToolkit {
 		/* Methods */
 		FlickView::PrototypeMethodsInit(tpl);
 
-		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
-		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
+		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "MODE_FREE_STYLE", JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_FREE_STYLE);
+		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "MODE_PAGE_STYLE", JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE);
 
-		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_DRAG_BEGIN", JDDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN);
-		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_ANIMATION_COMPLETED", JDDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED);
+		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_DRAG_BEGIN", JSDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN);
+		JSDX_TOOLKIT_DEFINE_CONSTANT(tpl, "EVENT_ANIMATION_COMPLETED", JSDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED);
 
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("clipArea"), FlickView::ClipAreaGetter, FlickView::ClipAreaSetter);
 		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("mode"), FlickView::ModeGetter, FlickView::ModeSetter);
@@ -242,7 +242,7 @@ namespace JSDXToolkit {
 
 
 		return scope.Close(
-			Boolean::New((flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) ? True : False)
+			Boolean::New((flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) ? True : False)
 		);
 	}
 
@@ -254,9 +254,9 @@ namespace JSDXToolkit {
 			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
 
 			if (value->ToBoolean()->Value()) {
-				flickview->Axis |= JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS;
+				flickview->Axis |= JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS;
 			} else {
-				flickview->Axis &= ~JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS;
+				flickview->Axis &= ~JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS;
 
 				clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(flickview->_drag_action), CLUTTER_DRAG_Y_AXIS);
 			}
@@ -271,7 +271,7 @@ namespace JSDXToolkit {
 
 
 		return scope.Close(
-			Boolean::New((flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) ? True : False)
+			Boolean::New((flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) ? True : False)
 		);
 	}
 
@@ -283,9 +283,9 @@ namespace JSDXToolkit {
 			FlickView *flickview = ObjectWrap::Unwrap<FlickView>(info.This());
 
 			if (value->ToBoolean()->Value()) {
-				flickview->Axis |= JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
+				flickview->Axis |= JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
 			} else {
-				flickview->Axis &= ~JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
+				flickview->Axis &= ~JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS;
 
 				clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(flickview->_drag_action), CLUTTER_DRAG_X_AXIS);
 			}
@@ -303,7 +303,7 @@ namespace JSDXToolkit {
 		float x = TargetX;
 		float y = TargetY;
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
 			/* Out of range */
 			if ((x > 0 && x + clutter_actor_get_width(flickview->_innerBox) >= clutter_actor_get_width(flickview->_actor))) {
 				OutOfRange = True;
@@ -323,7 +323,7 @@ namespace JSDXToolkit {
 			}
 		}
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
 			/* Out of range */
 			if (y > 0 && y + clutter_actor_get_height(flickview->_innerBox) >= clutter_actor_get_height(flickview->_actor)) {
 				OutOfRange = True;
@@ -343,7 +343,7 @@ namespace JSDXToolkit {
 		}
 
 		if (OutOfRange) {
-			if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
+			if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
 				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
 					"x", (gfloat)x,
 					"y", (gfloat)y,
@@ -367,10 +367,10 @@ namespace JSDXToolkit {
 		x = clutter_actor_get_x(flickview->_innerBox);
 		y = clutter_actor_get_y(flickview->_innerBox);
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS)
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS)
 			x += flickview->targetDx * flickview->Deceleration;
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS)
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS)
 			y += flickview->targetDy * flickview->Deceleration;
 
 		/* No Out of range */
@@ -388,8 +388,8 @@ namespace JSDXToolkit {
 		float pos;
 		int check;
 
-		if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
-			if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
+		if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
 				flickview->TotalPageX = ceil(clutter_actor_get_width(flickview->_innerBox) / clutter_actor_get_width(flickview->_actor));
 				clutter_actor_set_width(flickview->_innerBox, flickview->TotalPageX * clutter_actor_get_width(flickview->_actor));
 
@@ -403,7 +403,7 @@ namespace JSDXToolkit {
 					flickview->PageX = check;
 			}
 
-			if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
+			if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
 				flickview->TotalPageY = ceil(clutter_actor_get_height(flickview->_innerBox) / clutter_actor_get_height(flickview->_actor));
 				clutter_actor_set_height(flickview->_innerBox, flickview->TotalPageY * clutter_actor_get_height(flickview->_actor));
 
@@ -467,11 +467,11 @@ namespace JSDXToolkit {
 			flickview->dx = flickview->dy = 0;
 			flickview->targetDx = flickview->targetDy = 0;
 
-			if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
-				if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS)
+			if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+				if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS)
 					flickview->targetX = round(flickview->targetX / clutter_actor_get_width(flickview->_actor)) * clutter_actor_get_width(flickview->_actor);
 
-				if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS)
+				if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS)
 					flickview->targetY = round(flickview->targetY / clutter_actor_get_height(flickview->_actor)) * clutter_actor_get_height(flickview->_actor);
 
 				flickview->_animation = clutter_actor_animate(flickview->_innerBox, CLUTTER_EASE_OUT_BACK, 415,
@@ -485,12 +485,12 @@ namespace JSDXToolkit {
 		}
 
 		/* Rate */
-		if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
+		if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE)
 			DistanceRate = 1.0;
 		else
 			DistanceRate = 1 - flickview->Deceleration;
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
 			/* Figure duration  */
 			DurationX = FIGURE_DURATION(flickview->StartTimestampX, currentTime);
 
@@ -503,7 +503,7 @@ namespace JSDXToolkit {
 			FinalDx = flickview->targetDx * DistanceRate;
 
 			/* Page style mode */
-			if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
 				/* Next or previous page */
 				if (fabs(FinalDx) >= flickview->Threshold) {
 					flickview->PageX = flickview->PageX + ((FinalDx > 0) ? -1 : 1);
@@ -524,7 +524,7 @@ namespace JSDXToolkit {
 
 		}
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
 			/* Figure duration  */
 			DurationY = FIGURE_DURATION(flickview->StartTimestampY, currentTime);
 
@@ -537,7 +537,7 @@ namespace JSDXToolkit {
 			FinalDy = flickview->targetDy * DistanceRate;
 
 			/* Page style mode */
-			if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+			if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
 				/* Next or previous page */
 				if (fabs(FinalDy) >= flickview->Threshold) {
 					flickview->PageY = flickview->PageY + ((FinalDy > 0) ? -1 : 1);
@@ -585,7 +585,7 @@ namespace JSDXToolkit {
 		memcpy(&flickview->LastTimestampY, &(flickview->LastTimestampX), sizeof(struct timeval));
 
 		/* Reset delta and timer if they have different sign */
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_X_AXIS) {
 			if (((flickview->dx >= 0 && delta_x >= 0) || (flickview->dx <= 0 && delta_x <= 0)) &&
 				((flickview->targetDx >= 0 && delta_x >= 0) || (flickview->targetDx <= 0 && delta_x <= 0))) {
 				flickview->dx += delta_x;
@@ -596,7 +596,7 @@ namespace JSDXToolkit {
 			}
 		}
 
-		if (flickview->Axis & JDDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
+		if (flickview->Axis & JSDX_TOOLKIT_WIDGET_FLICKVIEW_Y_AXIS) {
 			if (((flickview->dy >= 0 && delta_y >= 0) || (flickview->dy <= 0 && delta_y <= 0)) &&
 				((flickview->targetDy >= 0 && delta_y >= 0) || (flickview->targetDy <= 0 && delta_y <= 0))) {
 				flickview->dy += delta_y;
@@ -620,7 +620,7 @@ namespace JSDXToolkit {
 				clutter_timeline_pause(timeline);
 		}
 
-		if (flickview->Mode == JDDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
+		if (flickview->Mode == JSDX_TOOLKIT_WIDGET_FLICKVIEW_MODE_PAGE_STYLE) {
 			/* Figure page number */
 			FigurePage(flickview);
 
@@ -701,12 +701,12 @@ namespace JSDXToolkit {
 		}
 
 		switch(Event->ToInteger()->Value()) {
-		case JDDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN:
+		case JSDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_DRAG_BEGIN:
 			flickview->_DragBeginCallback = new Persistent<Function>();
 			*(flickview->_DragBeginCallback) = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 			break;
 
-		case JDDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED:
+		case JSDX_TOOLKIT_WIDGET_FLICKVIEW_EVENT_ANIMATION_COMPLETED:
 			flickview->_AnimationCompletedCallback = new Persistent<Function>();
 			*(flickview->_AnimationCompletedCallback) = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 			break;

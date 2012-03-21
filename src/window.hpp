@@ -1,5 +1,5 @@
-#ifndef JDDX_TOOLKIT_WINDOW_H_
-#define JDDX_TOOLKIT_WINDOW_H_
+#ifndef JSDX_TOOLKIT_WINDOW_H_
+#define JSDX_TOOLKIT_WINDOW_H_
 
 #include <clutter/clutter.h>
 #if ENABLE_MX

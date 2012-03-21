@@ -1,5 +1,5 @@
-#ifndef JDDX_TOOLKIT_VIDEO_TEXTURE_H_
-#define JDDX_TOOLKIT_VIDEO_TEXTURE_H_
+#ifndef JSDX_TOOLKIT_VIDEO_TEXTURE_H_
+#define JSDX_TOOLKIT_VIDEO_TEXTURE_H_
 
 #include <v8.h>
 #include <node.h>

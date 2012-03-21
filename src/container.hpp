@@ -1,5 +1,5 @@
-#ifndef JDDX_TOOLKIT_CONTAINER_H_
-#define JDDX_TOOLKIT_CONTAINER_H_
+#ifndef JSDX_TOOLKIT_CONTAINER_H_
+#define JSDX_TOOLKIT_CONTAINER_H_
 
 #include <clutter/clutter.h>
 #include <v8.h>
