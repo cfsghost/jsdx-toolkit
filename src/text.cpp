@@ -33,17 +33,24 @@ namespace JSDXToolkit {
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
 		Local<String> name = String::NewSymbol("Text");
 
-		/* Methods */
-		Actor::PrototypeMethodsInit(tpl);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setColor", Text::SetColor);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "getColor", Text::GetColor);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "setFontName", Text::SetFontName);
-		NODE_SET_PROTOTYPE_METHOD(tpl, "getFontName", Text::GetFontName);
-
-		/* Accessor */
-		tpl->InstanceTemplate()->SetAccessor(String::NewSymbol("text"), Text::TextGetter, Text::TextSetter);
+		PrototypeMethodsInit(tpl);
 
 		target->Set(name, tpl->GetFunction());
+	}
+
+	void Text::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	{
+		/* Inherit */
+		Actor::PrototypeMethodsInit(constructor_template);
+
+		/* Methods */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setColor", Text::SetColor);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getColor", Text::GetColor);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setFontName", Text::SetFontName);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getFontName", Text::GetFontName);
+
+		/* Accessor */
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("text"), Text::TextGetter, Text::TextSetter);
 	}
 
 	/* ECMAScript constructor */

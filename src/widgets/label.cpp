@@ -15,6 +15,7 @@
 
 #include "../jsdx_toolkit.hpp"
 #include "../actor.hpp"
+#include "../text.hpp"
 #include "widget.hpp"
 #include "bin.hpp"
 #include "label.hpp"
