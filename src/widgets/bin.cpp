@@ -8,6 +8,7 @@
 #include <v8.h>
 #include <node.h>
 #include <clutter/clutter.h>
+#include <mx/mx.h>
 #include <sys/time.h>
 #include <string.h>
 #include <math.h>
@@ -45,6 +46,8 @@ namespace JSDXToolkit {
 
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
+
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", Bin::Add);
 	}
 
 	/* ECMAScript constructor */
@@ -65,4 +68,16 @@ namespace JSDXToolkit {
 		return scope.Close(args.This());
 	}
 
+	/* Methods */
+	Handle<Value> Bin::Add(const Arguments &args)
+	{
+		HandleScope scope;
+
+		if (args[0]->IsObject()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Bin>(args.This())->_actor;
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+
+			mx_bin_set_child(MX_BIN(instance), CLUTTER_ACTOR(actor));
+		}
+	}
 }
