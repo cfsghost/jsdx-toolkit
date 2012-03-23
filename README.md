@@ -3,29 +3,33 @@ jsdx-toolkit
 A graphical toolkit on JSDX framework. It aims to provide a node.js module for 3D user interface development.
 
 Installation
----
-With Steps, you can use git version of JSDX toolkit:
+-
+* With Steps, you can get git version of JSDX toolkit:
 
-1. Download source code from github
+    1. Download source code from github
 
-        git clone https://cfsghost@github.com/cfsghost/jsdx-toolkit.git
+            git clone tps://cfsghost@github.com/cfsghost/jsdx-toolkit.git
 
-2. Change directory into folder
+    2. Change directory into folder
 
-        cd jsdx-toolkit
+            cd jsdx-toolkit
 
-3. Configure and compile it
+    3. Configure and compile it
 
-        node-waf configure build
+            node-waf configure build
 
-Get Started
+* The other way, you can install via NPM as well:
+
+        npm install jsdx-toolkit
+
+Getting Started
 -
 It's the simple way to write a new application in Node.js:
   
     var toolkit = require('jsdx-toolkit');
     
     /* Create a new application */
-    var app = new toolkit.Application('Clutter Application');
+    var app = new toolkit.Application('JSDX Application');
     
     /* Create a new window */
     app.createWindow(function(window) {
