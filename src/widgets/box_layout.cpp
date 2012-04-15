@@ -160,12 +160,15 @@ namespace JSDXToolkit {
 	{
 		HandleScope scope;
 
-		if (args[0]->IsObject() && args[1]->IsNumber()) {
-			gint row, col;
+		if (args[0]->IsObject()) {
+			gint index = 0;
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
 
-			mx_box_layout_add_actor(MX_BOX_LAYOUT(instance), CLUTTER_ACTOR(actor), args[1]->ToInteger()->Value());
+			if (args[1]->IsNumber())
+				index = args[1]->ToInteger()->Value();
+
+			mx_box_layout_add_actor(MX_BOX_LAYOUT(instance), CLUTTER_ACTOR(actor), index);
 		}
 
 		return args.This();
