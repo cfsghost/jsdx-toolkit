@@ -36,6 +36,11 @@ namespace JSDXToolkit {
 	struct NodeCallback {
 		v8::Persistent<v8::Object> Holder;
 		v8::Persistent<v8::Function> cb;
+
+		~NodeCallback() {
+			Holder.Dispose();
+			cb.Dispose();
+		}
 	};
 
 }

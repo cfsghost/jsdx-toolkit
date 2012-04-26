@@ -179,9 +179,14 @@ namespace JSDXToolkit {
 	Handle<Value> Actor::Destroy(const Arguments &args)
 	{
 		HandleScope scope;
+		Actor *obj = ObjectWrap::Unwrap<Actor>(args.This());
+		clutter_actor_destroy((ClutterActor *)obj->_actor);
 
-		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-		clutter_actor_destroy(instance);
+		/* release callback function */
+		delete obj->destroy_cb;
+		delete obj->button_press_cb;
+		delete obj->button_release_cb;
+		delete obj->button_clicked_cb;
 
 		return args.This();
 	}
