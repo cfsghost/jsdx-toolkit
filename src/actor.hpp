@@ -30,6 +30,10 @@ namespace JSDXToolkit {
 		ClutterActor *_actor;
 		ClutterAnimation *_animation;
 
+		NodeCallback *destroy_cb;
+		NodeCallback *button_press_cb;
+		NodeCallback *button_release_cb;
+
 	protected:
 		Actor();
 

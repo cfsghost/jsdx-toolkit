@@ -33,6 +33,11 @@ namespace JSDXToolkit {
 		JSDX_TOOLKIT_EFFECT_PAGE_TURN
 	} NodeClutterEffect;
 
+	struct NodeCallback {
+		v8::Persistent<v8::Object> Holder;
+		v8::Persistent<v8::Function> cb;
+	};
+
 }
 
 #endif

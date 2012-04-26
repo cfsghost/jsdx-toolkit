@@ -50,6 +50,11 @@ namespace JSDXToolkit {
 
 		_actor = NULL;
 		_animation = NULL;
+
+		/* Callback function for events */
+		destroy_cb = NULL;
+		button_press_cb = NULL;
+		button_release_cb = NULL;
 	}
 
 	void Actor::Initialize(Handle<Object> target)
@@ -507,15 +512,15 @@ namespace JSDXToolkit {
 	/* Event Dispatcher */
 	void Actor::_DestroyCallback(ClutterActor *actor, gpointer user_data)
 	{
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
-		(*callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+		cb->cb->Call(cb->Holder, 0, NULL);
 	}
 
 	gboolean Actor::_PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -527,7 +532,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -535,7 +540,7 @@ namespace JSDXToolkit {
 	gboolean Actor::_ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -547,7 +552,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -746,17 +751,47 @@ namespace JSDXToolkit {
 
 		switch(Event->ToInteger()->Value()) {
 		case JSDX_TOOLKIT_EVENT_DESTROY:
-			g_signal_connect(G_OBJECT(instance), "destroy", G_CALLBACK(Actor::_DestroyCallback), (gpointer)callback);
+			if (!obj->destroy_cb) {
+				obj->destroy_cb = new NodeCallback();
+			} else {
+				obj->destroy_cb->Holder.Dispose();
+				obj->destroy_cb->cb.Dispose();
+			}
+
+			obj->destroy_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->destroy_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "destroy", G_CALLBACK(Actor::_DestroyCallback), (gpointer)obj->destroy_cb);
 
 			break;
 
 		case JSDX_TOOLKIT_EVENT_PRESS:
-			g_signal_connect(G_OBJECT(instance), "button-press-event", G_CALLBACK(Actor::_PressCallback), (gpointer)callback);
+			if (!obj->button_press_cb) {
+				obj->button_press_cb = new NodeCallback();
+			} else {
+				obj->button_press_cb->Holder.Dispose();
+				obj->button_press_cb->cb.Dispose();
+			}
+
+			obj->button_press_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->button_press_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "button-press-event", G_CALLBACK(Actor::_PressCallback), (gpointer)obj->button_press_cb);
 
 			break;
 
 		case JSDX_TOOLKIT_EVENT_RELEASE:
-			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_ReleaseCallback), (gpointer)callback);
+			if (!obj->button_release_cb) {
+				obj->button_release_cb = new NodeCallback();
+			} else {
+				obj->button_release_cb->Holder.Dispose();
+				obj->button_release_cb->cb.Dispose();
+			}
+
+			obj->button_release_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->button_release_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_PressCallback), (gpointer)obj->button_release_cb);
 
 			break;
 

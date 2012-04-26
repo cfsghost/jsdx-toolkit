@@ -33,6 +33,12 @@ texture2.loadFileSync('fred.jpg');
 texture2.setPosition(200, 150);
 texture2.rotate(30, toolkit.GRAVITY_CENTER);
 texture2.reactive = true;
+texture2.on(toolkit.EVENT_PRESS, function(ev) {
+	console.log('Pressed texture2!');
+});
+texture2.on(toolkit.EVENT_RELEASE, function(ev) {
+	console.log('Released texture2!');
+});
 texture2.on(toolkit.EVENT_CLICK, function(ev) {
 	console.log('Clicked texture2!');
 });
