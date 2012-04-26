@@ -55,6 +55,7 @@ namespace JSDXToolkit {
 		destroy_cb = NULL;
 		button_press_cb = NULL;
 		button_release_cb = NULL;
+		button_clicked_cb = NULL;
 	}
 
 	void Actor::Initialize(Handle<Object> target)
@@ -560,13 +561,13 @@ namespace JSDXToolkit {
 	void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
 	{
 		const unsigned argc = 1;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_CLICK))
 		};
 
-		(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		cb->cb->Call(cb->Holder, argc, argv);
 	}
 
 	gboolean Actor::_LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data)
@@ -822,7 +823,17 @@ namespace JSDXToolkit {
 			action = clutter_click_action_new();
 			clutter_actor_add_action(instance, action);
 
-			g_signal_connect(action, "clicked", G_CALLBACK(Actor::_ClickActionCallback), (gpointer)callback);
+			if (!obj->button_clicked_cb) {
+				obj->button_clicked_cb = new NodeCallback();
+			} else {
+				obj->button_clicked_cb->Holder.Dispose();
+				obj->button_clicked_cb->cb.Dispose();
+			}
+
+			obj->button_clicked_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->button_clicked_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(action, "clicked", G_CALLBACK(Actor::_ClickActionCallback), (gpointer)obj->button_clicked_cb);
 
 			break;
 

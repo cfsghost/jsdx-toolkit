@@ -33,6 +33,7 @@ namespace JSDXToolkit {
 		NodeCallback *destroy_cb;
 		NodeCallback *button_press_cb;
 		NodeCallback *button_release_cb;
+		NodeCallback *button_clicked_cb;
 
 	protected:
 		Actor();
