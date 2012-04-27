@@ -45,6 +45,8 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "quit", Application::Quit);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Application::Add);
 
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadStyleFile", Application::LoadStyleFile);
+
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("isRunning"), Application::IsRunningGetter, Application::IsRunningSetter);
 	}
 
@@ -124,6 +126,17 @@ namespace JSDXToolkit {
 		mx_application_add_window(application->_application, window->_window);
 #endif
 
+		return args.This();
+	}
+
+	Handle<Value> Application::LoadStyleFile(const Arguments &args)
+	{
+		HandleScope scope;
+#if ENABLE_MX
+		if (args[0]->IsString()) {
+			mx_style_load_from_file(mx_style_get_default(), *String::Utf8Value(args[0]->ToString()), NULL);
+		}
+#endif
 		return args.This();
 	}
 }
