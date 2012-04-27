@@ -58,6 +58,21 @@ namespace JSDXToolkit {
 		button_clicked_cb = NULL;
 	}
 
+	Actor::~Actor() {
+		if (_actor) {
+			if (_animation)
+				clutter_actor_detach_animation((ClutterActor *)_actor);
+
+			clutter_actor_destroy((ClutterActor *)_actor);
+		}
+
+		/* release callback function */
+		delete destroy_cb;
+		delete button_press_cb;
+		delete button_release_cb;
+		delete button_clicked_cb;
+	}
+
 	void Actor::Initialize(Handle<Object> target)
 	{
 		HandleScope scope;
@@ -181,14 +196,12 @@ namespace JSDXToolkit {
 		HandleScope scope;
 		Actor *obj = ObjectWrap::Unwrap<Actor>(args.This());
 		clutter_actor_destroy((ClutterActor *)obj->_actor);
+		obj->_actor = NULL;
+		obj->_animation = NULL;
 
-		/* release callback function */
-		delete obj->destroy_cb;
-		delete obj->button_press_cb;
-		delete obj->button_release_cb;
-		delete obj->button_clicked_cb;
+		obj->Unref();
 
-		return args.This();
+		return Undefined();
 	}
 
 	Handle<Value> Actor::Show(const Arguments &args)
