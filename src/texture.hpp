@@ -15,7 +15,6 @@ namespace JSDXToolkit {
 		static void Initialize(v8::Handle<v8::Object> target);
 		static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 
-		v8::Persistent<v8::Function> *LoadFinishedFunc;
 		NodeCallback *load_finished_cb;
 
 	protected:
