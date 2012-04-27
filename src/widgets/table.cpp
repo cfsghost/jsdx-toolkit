@@ -61,7 +61,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rowSpacing"), Table::RowSpacingGetter, Table::RowSpacingSetter);
 
 		/* Methods */
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", Table::Add);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Table::Add);
 	}
 
 	/* ECMAScript constructor */

@@ -47,7 +47,7 @@ namespace JSDXToolkit {
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", Bin::Add);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Bin::Add);
 	}
 
 	/* ECMAScript constructor */

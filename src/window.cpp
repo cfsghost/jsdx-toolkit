@@ -66,7 +66,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rotation"), Window::RotationGetter, Window::RotationSetter);
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setChild", Window::SetChild);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", Window::SetChild);
 	}
 
 	Local<Object> Window::New(void)

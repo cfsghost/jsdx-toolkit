@@ -63,7 +63,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("enableAnimations"), BoxLayout::EnableAnimationsGetter, BoxLayout::EnableAnimationsSetter);
 
 		/* Methods */
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "add", BoxLayout::Add);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", BoxLayout::Add);
 	}
 
 	/* ECMAScript constructor */

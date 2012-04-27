@@ -50,7 +50,7 @@ namespace JSDXToolkit {
 		Bin::PrototypeMethodsInit(constructor_template);
 
 		/* Methods */
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setTransientParent", Dialog::SetTransientParent);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setTransientParent", Dialog::SetTransientParent);
 	}
 
 	/* ECMAScript constructor */
