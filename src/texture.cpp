@@ -22,7 +22,7 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		_actor = NULL;
-		LoadFinishedFunc = new Persistent<Function>();
+		load_finished_cb = NULL;
 	}
 
 	void Texture::Initialize(Handle<Object> target)
@@ -101,7 +101,16 @@ namespace JSDXToolkit {
 			Texture *texture = ObjectWrap::Unwrap<Texture>(args.This());
 
 			if (args[1]->IsFunction()) {
-				*(texture->LoadFinishedFunc) = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+				if (!texture->load_finished_cb) {
+					texture->load_finished_cb = new NodeCallback();
+				} else {
+					texture->load_finished_cb->Holder.Dispose();
+					texture->load_finished_cb->cb.Dispose();
+				}
+
+				texture->load_finished_cb->Holder = Persistent<Object>::New(args.Holder());
+				texture->load_finished_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+
 				_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), True);
 			} else {
 				_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), False);
@@ -177,9 +186,11 @@ namespace JSDXToolkit {
 	void Texture::_LoadFinishedCallback(ClutterTexture *tex, GError *error, gpointer user_data)
 	{
 		Texture *texture = (Texture *)user_data;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(texture->LoadFinishedFunc);
+		texture->load_finished_cb->cb->Call(texture->load_finished_cb->Holder, 0, NULL);
 
-		(*callback)->Call(Context::GetCurrent()->Global(), 0, 0);
+		delete texture->load_finished_cb;
+
+		texture->load_finished_cb = NULL;
 	}
 
 	Handle<Value> Texture::On(const Arguments &args)
