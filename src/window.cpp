@@ -17,6 +17,10 @@
 #include "stage.hpp"
 #include "window.hpp"
 
+#if ENABLE_MX
+#include "widgets/style.hpp"
+#endif
+
 namespace JSDXToolkit {
  
 	using namespace node;

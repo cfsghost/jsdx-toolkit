@@ -23,6 +23,12 @@ protected:
 
 	static v8::Handle<v8::Value> DisabledGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 	static void DisabledSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+	static v8::Handle<v8::Value> ClassNameGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+	static void ClassNameSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+	/* Methods */
+	static v8::Handle<v8::Value> ApplyStyle(const v8::Arguments& args);
 };
 
 }

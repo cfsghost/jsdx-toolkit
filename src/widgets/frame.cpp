@@ -46,6 +46,7 @@ namespace JSDXToolkit {
 	{
 		HandleScope scope;
 
+		Widget::PrototypeMethodsInit(constructor_template);
 		Bin::PrototypeMethodsInit(constructor_template);
 	}
 

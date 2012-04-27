@@ -39,6 +39,7 @@ namespace JSDXToolkit {
 		constructor->SetClassName(name);
 
 		/* Methods */
+		Widget::PrototypeMethodsInit(constructor);
 		Bin::PrototypeMethodsInit(constructor);
 
 		target->Set(name, constructor->GetFunction());

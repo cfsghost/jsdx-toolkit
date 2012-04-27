@@ -67,6 +67,7 @@ namespace JSDXToolkit {
 		Table::Initialize(ClassObject);
 		Adjustment::Initialize(ClassObject);
 		Scrollable::Initialize(ClassObject);
+		//Stylable::Initialize(ClassObject);
 		Button::Initialize(ClassObject);
 		Entry::Initialize(ClassObject);
 		Frame::Initialize(ClassObject);
@@ -95,6 +96,9 @@ namespace JSDXToolkit {
 		Actor::PrototypeMethodsInit(constructor_template);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("disabled"), Widget::DisabledGetter, Widget::DisabledSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("className"), Widget::ClassNameGetter, Widget::ClassNameSetter);
+
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "applyStyle", Widget::ApplyStyle);
 	}
 
 	/* ECMAScript constructor */
@@ -135,5 +139,42 @@ namespace JSDXToolkit {
 
 			mx_widget_set_disabled(MX_WIDGET(instance), value->ToBoolean()->Value());
 		}
+	}
+
+	Handle<Value> Widget::ClassNameGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			String::New(mx_stylable_get_style_class(MX_STYLABLE(instance)))
+		);
+	}
+
+	void Widget::ClassNameSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsString()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			mx_stylable_set_style_class(MX_STYLABLE(instance), *String::Utf8Value(value->ToString()));
+		}
+	}
+
+	/* Methods */
+	Handle<Value> Widget::ApplyStyle(const Arguments& args)
+	{
+		HandleScope scope;
+
+		if (args[0]->IsObject()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+			MxStyle *style = ObjectWrap::Unwrap<Style>(args[0]->ToObject())->_style;
+
+			mx_stylable_set_style(MX_STYLABLE(instance), MX_STYLE(style));
+		}
+
+		return args.This();
 	}
 }
