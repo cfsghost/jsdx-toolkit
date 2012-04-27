@@ -19,6 +19,7 @@ namespace JSDXToolkit {
 
 	protected:
 		Texture();
+		~Texture();
 
 		static v8::Handle<v8::Value> New(const v8::Arguments& args);
 

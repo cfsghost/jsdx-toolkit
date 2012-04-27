@@ -25,6 +25,10 @@ namespace JSDXToolkit {
 		load_finished_cb = NULL;
 	}
 
+	Texture::~Texture() {
+		delete load_finished_cb;
+	}
+
 	void Texture::Initialize(Handle<Object> target)
 	{
 		HandleScope scope;

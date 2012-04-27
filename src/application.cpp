@@ -43,7 +43,7 @@ namespace JSDXToolkit {
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "run", Application::Run);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "quit", Application::Quit);
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "createWindow", Application::CreateWindow);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Application::Add);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("isRunning"), Application::IsRunningGetter, Application::IsRunningSetter);
 	}
@@ -113,28 +113,16 @@ namespace JSDXToolkit {
 		return Undefined();
 	}
 
-	Handle<Value> Application::CreateWindow(const Arguments &args)
+	Handle<Value> Application::Add(const Arguments &args)
 	{
 		HandleScope scope;
 
-		if (args[0]->IsFunction()) {
-			Application *application = ObjectWrap::Unwrap<Application>(args.This());
-			Persistent<Function> *callback = new Persistent<Function>();
-			*callback = Persistent<Function>::New(Handle<Function>::Cast(args[0]));
-
-			/* Create a new window */
-			Local<Object> WindowObject = Window::New();
-			Window *window = ObjectWrap::Unwrap<Window>(WindowObject);
 #if ENABLE_MX
-			mx_application_add_window(application->_application, window->_window);
-#endif
-			/* Prepare arguments */
-			Local<Value> argv[1] = {
-				scope.Close(WindowObject)
-			};
+		Application *application = ObjectWrap::Unwrap<Application>(args.This());
+		Window *window = ObjectWrap::Unwrap<Window>(args[0]->ToObject());
 
-			(*callback)->Call(args.This(), 1, argv);
-		}
+		mx_application_add_window(application->_application, window->_window);
+#endif
 
 		return args.This();
 	}

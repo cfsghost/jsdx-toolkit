@@ -51,3 +51,18 @@ function setTransientParent(_parent) {
 	_parent.actor_list.push(this);
 	this._setTransientParent(_parent);
 }
+
+/* Application */
+toolkit.Application.prototype.window_list = [];
+toolkit.Application.prototype.add = function(window) {
+	toolkit.Application.prototype.window_list.push(window);
+	this._add(window);
+};
+
+toolkit.Application.prototype.createWindow = function(callback) {
+	var window = new toolkit.Window();
+	this.add(window);
+
+	if (callback)
+		callback(window);
+};
