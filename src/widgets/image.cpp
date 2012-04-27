@@ -26,8 +26,6 @@ namespace JSDXToolkit {
 
 	Image::Image() : Widget() {
 		_actor = mx_image_new();
-
-		ImageLoadedFunc = new Persistent<Function>();
 	}
 
 	void Image::Initialize(Handle<Object> target)
@@ -71,7 +69,7 @@ namespace JSDXToolkit {
 		return scope.Close(args.This());
 	}
 
-	void Image::_LoadFile(Image *image, const char *filename, ImageCallback *imgcb)
+	void Image::_LoadFile(Image *image, const char *filename, NodeCallback *imgcb)
 	{
 		CoglHandle cogltex;
 		MxImage *instance = MX_IMAGE(image->_actor);
@@ -94,9 +92,9 @@ namespace JSDXToolkit {
 
 			if (args[1]->IsFunction()) {
 				/* Create a callback object */
-				ImageCallback *imgcb = new ImageCallback();
-				imgcb->object = image;
-				imgcb->callback = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+				NodeCallback *imgcb = new NodeCallback();
+				imgcb->Holder = Persistent<Object>::New(args.Holder());
+				imgcb->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
 				_LoadFile(image, *String::Utf8Value(args[0]->ToString()), imgcb);
 
@@ -111,17 +109,15 @@ namespace JSDXToolkit {
 	/* Event Handlers */
 	void Image::_ImageLoadedCallback(MxImage *img, gpointer user_data)
 	{
-		ImageCallback *imgcb = (ImageCallback *)user_data;
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		TryCatch try_catch;
-		imgcb->callback->Call(Context::GetCurrent()->Global(), 0, 0);
+		cb->cb->Call(cb->Holder, 0, NULL);
 		if (try_catch.HasCaught()) {
 			node::FatalException(try_catch);
 		}
 
-		imgcb->callback.Dispose();
-
-		delete imgcb;
+		delete cb;
 	}
 
 }
