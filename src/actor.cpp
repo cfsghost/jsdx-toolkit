@@ -56,6 +56,10 @@ namespace JSDXToolkit {
 		button_press_cb = NULL;
 		button_release_cb = NULL;
 		button_clicked_cb = NULL;
+		enter_cb = NULL;
+		leave_cb = NULL;
+		motion_cb = NULL;
+		drag_cb = NULL;
 	}
 
 	Actor::~Actor() {
@@ -71,6 +75,10 @@ namespace JSDXToolkit {
 		delete button_press_cb;
 		delete button_release_cb;
 		delete button_clicked_cb;
+		delete long_press_cb;
+		delete enter_cb;
+		delete leave_cb;
+		delete motion_cb;
 	}
 
 	void Actor::Initialize(Handle<Object> target)
@@ -592,7 +600,7 @@ namespace JSDXToolkit {
 	{
 		const unsigned argc = 2;
 		gfloat x, y;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* Get position */
 		clutter_click_action_get_coords(action, &x, &y);
@@ -608,7 +616,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -616,13 +624,13 @@ namespace JSDXToolkit {
 	gboolean Actor::_EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
 	{
 		const unsigned argc = 1;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_ENTER))
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -630,13 +638,13 @@ namespace JSDXToolkit {
 	gboolean Actor::_LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
 	{
 		const unsigned argc = 1;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_LEAVE))
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -644,7 +652,7 @@ namespace JSDXToolkit {
 	gboolean Actor::_MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -657,7 +665,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		Local<Value> ret = (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
 
 		return (*ret)->IsTrue();
 	}
@@ -670,7 +678,7 @@ namespace JSDXToolkit {
 		gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -683,7 +691,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		cb->cb->Call(cb->Holder, argc, argv);
 	}
 
 	void Actor::_DragActionEndCallback(ClutterClickAction *action,
@@ -694,7 +702,7 @@ namespace JSDXToolkit {
 		gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -707,7 +715,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		cb->cb->Call(cb->Holder, argc, argv);
 	}
 
 	void Actor::_DragActionMotionCallback(ClutterClickAction *action,
@@ -717,7 +725,7 @@ namespace JSDXToolkit {
 		gpointer user_data)
 	{
 		const unsigned argc = 2;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
@@ -729,7 +737,7 @@ namespace JSDXToolkit {
 			o
 		};
 
-		(*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+		cb->cb->Call(cb->Holder, argc, argv);
 	}
 
 	Handle<Value> Actor::On(const Arguments &args)
@@ -763,10 +771,6 @@ namespace JSDXToolkit {
 			return ThrowException(Exception::TypeError(
 				String::New("Second argument must be a callback function")));
 		}
-
-		/* Get callback function */
-		Persistent<Function> *callback = new Persistent<Function>();
-		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
 		switch(Event->ToInteger()->Value()) {
 		case JSDX_TOOLKIT_EVENT_DESTROY:
@@ -818,6 +822,16 @@ namespace JSDXToolkit {
 			action = clutter_click_action_new();
 			clutter_actor_add_action(instance, action);
 
+			if (!obj->long_press_cb) {
+				obj->long_press_cb = new NodeCallback();
+			} else {
+				obj->long_press_cb->Holder.Dispose();
+				obj->long_press_cb->cb.Dispose();
+			}
+
+			obj->long_press_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->long_press_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
 			/* Get duration, threshold */
 			if (args.Length() == 3 && Options->IsObject()) {
 				Local<Value> OptionValue;
@@ -833,7 +847,7 @@ namespace JSDXToolkit {
 				}
 			}
 
-			g_signal_connect(action, "long-press", G_CALLBACK(Actor::_LongPressActionCallback), (gpointer)callback);
+			g_signal_connect(action, "long-press", G_CALLBACK(Actor::_LongPressActionCallback), (gpointer)obj->long_press_cb);
 
 			break;
 
@@ -856,17 +870,47 @@ namespace JSDXToolkit {
 			break;
 
 		case JSDX_TOOLKIT_EVENT_ENTER:
-			g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Actor::_EnterCallback), (gpointer)callback);
+			if (!obj->enter_cb) {
+				obj->enter_cb = new NodeCallback();
+			} else {
+				obj->enter_cb->Holder.Dispose();
+				obj->enter_cb->cb.Dispose();
+			}
+
+			obj->enter_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->enter_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "enter-event", G_CALLBACK(Actor::_EnterCallback), (gpointer)obj->enter_cb);
 
 			break;
 
 		case JSDX_TOOLKIT_EVENT_LEAVE:
-			g_signal_connect(G_OBJECT(instance), "leave-event", G_CALLBACK(Actor::_LeaveCallback), (gpointer)callback);
+			if (!obj->leave_cb) {
+				obj->leave_cb = new NodeCallback();
+			} else {
+				obj->leave_cb->Holder.Dispose();
+				obj->leave_cb->cb.Dispose();
+			}
+
+			obj->leave_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->leave_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "leave-event", G_CALLBACK(Actor::_LeaveCallback), (gpointer)obj->leave_cb);
 
 			break;
 
 		case JSDX_TOOLKIT_EVENT_MOTION:
-			g_signal_connect(G_OBJECT(instance), "motion-event", G_CALLBACK(Actor::_MotionCallback), (gpointer)callback);
+			if (!obj->motion_cb) {
+				obj->motion_cb = new NodeCallback();
+			} else {
+				obj->motion_cb->Holder.Dispose();
+				obj->motion_cb->cb.Dispose();
+			}
+
+			obj->motion_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->motion_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "motion-event", G_CALLBACK(Actor::_MotionCallback), (gpointer)obj->motion_cb);
 
 			break;
 
@@ -896,9 +940,19 @@ namespace JSDXToolkit {
 			clutter_drag_action_set_drag_axis(CLUTTER_DRAG_ACTION(action), axis);
 			clutter_actor_add_action(instance, action);
 
-			g_signal_connect(G_OBJECT(action), "drag-begin", G_CALLBACK(Actor::_DragActionBeginCallback), (gpointer)callback);
-			g_signal_connect(G_OBJECT(action), "drag-end", G_CALLBACK(Actor::_DragActionEndCallback), (gpointer)callback);
-			g_signal_connect(G_OBJECT(action), "drag-motion", G_CALLBACK(Actor::_DragActionMotionCallback), (gpointer)callback);
+			if (!obj->drag_cb) {
+				obj->drag_cb = new NodeCallback();
+			} else {
+				obj->drag_cb->Holder.Dispose();
+				obj->drag_cb->cb.Dispose();
+			}
+
+			obj->drag_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->drag_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(action), "drag-begin", G_CALLBACK(Actor::_DragActionBeginCallback), (gpointer)obj->drag_cb);
+			g_signal_connect(G_OBJECT(action), "drag-end", G_CALLBACK(Actor::_DragActionEndCallback), (gpointer)obj->drag_cb);
+			g_signal_connect(G_OBJECT(action), "drag-motion", G_CALLBACK(Actor::_DragActionMotionCallback), (gpointer)obj->drag_cb);
 
 			break;
 
