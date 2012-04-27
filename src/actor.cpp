@@ -1025,16 +1025,17 @@ namespace JSDXToolkit {
 	/* Animate */
 	void Actor::_AnimationCompletedCallback(ClutterAnimation *animation, gpointer user_data)
 	{
-		HandleScope scope;
-		Persistent<Function> *callback = reinterpret_cast<Persistent<Function>*>(user_data);
+		NodeCallback *cb = (NodeCallback *)user_data;
 
-		(*callback)->Call(Context::GetCurrent()->Global(), 0, NULL);
+		cb->cb->Call(cb->Holder, 0, NULL);
+
+		delete cb;
 	}
 
 	Handle<Value> Actor::Animate(const Arguments &args)
 	{
 		HandleScope scope;
-		Persistent<Function> *callback;
+		NodeCallback *cb = NULL;
 		GValue value = {0};
 		ClutterTimeline *timeline;
 		ClutterAnimation *animation;
@@ -1054,9 +1055,10 @@ namespace JSDXToolkit {
 
 		if (args.Length() > 3) {
 			if (args[args.Length() - 1]->IsFunction()) {
-				/* Get callback function */
-				callback = new Persistent<Function>();
-				*callback = Persistent<Function>::New(Handle<Function>::Cast(args[args.Length() - 1]));
+
+				cb = new NodeCallback();
+				cb->Holder = Persistent<Object>::New(args.Holder());
+				cb->cb = Persistent<Function>::New(Handle<Function>::Cast(args[args.Length() - 1]));
 			}
 		}
 
@@ -1081,8 +1083,9 @@ namespace JSDXToolkit {
 			clutter_animation_set_mode(animation, args[0]->ToInteger()->Value());
 			clutter_animation_set_duration(animation, args[1]->ToInteger()->Value());
 
-			if (args[args.Length() - 1]->IsFunction())
-				g_signal_connect(G_OBJECT(animation), "completed", G_CALLBACK(_AnimationCompletedCallback), callback);
+			/* Callback function */
+			if (cb)
+				g_signal_connect(G_OBJECT(animation), "completed", G_CALLBACK(_AnimationCompletedCallback), cb);
 
 			/* Options */
 			if (args[3]->IsObject()) {
