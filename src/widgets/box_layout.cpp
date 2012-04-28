@@ -161,7 +161,7 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		if (args[0]->IsObject()) {
-			gint index = 0;
+			gint index = -1;
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
 
