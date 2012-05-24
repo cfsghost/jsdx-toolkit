@@ -84,8 +84,8 @@ def build(bld):
 			src/widgets/viewport.cpp
 			src/widgets/scrollview.cpp
 			src/widgets/kinetic_scrollview.cpp
-			src/widgets/FlickView.cpp
 			"""
+#			src/widgets/FlickView.cpp
 
 		obj.uselib += " MX"
 

@@ -32,7 +32,7 @@
 
 #if ENABLE_WIDGET
 #include "widgets/widget.hpp"
-#include "widgets/FlickView.hpp"
+//#include "widgets/FlickView.hpp"
 #endif
 
 namespace JSDXToolkit {
@@ -341,7 +341,7 @@ namespace JSDXToolkit {
 
 #if ENABLE_WIDGET
 			Widget::Initialize(target);
-			FlickView::Initialize(target);
+//			FlickView::Initialize(target);
 #endif
 
 			ContextInit();

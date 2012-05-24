@@ -1,4 +1,6 @@
 var toolkit = module.exports = require('./build/Release/jsdx_toolkit');
+toolkit.JTKML = require('./lib/jtkml');
+toolkit.UIRender = require('./lib/ui-render');
 
 /* Increasse reference to avoid GC to recycle */
 toolkit.Group.prototype.actor_list = [];
@@ -16,8 +18,13 @@ function add() {
 }
 
 /* Window */
+toolkit.Window.prototype.type = 'Window';
+toolkit.Window.prototype.uiObj = {};
+toolkit.Window.prototype.application = null;
 toolkit.Window.prototype.actor_list = [];
 toolkit.Window.prototype.setChild = setChild;
+toolkit.Window.prototype.add = setChild;
+toolkit.Window.prototype.renderUI = renderUI;
 
 function setChild(child) {
 	this.actor_list.push(child);
@@ -47,16 +54,21 @@ toolkit.Widget.Frame.prototype.add = add;
 toolkit.Widget.Dialog.prototype.actor_list = [];
 toolkit.Widget.Dialog.prototype.add = add;
 toolkit.Widget.Dialog.prototype.setTransientParent = setTransientParent;
+
 function setTransientParent(_parent) {
 	_parent.actor_list.push(this);
 	this._setTransientParent(_parent);
 }
 
 /* Application */
+toolkit.Application.prototype.uiObj = {};
 toolkit.Application.prototype.window_list = [];
+toolkit.Application.prototype.object_list = [];
 toolkit.Application.prototype.add = function(window) {
 	toolkit.Application.prototype.window_list.push(window);
 	this._add(window);
+
+	window.application = this;
 };
 
 toolkit.Application.prototype.createWindow = function(callback) {
@@ -66,3 +78,13 @@ toolkit.Application.prototype.createWindow = function(callback) {
 	if (callback)
 		callback(window);
 };
+
+toolkit.Application.prototype.renderUI = renderUI;
+
+function renderUI(uiObj) {
+	this.uiObj = uiObj;
+
+	for (var index in uiObj.roots) {
+		this.add(uiObj.roots[index]);
+	}
+}
