@@ -288,5 +288,8 @@ toolkit.Application.prototype.renderUI = function(structure) {
 }
 
 toolkit.Application.prototype.getWidgetById = function(id) {
-	return this.widget[id];
+	if (id in this.widget)
+		return this.widget[id];
+
+	throw Error('No such widget');
 };

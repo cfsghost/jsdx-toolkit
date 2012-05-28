@@ -7,6 +7,7 @@ JTKML.loadFile('test.jtkml', function(structure) {
 	app.renderUI(structure);
 
 	app.getWidgetById('window1').show();
+	app.getWidgetById('window2').show();
 });
 
 app.run();

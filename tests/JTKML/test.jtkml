@@ -1,4 +1,9 @@
-Window(id='window1', title='JTKML Window')
+Window(id='window1', title='JTKML Window 1')
+	BoxLayout
+		Button(label='This is a button')
+		Label(text='This is a Label')
+
+Window(id='window2', title='JTKML Window 2')
 	BoxLayout
 		Button(label='This is a button')
 		Label(text='This is a Label')
