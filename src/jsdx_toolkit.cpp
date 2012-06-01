@@ -323,7 +323,7 @@ namespace JSDXToolkit {
 
 			/* Application */
 			Application::Initialize(target);
-			Window::Initialize(target);
+			JSDXWindow::Initialize(target);
 
 			Actor::Initialize(target);
 			Container::Initialize(target);

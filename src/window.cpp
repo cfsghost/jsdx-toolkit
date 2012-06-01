@@ -7,6 +7,12 @@
 
 #include <v8.h>
 #include <node.h>
+
+#if USE_X11
+#include <clutter/x11/clutter-x11.h>
+#include "backend/x11.hpp"
+#endif
+
 #include <clutter/clutter.h>
 #if ENABLE_MX
 	#include <mx/mx.h>
@@ -26,9 +32,9 @@ namespace JSDXToolkit {
 	using namespace node;
 	using namespace v8;
 
-	Persistent<FunctionTemplate> Window::constructor;
+	Persistent<FunctionTemplate> JSDXWindow::constructor;
 
-	Window::Window() : Stage()
+	JSDXWindow::JSDXWindow() : Stage()
 	{
 		/* Create a new stage */
 		_actor = clutter_stage_new();
@@ -40,9 +46,13 @@ namespace JSDXToolkit {
 		/* No toolbar by default */
 		mx_window_set_has_toolbar(MX_WINDOW(_window), FALSE);
 #endif
+
+#if USE_X11
+		hasDecorator = TRUE;
+#endif
 	}
 
-	void Window::Initialize(Handle<Object> target)
+	void JSDXWindow::Initialize(Handle<Object> target)
 	{
 		HandleScope scope;
 
@@ -54,36 +64,39 @@ namespace JSDXToolkit {
 		constructor->SetClassName(name);
 
 		/* Methods */
-		Window::PrototypeMethodsInit(constructor);
+		JSDXWindow::PrototypeMethodsInit(constructor);
 
 		target->Set(name, constructor->GetFunction());
 	}
 
-	void Window::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
+	void JSDXWindow::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	{
 		HandleScope scope;
 
 		Stage::PrototypeMethodsInit(constructor_template);
 
-		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), Window::WidthGetter, Window::WidthSetter);
-		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Window::HeightGetter, Window::HeightSetter);
-		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), Window::HasToolbarGetter, Window::HasToolbarSetter);
-		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rotation"), Window::RotationGetter, Window::RotationSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), JSDXWindow::WidthGetter, JSDXWindow::WidthSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), JSDXWindow::HeightGetter, JSDXWindow::HeightSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), JSDXWindow::HasToolbarGetter, JSDXWindow::HasToolbarSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rotation"), JSDXWindow::RotationGetter, JSDXWindow::RotationSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasDecorator"), JSDXWindow::HasDecoratorGetter, JSDXWindow::HasDecoratorSetter);
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", Window::SetChild);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", JSDXWindow::SetChild);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", JSDXWindow::Show);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", JSDXWindow::ShowAll);
 	}
 
-	Local<Object> Window::New(void)
+	Local<Object> JSDXWindow::New(void)
 	{
-		Local<Object> ObjectInstance = Window::constructor->GetFunction()->NewInstance();
-		Window* obj = new Window();
+		Local<Object> ObjectInstance = JSDXWindow::constructor->GetFunction()->NewInstance();
+		JSDXWindow* obj = new JSDXWindow();
 		obj->Wrap(ObjectInstance);
 
 		return ObjectInstance;
 	}
 
 	/* ECMAScript constructor */
-	Handle<Value> Window::New(const Arguments& args)
+	Handle<Value> JSDXWindow::New(const Arguments& args)
 	{
 		HandleScope scope;
 
@@ -94,18 +107,18 @@ namespace JSDXToolkit {
 		}
 
 		// Creates a new instance object of this type and wraps it.
-		Window* obj = new Window();
+		JSDXWindow* obj = new JSDXWindow();
 		obj->Wrap(args.This());
 
 		return scope.Close(args.This());
 	}
 
 	/* Accessors */
-	Handle<Value> Window::WidthGetter(Local<String> name, const AccessorInfo& info)
+	Handle<Value> JSDXWindow::WidthGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
-		Window *window = ObjectWrap::Unwrap<Window>(info.This());
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
 		gint width, height;
@@ -117,12 +130,12 @@ namespace JSDXToolkit {
 #endif
 	}
 
-	void Window::WidthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	void JSDXWindow::WidthSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 		if (value->IsNumber()) {
-			Window *window = ObjectWrap::Unwrap<Window>(info.This());
+			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
 			gint width, height;
@@ -137,11 +150,11 @@ namespace JSDXToolkit {
 		}
 	}
 
-	Handle<Value> Window::HeightGetter(Local<String> name, const AccessorInfo& info)
+	Handle<Value> JSDXWindow::HeightGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
-		Window *window = ObjectWrap::Unwrap<Window>(info.This());
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
 		gint width, height;
@@ -153,12 +166,12 @@ namespace JSDXToolkit {
 #endif
 	}
 
-	void Window::HeightSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	void JSDXWindow::HeightSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 		if (value->IsNumber()) {
-			Window *window = ObjectWrap::Unwrap<Window>(info.This());
+			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
 			gint width, height;
@@ -173,12 +186,12 @@ namespace JSDXToolkit {
 		}
 	}
 
-	Handle<Value> Window::HasToolbarGetter(Local<String> name, const AccessorInfo& info)
+	Handle<Value> JSDXWindow::HasToolbarGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 #if ENABLE_MX
-		MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+		MxWindow *instance = ObjectWrap::Unwrap<JSDXWindow>(info.This())->_window;
 
 		return scope.Close(
 			Boolean::New(mx_window_get_has_toolbar(MX_WINDOW(instance)))
@@ -188,25 +201,62 @@ namespace JSDXToolkit {
 #endif
 	}
 
-	void Window::HasToolbarSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	void JSDXWindow::HasToolbarSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 #if ENABLE_MX
 		if (value->IsBoolean()) {
-			MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+			MxWindow *instance = ObjectWrap::Unwrap<JSDXWindow>(info.This())->_window;
 
 			mx_window_set_has_toolbar(MX_WINDOW(instance), value->ToBoolean()->Value());
 		}
 #endif
 	}
 
-	Handle<Value> Window::RotationGetter(Local<String> name, const AccessorInfo& info)
+	Handle<Value> JSDXWindow::HasDecoratorGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if USE_X11
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+
+		return scope.Close(Boolean::New(window->hasDecorator));
+#else
+		return scope.Close(Boolean::New(True));
+#endif
+
+	}
+
+	void JSDXWindow::HasDecoratorSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if USE_X11
+		if (value->IsBoolean()) {
+			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			window->hasDecorator = value->ToBoolean()->Value();
+
+			/* If window was realized, take off its decorator now */
+			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+				Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+				Display *disp = clutter_x11_get_default_display();
+
+				X11::setWindowDecorator(disp, w, window->hasDecorator);
+			}
+		}
+#endif
+
+	}
+
+	Handle<Value> JSDXWindow::RotationGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 #if ENABLE_MX
-		MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+		MxWindow *instance = ObjectWrap::Unwrap<JSDXWindow>(info.This())->_window;
 
 		switch(mx_window_get_window_rotation(MX_WINDOW(instance))) {
 		case MX_WINDOW_ROTATION_0:
@@ -229,13 +279,13 @@ namespace JSDXToolkit {
 #endif
 	}
 
-	void Window::RotationSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	void JSDXWindow::RotationSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
 	{
 		HandleScope scope;
 
 #if ENABLE_MX
 		if (value->IsNumber()) {
-			MxWindow *instance = ObjectWrap::Unwrap<Window>(info.This())->_window;
+			MxWindow *instance = ObjectWrap::Unwrap<JSDXWindow>(info.This())->_window;
 
 			switch(value->ToInteger()->Value()) {
 			case 0:
@@ -259,19 +309,52 @@ namespace JSDXToolkit {
 	}
 
 	/* Methods */
-	Handle<Value> Window::SetChild(const Arguments &args)
+	Handle<Value> JSDXWindow::SetChild(const Arguments &args)
 	{
 		HandleScope scope;
 
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
 
 #if ENABLE_MX
-		MxWindow *instance = ObjectWrap::Unwrap<Window>(args.This())->_window;
+		MxWindow *instance = ObjectWrap::Unwrap<JSDXWindow>(args.This())->_window;
 
 		mx_window_set_child(MX_WINDOW(instance), CLUTTER_ACTOR(actor));
 #else
 		Container::Add(args);
 #endif
+
+		return args.This();
+	}
+
+	Handle<Value> JSDXWindow::Show(const Arguments &args)
+	{
+		HandleScope scope;
+
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		clutter_actor_show(actor);
+
+		/* Set Window Decorator */
+		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+		Display *disp = clutter_x11_get_default_display();
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+
+		return args.This();
+	}
+
+	Handle<Value> JSDXWindow::ShowAll(const Arguments &args)
+	{
+		HandleScope scope;
+
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		clutter_actor_show_all(actor);
+
+		/* Set Window Decorator */
+		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+		Display *disp = clutter_x11_get_default_display();
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+
 
 		return args.This();
 	}

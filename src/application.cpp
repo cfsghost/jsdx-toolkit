@@ -121,7 +121,7 @@ namespace JSDXToolkit {
 
 #if ENABLE_MX
 		Application *application = ObjectWrap::Unwrap<Application>(args.This());
-		Window *window = ObjectWrap::Unwrap<Window>(args[0]->ToObject());
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args[0]->ToObject());
 
 		mx_application_add_window(application->_application, window->_window);
 #endif

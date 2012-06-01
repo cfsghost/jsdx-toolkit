@@ -10,6 +10,7 @@ def set_options(opt):
 	opt.tool_options("compiler_cxx")
 	opt.add_option('--enable-clutter-gst', action='store', default=1, help='Enable clutter-gst to support multimedia [Default: True]')
 	opt.add_option('--enable-widget', action='store', default=1, help='Enable widget support [Default: True]')
+	opt.add_option('--with-x11', action='store', default=1, help='Enable X11 backend support [Default: True]')
 
 def configure(conf):
 	conf.check_tool("compiler_cxx")
@@ -26,6 +27,11 @@ def configure(conf):
 		conf.env["ENABLE_MX"] = True
 		conf.env["ENABLE_WIDGET"] = True
 		conf.check_cfg(package='mx-1.0', uselib_store='MX', args='--cflags --libs')
+
+	if Options.options.with_x11:
+		print "Enable X11 backend support"
+		conf.env["WITH_X11"] = True
+		conf.check_cfg(package='x11', uselib_store='X11', args='--cflags --libs')
 
 def build(bld):
 	obj = bld.new_task_gen("cxx", "shlib", "node_addon")
@@ -88,6 +94,15 @@ def build(bld):
 #			src/widgets/FlickView.cpp
 
 		obj.uselib += " MX"
+
+	if bld.env["WITH_X11"]:
+		obj.cxxflags.append("-DUSE_X11");
+		obj.source += """
+			src/backend/x11.cpp
+			"""
+
+		obj.uselib += " X11"
+
 
 def shutdown():
 	if Options.commands['clean']:
