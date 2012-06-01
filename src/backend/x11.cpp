@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 
@@ -46,5 +47,47 @@ namespace JSDXToolkit {
 
 		if (hints != &new_hints)
 			XFree(hints);
+	}
+
+	void X11::setWindowType(Display *disp, Window w, X11WindowType wtype)
+	{
+		Atom wt_atom;
+		Atom type_atom;
+
+		switch(wtype) {
+		case X11_WINDOW_TYPE_NORMAL:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+			break;
+		case X11_WINDOW_TYPE_DESKTOP:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+			break;
+		case X11_WINDOW_TYPE_DOCK:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
+			break;
+		case X11_WINDOW_TYPE_TOOLBAR:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+			break;
+		case X11_WINDOW_TYPE_MENU:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_MENU", False);
+			break;
+		case X11_WINDOW_TYPE_UTILITY:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_UTILITY", False);
+			break;
+		case X11_WINDOW_TYPE_SPLASH:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+			break;
+		case X11_WINDOW_TYPE_DIALOG:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+			break;
+		default:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+		}
+
+		wt_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
+
+		XChangeProperty(disp, w,
+			wt_atom,
+			XA_ATOM, 32, PropModeReplace,
+			(unsigned char *)&type_atom, 1);
 	}
 }

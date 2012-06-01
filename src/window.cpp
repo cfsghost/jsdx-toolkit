@@ -37,6 +37,7 @@ namespace JSDXToolkit {
 	JSDXWindow::JSDXWindow() : Stage()
 	{
 		/* Create a new stage */
+		windowType = JSDX_WINDOW_TYPE_NORMAL;
 		_actor = clutter_stage_new();
 		clutter_stage_set_title(CLUTTER_STAGE(_actor), "Default");
 
@@ -80,6 +81,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), JSDXWindow::HasToolbarGetter, JSDXWindow::HasToolbarSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("rotation"), JSDXWindow::RotationGetter, JSDXWindow::RotationSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasDecorator"), JSDXWindow::HasDecoratorGetter, JSDXWindow::HasDecoratorSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("windowType"), JSDXWindow::WindowTypeGetter, JSDXWindow::WindowTypeSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", JSDXWindow::SetChild);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", JSDXWindow::Show);
@@ -251,6 +253,38 @@ namespace JSDXToolkit {
 
 	}
 
+	Handle<Value> JSDXWindow::WindowTypeGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+
+		return scope.Close(Integer::New(window->windowType));
+	}
+
+	void JSDXWindow::WindowTypeSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+
+		if (value->IsNumber()) {
+
+			window->windowType = (JSDXWindowType)value->ToInteger()->Value();
+
+#if USE_X11
+			/* If window was realized, change window type now */
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+				Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+				Display *disp = clutter_x11_get_default_display();
+
+				X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+			}
+#endif
+		}
+	}
+
 	Handle<Value> JSDXWindow::RotationGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
@@ -334,11 +368,14 @@ namespace JSDXToolkit {
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 		clutter_actor_show(actor);
 
-		/* Set Window Decorator */
+#if USE_X11
+		/* Set Window properties */
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
 
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+#endif
 		return args.This();
 	}
 
@@ -350,11 +387,14 @@ namespace JSDXToolkit {
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 		clutter_actor_show_all(actor);
 
-		/* Set Window Decorator */
+#if USE_X11
+		/* Set Window properties */
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
 
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+#endif
 
 		return args.This();
 	}

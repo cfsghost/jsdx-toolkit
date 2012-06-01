@@ -10,12 +10,25 @@
 
 namespace JSDXToolkit {
 
+	typedef enum {
+		JSDX_WINDOW_TYPE_NORMAL,
+		JSDX_WINDOW_TYPE_DESKTOP,
+		JSDX_WINDOW_TYPE_DOCK,
+		JSDX_WINDOW_TYPE_TOOLBAR,
+		JSDX_WINDOW_TYPE_MENU,
+		JSDX_WINDOW_TYPE_UTILITY,
+		JSDX_WINDOW_TYPE_SPLASH,
+		JSDX_WINDOW_TYPE_DIALOG
+	} JSDXWindowType;
+
 	class JSDXWindow : public Stage {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 		static void Initialize(v8::Handle<v8::Object> target);
 		static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 		static v8::Local<v8::Object> New(void);
+
+		JSDXWindowType windowType;
 
 #if ENABLE_MX
 		MxWindow *_window;
@@ -45,6 +58,9 @@ namespace JSDXToolkit {
 
 		static v8::Handle<v8::Value> HasDecoratorGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 		static void HasDecoratorSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+		static v8::Handle<v8::Value> WindowTypeGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+		static void WindowTypeSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 		/* Methods */
 		static v8::Handle<v8::Value> SetChild(const v8::Arguments& args);

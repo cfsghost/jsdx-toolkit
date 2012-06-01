@@ -29,8 +29,6 @@ namespace JSDXToolkit {
 
 	namespace X11 {
 
-		void setWindowDecorator(Display *disp, Window w, bool enabled);
-
 		typedef struct {
 			long flags;
 			long functions;
@@ -39,6 +37,19 @@ namespace JSDXToolkit {
 			long state;
 		} MotifWmHints;
 
+		typedef enum {
+			X11_WINDOW_TYPE_NORMAL,
+			X11_WINDOW_TYPE_DESKTOP,
+			X11_WINDOW_TYPE_DOCK,
+			X11_WINDOW_TYPE_TOOLBAR,
+			X11_WINDOW_TYPE_MENU,
+			X11_WINDOW_TYPE_UTILITY,
+			X11_WINDOW_TYPE_SPLASH,
+			X11_WINDOW_TYPE_DIALOG
+		} X11WindowType;
+
+		void setWindowDecorator(Display *disp, Window w, bool enabled);
+		void setWindowType(Display *disp, Window w, X11WindowType wtype);
 	}
 
 }
