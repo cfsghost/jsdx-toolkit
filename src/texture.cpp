@@ -115,9 +115,9 @@ namespace JSDXToolkit {
 				texture->load_finished_cb->Holder = Persistent<Object>::New(args.Holder());
 				texture->load_finished_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
-				_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), True);
+				Texture::_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), TRUE);
 			} else {
-				_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), False);
+				Texture::_LoadFile(texture, *String::Utf8Value(args[0]->ToString()), FALSE);
 			}
 		}
 
