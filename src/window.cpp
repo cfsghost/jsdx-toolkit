@@ -37,6 +37,8 @@ namespace JSDXToolkit {
 	JSDXWindow::JSDXWindow() : Stage()
 	{
 		/* Create a new stage */
+		x = -1;
+		y = -1;
 		windowType = JSDX_WINDOW_TYPE_NORMAL;
 		_actor = clutter_stage_new();
 		clutter_stage_set_title(CLUTTER_STAGE(_actor), "Default");
@@ -76,6 +78,8 @@ namespace JSDXToolkit {
 
 		Stage::PrototypeMethodsInit(constructor_template);
 
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("x"), JSDXWindow::XGetter, JSDXWindow::XSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("y"), JSDXWindow::YGetter, JSDXWindow::YSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("width"), JSDXWindow::WidthGetter, JSDXWindow::WidthSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), JSDXWindow::HeightGetter, JSDXWindow::HeightSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasToolbar"), JSDXWindow::HasToolbarGetter, JSDXWindow::HasToolbarSetter);
@@ -342,6 +346,106 @@ namespace JSDXToolkit {
 #endif
 	}
 
+	Handle<Value> JSDXWindow::XGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+		MxWindow *instance = window->_window;
+		mx_window_get_window_position(instance, &(window->x), &(window->y));
+
+		return scope.Close(
+			Number::New(window->x)
+		);
+#else
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Number::New(clutter_actor_get_x(CLUTTER_ACTOR(instance)))
+		);
+#endif
+	}
+
+	Handle<Value> JSDXWindow::YGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+#if ENABLE_MX
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+		MxWindow *instance = window->_window;
+		mx_window_get_window_position(instance, &(window->x), &(window->y));
+
+		return scope.Close(
+			Number::New(window->y)
+		);
+#else
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Number::New(clutter_actor_get_y(CLUTTER_ACTOR(instance)))
+		);
+#endif
+	}
+
+	void JSDXWindow::XSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+#if ENABLE_MX
+			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+			MxWindow *instance = window->_window;
+			gint x, y;
+
+			window->x = value->ToInteger()->Value();
+
+			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+				mx_window_get_window_position(instance, &x, &y);
+
+				if (window->y < 0)
+					window->y = y;
+
+				mx_window_set_window_position(instance, window->x, window->y);
+			}
+#else
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_x(CLUTTER_ACTOR(instance), value->NumberValue());
+#endif
+		}
+	}
+
+	void JSDXWindow::YSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+#if ENABLE_MX
+			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+			MxWindow *instance = window->_window;
+			gint x, y;
+
+			window->y = value->ToInteger()->Value();
+
+			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+				mx_window_get_window_position(instance, &x, &y);
+
+				if (window->x < 0)
+					window->x = x;
+
+				mx_window_set_window_position(instance, window->x, window->y);
+			}
+#else
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_y(CLUTTER_ACTOR(instance), value->NumberValue());
+#endif
+		}
+	}
+
 	/* Methods */
 	Handle<Value> JSDXWindow::SetChild(const Arguments &args)
 	{
@@ -376,6 +480,22 @@ namespace JSDXToolkit {
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
 #endif
+
+#if ENABLE_MX
+		/* Set position if it was changed before realized */
+		MxWindow *instance = window->_window;
+		gint x, y;
+
+		mx_window_get_window_position(instance, &x, &y);
+		if (window->x < 0)
+			window->x = x;
+
+		if (window->y < 0)
+			window->y = y;
+
+		mx_window_set_window_position(instance, window->x, window->y);
+#endif
+
 		return args.This();
 	}
 
@@ -394,6 +514,21 @@ namespace JSDXToolkit {
 
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+#endif
+
+#if ENABLE_MX
+		/* Set position if it was changed before realized */
+		MxWindow *instance = window->_window;
+		gint x, y;
+
+		mx_window_get_window_position(instance, &x, &y);
+		if (window->x < 0)
+			window->x = x;
+
+		if (window->y < 0)
+			window->y = y;
+
+		mx_window_set_window_position(instance, window->x, window->y);
 #endif
 
 		return args.This();
