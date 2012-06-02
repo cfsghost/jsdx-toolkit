@@ -401,7 +401,7 @@ namespace JSDXToolkit {
 
 			window->x = value->ToInteger()->Value();
 
-			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+			if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
 				mx_window_get_window_position(instance, &x, &y);
 
 				if (window->y < 0)
@@ -430,7 +430,7 @@ namespace JSDXToolkit {
 
 			window->y = value->ToInteger()->Value();
 
-			if (clutter_actor_get_flags(actor) & CLUTTER_ACTOR_REALIZED) {
+			if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
 				mx_window_get_window_position(instance, &x, &y);
 
 				if (window->x < 0)
@@ -470,6 +470,7 @@ namespace JSDXToolkit {
 
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		clutter_actor_realize(actor);
 		clutter_actor_show(actor);
 
 #if USE_X11
