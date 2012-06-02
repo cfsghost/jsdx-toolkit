@@ -470,32 +470,36 @@ namespace JSDXToolkit {
 
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-		clutter_actor_realize(actor);
-		clutter_actor_show(actor);
+
+		if (!CLUTTER_ACTOR_IS_REALIZED(actor)) {
+			clutter_actor_realize(actor);
 
 #if USE_X11
-		/* Set Window properties */
-		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
-		Display *disp = clutter_x11_get_default_display();
+			/* Set Window properties */
+			Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+			Display *disp = clutter_x11_get_default_display();
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
-		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+			X11::setWindowDecorator(disp, w, window->hasDecorator);
+			X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
 #endif
 
 #if ENABLE_MX
-		/* Set position if it was changed before realized */
-		MxWindow *instance = window->_window;
-		gint x, y;
+			/* Set position if it was changed before realized */
+			MxWindow *instance = window->_window;
+			gint x, y;
 
-		mx_window_get_window_position(instance, &x, &y);
-		if (window->x < 0)
-			window->x = x;
+			mx_window_get_window_position(instance, &x, &y);
+			if (window->x < 0)
+				window->x = x;
 
-		if (window->y < 0)
-			window->y = y;
+			if (window->y < 0)
+				window->y = y;
 
-		mx_window_set_window_position(instance, window->x, window->y);
+			mx_window_set_window_position(instance, window->x, window->y);
 #endif
+		}
+
+		clutter_actor_show(actor);
 
 		return args.This();
 	}
@@ -506,31 +510,36 @@ namespace JSDXToolkit {
 
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-		clutter_actor_show_all(actor);
+
+		if (!CLUTTER_ACTOR_IS_REALIZED(actor)) {
+			clutter_actor_realize(actor);
 
 #if USE_X11
-		/* Set Window properties */
-		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
-		Display *disp = clutter_x11_get_default_display();
+			/* Set Window properties */
+			Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+			Display *disp = clutter_x11_get_default_display();
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
-		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+			X11::setWindowDecorator(disp, w, window->hasDecorator);
+			X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
 #endif
 
 #if ENABLE_MX
-		/* Set position if it was changed before realized */
-		MxWindow *instance = window->_window;
-		gint x, y;
+			/* Set position if it was changed before realized */
+			MxWindow *instance = window->_window;
+			gint x, y;
 
-		mx_window_get_window_position(instance, &x, &y);
-		if (window->x < 0)
-			window->x = x;
+			mx_window_get_window_position(instance, &x, &y);
+			if (window->x < 0)
+				window->x = x;
 
-		if (window->y < 0)
-			window->y = y;
+			if (window->y < 0)
+				window->y = y;
 
-		mx_window_set_window_position(instance, window->x, window->y);
+			mx_window_set_window_position(instance, window->x, window->y);
 #endif
+		}
+
+		clutter_actor_show_all(actor);
 
 		return args.This();
 	}
