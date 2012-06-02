@@ -30,6 +30,7 @@
 #include "image.hpp"
 #include "bin.hpp"
 #include "box_layout.hpp"
+#include "stack.hpp"
 #include "grid.hpp"
 #include "table.hpp"
 #include "viewport.hpp"
@@ -63,6 +64,7 @@ namespace JSDXToolkit {
 		Style::Initialize(ClassObject);
 		Bin::Initialize(ClassObject);
 		BoxLayout::Initialize(ClassObject);
+		Stack::Initialize(ClassObject);
 		Grid::Initialize(ClassObject);
 		Table::Initialize(ClassObject);
 		Adjustment::Initialize(ClassObject);

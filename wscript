@@ -73,6 +73,7 @@ def build(bld):
 			src/widgets/widget.cpp
 			src/widgets/bin.cpp
 			src/widgets/box_layout.cpp
+			src/widgets/stack.cpp
 			src/widgets/grid.cpp
 			src/widgets/table.cpp
 			src/widgets/adjustment.cpp
