@@ -11,6 +11,7 @@
 #include <mx/mx.h>
 
 #include "../jsdx_toolkit.hpp"
+#include "../actor.hpp"
 #include "stylable.hpp"
 
 namespace JSDXToolkit {
@@ -51,6 +52,7 @@ namespace JSDXToolkit {
 		ObjectTpl->SetInternalFieldCount(1);
 		Local<Object> ObjectInstance = ObjectTpl->NewInstance();
 
+		/* Append on widget object */
 		constructor_template->InstanceTemplate()->Set(name, ObjectInstance);
 	}
 

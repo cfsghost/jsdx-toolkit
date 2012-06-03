@@ -18,6 +18,7 @@
 #include "../container.hpp"
 #include "widget.hpp"
 #include "image.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -47,6 +48,7 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		Widget::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Image::LoadFile);
 	}

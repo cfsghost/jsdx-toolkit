@@ -18,6 +18,7 @@
 #include "../container.hpp"
 #include "widget.hpp"
 #include "stack.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -47,6 +48,7 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		Container::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 	}
 
 	/* ECMAScript constructor */

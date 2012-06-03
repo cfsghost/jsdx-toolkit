@@ -16,6 +16,8 @@ public:
 	static void Initialize(v8::Handle<v8::Object> target);
 	static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 
+	bool hasClassName;
+
 protected:
 	Widget();
 

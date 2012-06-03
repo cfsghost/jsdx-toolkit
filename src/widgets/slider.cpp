@@ -18,6 +18,7 @@
 #include "widget.hpp"
 #include "bin.hpp"
 #include "slider.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -47,6 +48,7 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		Widget::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("value"), Slider::ValueGetter, Slider::ValueSetter);
 	}

@@ -19,6 +19,7 @@
 #include "widget.hpp"
 #include "bin.hpp"
 #include "table.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -55,6 +56,7 @@ namespace JSDXToolkit {
 
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 
 		/* Accessor */
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("columnSpacing"), Table::ColumnSpacingGetter, Table::ColumnSpacingSetter);

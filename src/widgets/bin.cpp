@@ -18,6 +18,7 @@
 #include "../container.hpp"
 #include "widget.hpp"
 #include "bin.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -46,6 +47,7 @@ namespace JSDXToolkit {
 
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Bin::Add);
 	}

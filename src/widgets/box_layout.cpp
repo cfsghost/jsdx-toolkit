@@ -20,6 +20,7 @@
 #include "bin.hpp"
 #include "scrollable.hpp"
 #include "box_layout.hpp"
+#include "stylable.hpp"
 
 namespace JSDXToolkit {
  
@@ -57,6 +58,7 @@ namespace JSDXToolkit {
 
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
+		Stylable::PrototypeMethodsInit(constructor_template);
 
 		/* Accessor */
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("orientation"), BoxLayout::OrientationGetter, BoxLayout::OrientationSetter);

@@ -37,12 +37,16 @@
 #include "scrollview.hpp"
 #include "kinetic_scrollview.hpp"
 
+#include "stylable.hpp"
+
 namespace JSDXToolkit {
  
 	using namespace node;
 	using namespace v8;
 
-	Widget::Widget() : Actor() {}
+	Widget::Widget() : Actor() {
+		hasClassName = FALSE;
+	}
 
 	void Widget::Initialize(Handle<Object> target)
 	{
@@ -147,6 +151,13 @@ namespace JSDXToolkit {
 	{
 		HandleScope scope;
 
+		/* This widget has no class name */
+		if (!ObjectWrap::Unwrap<Widget>(info.This())->hasClassName) {
+			return scope.Close(
+				String::New("")
+			);
+		}
+
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 		return scope.Close(
@@ -161,6 +172,7 @@ namespace JSDXToolkit {
 		if (value->IsString()) {
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
+			ObjectWrap::Unwrap<Widget>(info.This())->hasClassName = TRUE;
 			mx_stylable_set_style_class(MX_STYLABLE(instance), *String::Utf8Value(value->ToString()));
 		}
 	}
