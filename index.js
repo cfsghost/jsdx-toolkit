@@ -190,7 +190,10 @@ toolkit.Application.prototype.add = function(window) {
 	else
 		self.window_list = [ window ];
 
-	this._add(window);
+	/* Call internal method in next time, to avoid that process was confused cause crashing */
+	process.nextTick(function() {
+		self._add(window);
+	});
 
 	window.parent = this;
 
