@@ -88,7 +88,10 @@ function add() {
 	else
 		self.actor_list = [ widget ];
 
-	this._add.apply(this, args);
+	/* Call internal method in next time, to avoid that process was confused cause crashing */
+	process.nextTick(function() {
+		self._add.apply(self, args);
+	});
 
 	/* If container belongs to specific application, child has the same one as well. */
 	if ('application' in this) {
