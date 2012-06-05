@@ -145,6 +145,8 @@ namespace JSDXToolkit {
 			node::FatalException(try_catch);
 		}
 
+		g_signal_handlers_disconnect_by_data(G_OBJECT(img), user_data);
+
 		delete cb;
 	}
 
