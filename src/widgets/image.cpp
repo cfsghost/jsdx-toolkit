@@ -50,6 +50,8 @@ namespace JSDXToolkit {
 		Widget::PrototypeMethodsInit(constructor_template);
 		Stylable::PrototypeMethodsInit(constructor_template);
 
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("scaleMode"), Image::ScaleModeGetter, Image::ScaleModeSetter);
+
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Image::LoadFile);
 	}
 
@@ -71,6 +73,30 @@ namespace JSDXToolkit {
 		return scope.Close(args.This());
 	}
 
+	/* Accessor */
+	Handle<Value> Image::ScaleModeGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Image>(info.This())->_actor;
+
+		return scope.Close(
+			Integer::New(mx_image_get_scale_mode(MX_IMAGE(instance)))
+		);
+	}
+
+	void Image::ScaleModeSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Image>(info.This())->_actor;
+
+			mx_image_set_scale_mode(MX_IMAGE(instance), (MxImageScaleMode)value->ToInteger()->Value());
+		}
+	}
+
+	/* Methods */
 	void Image::_LoadFile(Image *image, const char *filename, NodeCallback *imgcb)
 	{
 		CoglHandle cogltex;
