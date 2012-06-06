@@ -79,6 +79,9 @@ namespace JSDXToolkit {
 		case X11_WINDOW_TYPE_DIALOG:
 			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 			break;
+		case X11_WINDOW_TYPE_POPUP_MENU:
+			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_POPUP_MENU", False);
+			break;
 		default:
 			type_atom = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 		}

@@ -45,7 +45,8 @@ namespace JSDXToolkit {
 			X11_WINDOW_TYPE_MENU,
 			X11_WINDOW_TYPE_UTILITY,
 			X11_WINDOW_TYPE_SPLASH,
-			X11_WINDOW_TYPE_DIALOG
+			X11_WINDOW_TYPE_DIALOG,
+			X11_WINDOW_TYPE_POPUP_MENU
 		} X11WindowType;
 
 		void setWindowDecorator(Display *disp, Window w, bool enabled);
