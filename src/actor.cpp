@@ -117,6 +117,8 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "isVisible", Actor::IsVisible);
+
 		/* Anchor */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnchorFromGravity", Actor::SetAnchorFromGravity);
 
@@ -312,6 +314,16 @@ namespace JSDXToolkit {
 		return args.This();
 	}
 
+	Handle<Value> Actor::IsVisible(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		return scope.Close(Boolean::New(CLUTTER_ACTOR_IS_VISIBLE(instance)));
+	}
+
+	/* Accessor */
 	Handle<Value> Actor::XGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
