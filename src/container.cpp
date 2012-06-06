@@ -42,7 +42,7 @@ namespace JSDXToolkit {
 		Actor::PrototypeMethodsInit(constructor_template);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Container::Add);
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "remove", Container::Remove);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_remove", Container::Remove);
 	}
 
 	/* ECMAScript constructor */

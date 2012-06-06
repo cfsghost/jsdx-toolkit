@@ -109,7 +109,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasClip"), Actor::HasClipGetter, Actor::HasClipSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("reactive"), Actor::ReactiveGetter, Actor::ReactiveSetter);
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "destroy", Actor::Destroy);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_destroy", Actor::Destroy);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", Actor::ShowAll);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", Actor::Hide);
@@ -210,7 +210,7 @@ namespace JSDXToolkit {
 		obj->_actor = NULL;
 		obj->_animation = NULL;
 
-		obj->Unref();
+//		obj->Unref();
 
 		return Undefined();
 	}

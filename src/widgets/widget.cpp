@@ -178,6 +178,7 @@ namespace JSDXToolkit {
 
 			ObjectWrap::Unwrap<Widget>(info.This())->hasClassName = TRUE;
 			mx_stylable_set_style_class(MX_STYLABLE(instance), *String::Utf8Value(value->ToString()));
+			mx_stylable_set_style(MX_STYLABLE(instance), mx_style_get_default());
 		}
 	}
 

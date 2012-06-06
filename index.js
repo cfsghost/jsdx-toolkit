@@ -68,10 +68,73 @@ function setApplication(widget, app) {
 	});
 }
 
+/* Destroy */
+//toolkit.Application.prototype.destroy = destroy;
+toolkit.Window.prototype.destroy = destroy;
+toolkit.Actor.prototype.destroy = destroy;
+toolkit.Container.prototype.destroy = destroy;
+toolkit.Group.prototype.destroy = destroy;
+toolkit.Stage.prototype.destroy = destroy;
+toolkit.Rectangle.prototype.destroy = destroy;
+toolkit.Text.prototype.destroy = destroy;
+toolkit.Texture.prototype.destroy = destroy;
+toolkit.State.prototype.destroy = destroy;
+toolkit.GstVideoTexture.prototype.destroy = destroy;
+toolkit.Widget.Style.prototype.destroy = destroy;
+toolkit.Widget.Stack.prototype.destroy = destroy;
+toolkit.Widget.BoxLayout.prototype.destroy = destroy;
+toolkit.Widget.Grid.prototype.destroy = destroy;
+toolkit.Widget.Table.prototype.destroy = destroy;
+toolkit.Widget.Scroll.prototype.destroy = destroy;
+toolkit.Widget.Button.prototype.destroy = destroy;
+toolkit.Widget.Entry.prototype.destroy = destroy;
+toolkit.Widget.Frame.prototype.destroy = destroy;
+toolkit.Widget.Label.prototype.destroy = destroy;
+toolkit.Widget.Dialog.prototype.destroy = destroy;
+toolkit.Widget.ProgressBar.prototype.destroy = destroy;
+toolkit.Widget.Slider.prototype.destroy = destroy;
+toolkit.Widget.Toggle.prototype.destroy = destroy;
+toolkit.Widget.Spinner.prototype.destroy = destroy;
+toolkit.Widget.Image.prototype.destroy = destroy;
+toolkit.Widget.Viewport.prototype.destroy = destroy;
+toolkit.Widget.ScrollView.prototype.destroy = destroy;
+toolkit.Widget.KineticScrollView.prototype.destroy = destroy;
+
+function destroy() {
+	var self = this;
+
+	self.hide();
+
+	if (self.application) {
+		/* Remove widget from widget list of application */
+		if ('id' in self) {
+			self.application.removeWidgetById(self.id);
+		}
+	}
+
+	/* Destory childs */
+	for (var index in self.actor_list) {
+		var child = self.actor_list[index];
+
+		child.destroy();
+	}
+
+	if (self.parent) {
+		/* Take off this widget from parent */
+		self.parent.remove.apply(self.parent, [ self ]);
+	} else {
+		/* Destroy this widget only */
+		self._destroy.apply(self, []);
+	}
+}
+
 /* Increasse reference to avoid GC to recycle */
 toolkit.Group.prototype.add = add;
+toolkit.Group.prototype.remove = remove;
 toolkit.Container.prototype.add = add;
+toolkit.Container.prototype.remove = remove;
 toolkit.Stage.prototype.add = add;
+toolkit.Stage.prototype.remove = remove;
 
 function add() {
 	if (arguments.length != 1)
@@ -109,6 +172,22 @@ function add() {
 	}
 }
 
+function remove(widget) {
+	var self = this;
+
+	/* Destory specific widget */
+	for (var index in self.actor_list) {
+		if (self.actor_list[index] == widget) {
+			/* remove and destory this widget */
+			self._remove.apply(self, [ widget ]);
+
+			delete self.actor_list[index];
+
+			return;
+		}
+	}
+}
+
 /* Window */
 toolkit.Window.prototype.setChild = setChild;
 toolkit.Window.prototype.add = setChild;
@@ -143,17 +222,28 @@ function setChild(child) {
 
 /* Widgets */
 toolkit.Widget.BoxLayout.prototype.add = add;
+toolkit.Widget.BoxLayout.prototype.remove = remove;
 toolkit.Widget.Stack.prototype.add = add;
+toolkit.Widget.Stack.prototype.remove = remove;
 toolkit.Widget.Table.prototype.add = add;
+toolkit.Widget.Table.prototype.remove = remove;
 toolkit.Widget.KineticScrollView.prototype.add = add;
+toolkit.Widget.KineticScrollView.prototype.remove = remove;
 toolkit.Widget.ScrollView.prototype.add = add;
+toolkit.Widget.ScrollView.prototype.remove = remove;
 toolkit.Widget.Viewport.prototype.add = add;
+toolkit.Widget.Viewport.prototype.remove = remove;
 toolkit.Widget.Button.prototype.add = add;
+toolkit.Widget.Button.prototype.remove = remove;
 toolkit.Widget.Label.prototype.add = add;
+toolkit.Widget.Label.prototype.remove = remove;
 toolkit.Widget.Entry.prototype.add = add;
+toolkit.Widget.Entry.prototype.remove = remove;
 toolkit.Widget.Frame.prototype.add = add;
+toolkit.Widget.Frame.prototype.remove = remove;
 
 toolkit.Widget.Dialog.prototype.add = add;
+toolkit.Widget.Dialog.prototype.remove = remove;
 toolkit.Widget.Dialog.prototype.setTransientParent = setTransientParent;
 
 function setTransientParent(_parent) {
@@ -242,6 +332,21 @@ toolkit.Application.prototype.renderUI = function(structure) {
 		}
 	}
 }
+
+toolkit.Application.prototype.removeWidget = function(widget) {
+	for (var id in self.widget) {
+		if (self.widget[id] == widget) {
+			delete self.widget[id];
+			return;
+		}
+	}
+};
+
+toolkit.Application.prototype.removeWidgetById = function(id) {
+	if (id in self.widget) {
+		delete self.widget[id];
+	}
+};
 
 toolkit.Application.prototype.getWidgetById = function(id) {
 	if (id in this.widget)
