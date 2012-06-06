@@ -74,6 +74,7 @@ namespace JSDXToolkit {
 
 		static v8::Handle<v8::Value> Resize(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
+		static v8::Handle<v8::Value> SetBackgroundColor(const v8::Arguments& args);
 		static v8::Handle<v8::Value> IsVisible(const v8::Arguments& args);
 
 		static v8::Handle<v8::Value> SetAnchorFromGravity(const v8::Arguments& args);

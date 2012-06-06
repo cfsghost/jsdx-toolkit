@@ -116,6 +116,7 @@ namespace JSDXToolkit {
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setBackgroundColor", Actor::SetBackgroundColor);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "isVisible", Actor::IsVisible);
 
@@ -309,6 +310,25 @@ namespace JSDXToolkit {
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 			clutter_actor_set_position(CLUTTER_ACTOR(instance), args[0]->NumberValue(), args[1]->NumberValue());
+		}
+
+		return args.This();
+	}
+
+	Handle<Value> Actor::SetBackgroundColor(const Arguments &args)
+	{
+		HandleScope scope;
+		static ClutterColor color;
+
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+			color.red = args[0]->NumberValue();
+			color.green = args[1]->NumberValue();
+			color.blue = args[2]->NumberValue();
+			color.alpha = args[3]->NumberValue();
+
+			clutter_actor_set_background_color(CLUTTER_ACTOR(instance), &color);
 		}
 
 		return args.This();
