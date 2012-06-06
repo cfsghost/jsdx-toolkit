@@ -56,6 +56,7 @@ namespace JSDXToolkit {
 		button_press_cb = NULL;
 		button_release_cb = NULL;
 		button_clicked_cb = NULL;
+		long_press_cb = NULL;
 		enter_cb = NULL;
 		leave_cb = NULL;
 		motion_cb = NULL;

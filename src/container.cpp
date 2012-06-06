@@ -81,8 +81,12 @@ namespace JSDXToolkit {
 
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+		Actor *obj = ObjectWrap::Unwrap<Actor>(args[0]->ToObject());
 
 		clutter_container_remove_actor(CLUTTER_CONTAINER(instance), CLUTTER_ACTOR(actor));
+
+		obj->_actor = NULL;
+		obj->_animation = NULL;
 
 		return args.This();
 	}
