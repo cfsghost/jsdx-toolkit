@@ -189,6 +189,16 @@ function remove(widget) {
 }
 
 /* Window */
+toolkit.Window.prototype.__defineGetter__('id', function() {
+	return this._id;
+});
+toolkit.Window.prototype.__defineSetter__('id', function(val) {
+	this._id = val;
+
+	/* Register this ID in application */
+	if (this.application)
+		this.application.widget[val] = this;
+});
 toolkit.Window.prototype.setChild = setChild;
 toolkit.Window.prototype.add = setChild;
 
