@@ -58,6 +58,7 @@ namespace JSDXToolkit {
 
 		/* Inherit methods from Actor */
 		Container::PrototypeMethodsInit(constructor_template);
+		Widget::PrototypeMethodsInit(constructor_template);
 		Stylable::PrototypeMethodsInit(constructor_template);
 
 		/* Accessor */
