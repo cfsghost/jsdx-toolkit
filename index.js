@@ -101,30 +101,28 @@ toolkit.Widget.ScrollView.prototype.destroy = destroy;
 toolkit.Widget.KineticScrollView.prototype.destroy = destroy;
 
 function destroy() {
-	var self = this;
+	this.hide();
 
-	self.hide();
-
-	if (self.application) {
+	if (this.application) {
 		/* Remove widget from widget list of application */
-		if ('id' in self) {
-			self.application.removeWidgetById(self.id);
+		if ('id' in this) {
+			this.application.removeWidgetById(this.id);
 		}
 	}
 
 	/* Destory childs */
-	for (var index in self.actor_list) {
-		var child = self.actor_list[index];
+	for (var index in this.actor_list) {
+		var child = this.actor_list[index];
 
 		child.destroy();
 	}
 
-	if (self.parent) {
+	if (this.parent) {
 		/* Take off this widget from parent */
-		self.parent.remove.apply(self.parent, [ self ]);
+		this.parent.remove.apply(this.parent, [ this ]);
 	} else {
 		/* Destroy this widget only */
-		self._destroy.apply(self, []);
+		this._destroy.apply(this, []);
 	}
 }
 
@@ -173,32 +171,106 @@ function add() {
 }
 
 function remove(widget) {
-	var self = this;
 
 	/* Destory specific widget */
-	for (var index in self.actor_list) {
-		if (self.actor_list[index] == widget) {
+	for (var index in this.actor_list) {
+		if (this.actor_list[index] == widget) {
 			/* remove and destory this widget */
-			self._remove.apply(self, [ widget ]);
+			this._remove.apply(this, [ widget ]);
 
-			delete self.actor_list[index];
+			delete this.actor_list[index];
 
 			return;
 		}
 	}
 }
 
-/* Window */
-toolkit.Window.prototype.__defineGetter__('id', function() {
-	return this._id;
-});
-toolkit.Window.prototype.__defineSetter__('id', function(val) {
-	this._id = val;
+/* Unique ID Handler */
+function idGetter() {
+	if ('_id' in this)
+		return this._id;
+	else
+		return undefined;
+};
+
+function idSetter(val) {
 
 	/* Register this ID in application */
-	if (this.application)
+	if (this.application) {
+		/* Has ID already */
+		if ('_id' in this) {
+
+			/* Unregister old */
+			if (this._id in this.application)
+				delete this.application.widget[this._id];
+		}
+
 		this.application.widget[val] = this;
-});
+	}
+
+	this._id = val;
+};
+
+toolkit.Window.prototype.__defineGetter__('id', idGetter);
+toolkit.Window.prototype.__defineSetter__('id', idSetter);
+toolkit.Actor.prototype.__defineGetter__('id', idGetter);
+toolkit.Actor.prototype.__defineSetter__('id', idSetter);
+toolkit.Container.prototype.__defineGetter__('id', idGetter);
+toolkit.Container.prototype.__defineSetter__('id', idSetter);
+toolkit.Group.prototype.__defineGetter__('id', idGetter);
+toolkit.Group.prototype.__defineSetter__('id', idSetter);
+toolkit.Stage.prototype.__defineGetter__('id', idGetter);
+toolkit.Stage.prototype.__defineSetter__('id', idSetter);
+toolkit.Rectangle.prototype.__defineGetter__('id', idGetter);
+toolkit.Rectangle.prototype.__defineSetter__('id', idSetter);
+toolkit.Text.prototype.__defineGetter__('id', idGetter);
+toolkit.Text.prototype.__defineSetter__('id', idSetter);
+toolkit.Texture.prototype.__defineGetter__('id', idGetter);
+toolkit.Texture.prototype.__defineSetter__('id', idSetter);
+toolkit.State.prototype.__defineGetter__('id', idGetter);
+toolkit.State.prototype.__defineSetter__('id', idSetter);
+toolkit.GstVideoTexture.prototype.__defineGetter__('id', idGetter);
+toolkit.GstVideoTexture.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Style.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Style.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Stack.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Stack.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.BoxLayout.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.BoxLayout.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Grid.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Grid.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Table.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Table.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Scroll.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Scroll.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Button.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Button.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Entry.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Entry.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Frame.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Frame.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Label.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Label.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Dialog.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Dialog.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.ProgressBar.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.ProgressBar.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Slider.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Slider.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Toggle.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Toggle.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Spinner.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Spinner.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Image.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Image.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.Viewport.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.Viewport.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.ScrollView.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.ScrollView.prototype.__defineSetter__('id', idSetter);
+toolkit.Widget.KineticScrollView.prototype.__defineGetter__('id', idGetter);
+toolkit.Widget.KineticScrollView.prototype.__defineSetter__('id', idSetter);
+
+/* Window */
 toolkit.Window.prototype.setChild = setChild;
 toolkit.Window.prototype.add = setChild;
 
@@ -344,6 +416,8 @@ toolkit.Application.prototype.renderUI = function(structure) {
 }
 
 toolkit.Application.prototype.removeWidget = function(widget) {
+	var self = this;
+
 	for (var id in self.widget) {
 		if (self.widget[id] == widget) {
 			delete self.widget[id];
@@ -353,6 +427,8 @@ toolkit.Application.prototype.removeWidget = function(widget) {
 };
 
 toolkit.Application.prototype.removeWidgetById = function(id) {
+	var self = this;
+
 	if (id in self.widget) {
 		delete self.widget[id];
 	}
