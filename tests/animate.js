@@ -17,18 +17,17 @@ stage.show();
 
 var texture1 = new toolkit.Texture;
 texture1.loadFile('fred.jpg');
-texture1.setPosition(100, 100);
+texture1.setPosition(0, 0);
+texture1.opacity = 0;
 stage.add(texture1);
 
 texture1.animate(toolkit.EASE_IN_QUINT, 1000, {
-	'x': 5,
-	'y': 5,
-	'opacity': 0
+	'x': 100,
+	'y': 100,
+	'opacity': 255
 }, function() {
-	texture1.animate(toolkit.EASE_IN_QUINT, 1000, {
-		'x': 100,
-		'y': 100,
-		'opacity': 255
+	texture1.animate(toolkit.EASE_IN_CUBIC, 1000, {
+		'rotation-angle-x': 360
 	}, { loop: true });
 });
 
