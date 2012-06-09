@@ -478,7 +478,6 @@ namespace JSDXToolkit {
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
 #endif
 
@@ -499,6 +498,10 @@ namespace JSDXToolkit {
 
 		clutter_actor_show(actor);
 
+#if USE_X11
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+#endif
+
 		return args.This();
 	}
 
@@ -516,7 +519,6 @@ namespace JSDXToolkit {
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
 #endif
 
@@ -536,6 +538,10 @@ namespace JSDXToolkit {
 #endif
 
 		clutter_actor_show_all(actor);
+
+#if USE_X11
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+#endif
 
 		return args.This();
 	}
