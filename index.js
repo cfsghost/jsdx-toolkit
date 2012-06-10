@@ -197,6 +197,11 @@ function idSetter(val) {
 
 	/* Register this ID in application */
 	if (this.application) {
+
+		/* Initializing object to store childs */
+		if (!('widget' in this.application))
+			this.application.widget = {};
+
 		/* Has ID already */
 		if ('_id' in this) {
 
