@@ -51,6 +51,12 @@ namespace JSDXToolkit {
 
 		void setWindowDecorator(Display *disp, Window w, bool enabled);
 		void setWindowType(Display *disp, Window w, X11WindowType wtype);
+		void windowConfigure(Display *disp, Window root, Window w, X11WindowType wtype);
+		void setActive(Display *disp, Window root, Window w, bool active);
+		void send_xclient_message(Display *disp, Window w, Atom a, long data0, long data1);
+		void reparentWindow(Display *disp, Window w, Window parent);
+
+		void skipTaskbarHint(Display *disp, Window w, bool skip);
 	}
 
 }

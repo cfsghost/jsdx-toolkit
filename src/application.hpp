@@ -5,6 +5,9 @@
 #if ENABLE_MX
 #include <mx/mx.h>
 #endif
+#if USE_X11
+#include <clutter/x11/clutter-x11.h>
+#endif
 #include <v8.h>
 
 namespace JSDXToolkit {

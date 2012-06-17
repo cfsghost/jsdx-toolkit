@@ -29,6 +29,7 @@ namespace JSDXToolkit {
 		static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 		static v8::Local<v8::Object> New(void);
 
+		JSDXWindow *parent;
 		JSDXWindowType windowType;
 		int x;
 		int y;
@@ -38,6 +39,7 @@ namespace JSDXToolkit {
 #endif
 
 #if USE_X11
+		Window grabWindow;
 		bool hasDecorator;
 #endif
 
@@ -73,8 +75,15 @@ namespace JSDXToolkit {
 
 		/* Methods */
 		static v8::Handle<v8::Value> SetChild(const v8::Arguments& args);
+		static v8::Handle<v8::Value> SetParentWindow(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Show(const v8::Arguments& args);
 		static v8::Handle<v8::Value> ShowAll(const v8::Arguments& args);
+
+		/* signal */
+		static void _HideCallback(ClutterActor *actor, gpointer user_data);
+#if USE_X11
+		static ClutterX11FilterReturn MenuEventHandler(XEvent *xev, ClutterEvent *cev, gpointer data);
+#endif
 	};
 
 }

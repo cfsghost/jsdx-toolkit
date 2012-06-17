@@ -37,6 +37,7 @@ namespace JSDXToolkit {
 	JSDXWindow::JSDXWindow() : Stage()
 	{
 		/* Create a new stage */
+		parent = NULL;
 		x = -1;
 		y = -1;
 		windowType = JSDX_WINDOW_TYPE_NORMAL;
@@ -51,6 +52,7 @@ namespace JSDXToolkit {
 #endif
 
 #if USE_X11
+		grabWindow = -1;
 		hasDecorator = TRUE;
 #endif
 	}
@@ -87,6 +89,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasDecorator"), JSDXWindow::HasDecoratorGetter, JSDXWindow::HasDecoratorSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("windowType"), JSDXWindow::WindowTypeGetter, JSDXWindow::WindowTypeSetter);
 
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setParentWindow", JSDXWindow::SetParentWindow);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", JSDXWindow::SetChild);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", JSDXWindow::Show);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", JSDXWindow::ShowAll);
@@ -464,6 +467,25 @@ namespace JSDXToolkit {
 		return args.This();
 	}
 
+	Handle<Value> JSDXWindow::SetParentWindow(const Arguments &args)
+	{
+		HandleScope scope;
+
+#if USE_X11
+/*
+		ClutterActor *parent = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+		Display *disp = clutter_x11_get_default_display();
+*/
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
+		window->parent = ObjectWrap::Unwrap<JSDXWindow>(args[0]->ToObject());
+
+#endif
+
+		return args.This();
+	}
+
 	Handle<Value> JSDXWindow::Show(const Arguments &args)
 	{
 		HandleScope scope;
@@ -477,8 +499,27 @@ namespace JSDXToolkit {
 		/* Set Window properties */
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
+		Window root = clutter_x11_get_root_window();
 
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+		X11::reparentWindow(disp, w, clutter_x11_get_root_window());
+
+		if (window->windowType == JSDX_WINDOW_TYPE_MENU || window->windowType == JSDX_WINDOW_TYPE_POPUP_MENU) {
+
+			if (window->grabWindow == -1) {
+				int i;
+				XGetInputFocus(disp, &(window->grabWindow), &i);
+
+				/*
+				 * It will be failed if someone window grabs pointer already.
+				 * So there is no need to worry about doing the same thing twice
+				 */
+				XGrabPointer(disp, window->grabWindow, TRUE, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+			}
+
+			/* Add a filter to get event that click to hide menu */
+			clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
+		}
 #endif
 
 #if ENABLE_MX
@@ -500,6 +541,7 @@ namespace JSDXToolkit {
 
 #if USE_X11
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 		return args.This();
@@ -518,8 +560,27 @@ namespace JSDXToolkit {
 		/* Set Window properties */
 		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
 		Display *disp = clutter_x11_get_default_display();
+		Window root = clutter_x11_get_root_window();
 
 		X11::setWindowType(disp, w, (X11::X11WindowType)window->windowType);
+		X11::reparentWindow(disp, w, clutter_x11_get_root_window());
+
+		if (window->windowType == JSDX_WINDOW_TYPE_MENU || window->windowType == JSDX_WINDOW_TYPE_POPUP_MENU) {
+
+			if (window->grabWindow == -1) {
+				int i;
+				XGetInputFocus(disp, &(window->grabWindow), &i);
+
+				/*
+				 * It will be failed if someone window grabs pointer already.
+				 * So there is no need to worry about doing the same thing twice
+				 */
+				XGrabPointer(disp, window->grabWindow, TRUE, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+			}
+
+			/* Add a filter to get event that click to hide menu */
+			clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
+		}
 #endif
 
 #if ENABLE_MX
@@ -541,8 +602,27 @@ namespace JSDXToolkit {
 
 #if USE_X11
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 		return args.This();
 	}
+
+	/* Event Handler */
+#if USE_X11
+	ClutterX11FilterReturn JSDXWindow::MenuEventHandler(XEvent *xev, ClutterEvent *cev, gpointer data)
+	{
+		JSDXWindow *window = (JSDXWindow *)data;
+
+		if (xev->type == ButtonRelease && window->grabWindow == xev->xbutton.window) {
+
+			XUngrabPointer(clutter_x11_get_default_display(), CurrentTime);
+
+			window->grabWindow = -1;
+			clutter_actor_hide(window->_actor);
+		}
+
+		return CLUTTER_X11_FILTER_CONTINUE;
+	}
+#endif
 }

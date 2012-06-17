@@ -418,7 +418,7 @@ toolkit.Application.prototype.renderUI = function(structure) {
 			this.add(render.widgets[index]);
 		}
 	}
-}
+};
 
 toolkit.Application.prototype.removeWidget = function(widget) {
 	var self = this;
