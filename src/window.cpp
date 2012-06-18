@@ -533,11 +533,21 @@ namespace JSDXToolkit {
 
 		if (window->y < 0)
 			window->y = y;
-
-		mx_window_set_window_position(instance, window->x, window->y);
+#else
+		/* TODO: Using pure X11 solution to get window position */
 #endif
 
+#if ENABLE_MX
+		mx_window_show(mx_window_get_for_stage(CLUTTER_STAGE(actor)));
+#else
 		clutter_actor_show(actor);
+#endif
+
+#if ENABLE_MX
+		mx_window_set_window_position(instance, window->x, window->y);
+#else
+		/* TODO: Using pure X11 solution to set window position */
+#endif
 
 #if USE_X11
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
@@ -594,11 +604,17 @@ namespace JSDXToolkit {
 
 		if (window->y < 0)
 			window->y = y;
-
-		mx_window_set_window_position(instance, window->x, window->y);
+#else
+		/* TODO: Using pure X11 solution to get window position */
 #endif
 
 		clutter_actor_show_all(actor);
+
+#if ENABLE_MX
+		mx_window_set_window_position(instance, window->x, window->y);
+#else
+		/* TODO: Using pure X11 solution to set window position */
+#endif
 
 #if USE_X11
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
