@@ -101,6 +101,10 @@ namespace JSDXToolkit {
 
 		switch(wtype) {
 		case X11_WINDOW_TYPE_NORMAL:
+
+			/* Set focus on this window */
+			setActive(disp, root, w, True);
+
 			break;
 		case X11_WINDOW_TYPE_DESKTOP:
 			break;
@@ -145,8 +149,6 @@ namespace JSDXToolkit {
 		Atom wm_take_focus = XInternAtom(disp, "WM_TAKE_FOCUS", False);
 
 		if (active) {
-			XSetInputFocus(disp, w, RevertToParent, CurrentTime);
-
 			send_xclient_message(disp, w, wm_protocol, wm_take_focus, 0L);
 
 			XChangeProperty(disp, root,
