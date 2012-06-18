@@ -68,6 +68,7 @@ namespace JSDXToolkit {
 
 		/* Methods */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", BoxLayout::Add);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setExpand", BoxLayout::SetExpand);
 	}
 
 	/* ECMAScript constructor */
@@ -173,6 +174,24 @@ namespace JSDXToolkit {
 				index = args[1]->ToInteger()->Value();
 
 			mx_box_layout_add_actor(MX_BOX_LAYOUT(instance), CLUTTER_ACTOR(actor), index);
+		}
+
+		return args.This();
+	}
+
+	Handle<Value> BoxLayout::SetExpand(const Arguments &args)
+	{
+		HandleScope scope;
+
+		if (args.Length() == 2) {
+			if (args[0]->IsObject() && args[1]->IsBoolean()) {
+				ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+				ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+
+				if (clutter_actor_contains(instance, actor)) {
+					mx_box_layout_child_set_expand(MX_BOX_LAYOUT(instance), CLUTTER_ACTOR(actor), args[1]->ToBoolean()->Value());
+				}
+			}
 		}
 
 		return args.This();

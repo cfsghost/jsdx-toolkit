@@ -445,3 +445,13 @@ toolkit.Application.prototype.getWidgetById = function(id) {
 
 	throw Error('No such widget');
 };
+
+/* BoxLayout */
+toolkit.Widget.BoxLayout.prototype.setExpand = function() {
+	var self = this;
+	var args = Array.prototype.slice.call(arguments);
+
+	process.nextTick(function() {
+		self._setExpand.apply(self, args);
+	});
+};
