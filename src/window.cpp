@@ -576,10 +576,10 @@ namespace JSDXToolkit {
 				 * So there is no need to worry about doing the same thing twice
 				 */
 				XGrabPointer(disp, window->grabWindow, TRUE, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
-			}
 
-			/* Add a filter to get event that click to hide menu */
-			clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
+				/* Add a filter to get event that click to hide menu */
+				clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
+			}
 		}
 #endif
 
@@ -620,6 +620,8 @@ namespace JSDXToolkit {
 
 			window->grabWindow = -1;
 			clutter_actor_hide(window->_actor);
+
+			clutter_x11_remove_filter(JSDXWindow::MenuEventHandler, data);
 		}
 
 		return CLUTTER_X11_FILTER_CONTINUE;
