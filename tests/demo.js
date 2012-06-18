@@ -10,7 +10,7 @@ if (toolkit.init() != toolkit.INIT_SUCCESS) {
 /* Create a new stage */
 var stage = new toolkit.Stage();
 stage.title = 'jsdx-toolkit Demo';
-stage.useAlpha(true);
+stage.useAlpha = true;
 stage.opacity = 100;
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);

@@ -56,7 +56,7 @@ namespace JSDXToolkit {
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("title"), Stage::TitleGetter, Stage::TitleSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("useFog"), Stage::UseFogGetter, Stage::UseFogSetter);
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "useAlpha", Stage::SetUseAlpha);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("useAlpha"), Stage::UseAlphaGetter, Stage::UseAlphaSetter);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setColor", Stage::SetColor);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setCursor", Stage::SetCursor);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getFog", Stage::GetFog);
@@ -135,6 +135,28 @@ namespace JSDXToolkit {
 		}
 	}
 
+	Handle<Value> Stage::UseAlphaGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(clutter_stage_get_use_alpha(CLUTTER_STAGE(instance)))
+		);
+	}
+
+	void Stage::UseAlphaSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_stage_set_use_alpha(CLUTTER_STAGE(instance), value->ToBoolean()->Value());
+		}
+	}
+
 	Handle<Value> Stage::GetFog(const Arguments &args)
 	{
 		HandleScope scope;
@@ -167,19 +189,6 @@ namespace JSDXToolkit {
 
 			clutter_stage_set_fog(CLUTTER_STAGE(instance), &fog);
 		}
-	}
-
-	Handle<Value> Stage::SetUseAlpha(const Arguments &args)
-	{
-		HandleScope scope;
-
-		if (args[0]->IsBoolean()) {
-			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
-
-			clutter_stage_set_use_alpha(CLUTTER_STAGE(instance), args[0]->ToBoolean()->Value());
-		}
-
-		return args.This();
 	}
 
 	Handle<Value> Stage::SetColor(const Arguments &args)
