@@ -93,6 +93,7 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", JSDXWindow::SetChild);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", JSDXWindow::Show);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", JSDXWindow::ShowAll);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", JSDXWindow::Hide);
 	}
 
 	Local<Object> JSDXWindow::New(void)
@@ -620,6 +621,26 @@ namespace JSDXToolkit {
 		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
+
+		return args.This();
+	}
+
+	Handle<Value> JSDXWindow::Hide(const Arguments &args)
+	{
+		HandleScope scope;
+
+		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
+
+		/* It grabs screen if window type is popup menu or menu */
+		if (window->grabWindow != -1) {
+			XUngrabPointer(clutter_x11_get_default_display(), CurrentTime);
+
+			window->grabWindow = -1;
+
+			clutter_x11_remove_filter(JSDXWindow::MenuEventHandler, window);
+		}
+
+		clutter_actor_hide(window->_actor);
 
 		return args.This();
 	}

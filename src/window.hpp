@@ -78,6 +78,7 @@ namespace JSDXToolkit {
 		static v8::Handle<v8::Value> SetParentWindow(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Show(const v8::Arguments& args);
 		static v8::Handle<v8::Value> ShowAll(const v8::Arguments& args);
+		static v8::Handle<v8::Value> Hide(const v8::Arguments& args);
 
 		/* signal */
 		static void _HideCallback(ClutterActor *actor, gpointer user_data);
