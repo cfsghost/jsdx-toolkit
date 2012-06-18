@@ -622,6 +622,8 @@ namespace JSDXToolkit {
 			clutter_actor_hide(window->_actor);
 
 			clutter_x11_remove_filter(JSDXWindow::MenuEventHandler, data);
+
+			return CLUTTER_X11_FILTER_REMOVE;
 		}
 
 		return CLUTTER_X11_FILTER_CONTINUE;
