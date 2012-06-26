@@ -8,6 +8,11 @@
 #include <v8.h>
 #include <node.h>
 #include <clutter/clutter.h>
+
+#if USE_X11
+#include <clutter/x11/clutter-x11.h>
+#endif
+
 #include <string.h>
 
 #include "jsdx_toolkit.hpp"

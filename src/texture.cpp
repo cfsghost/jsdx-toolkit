@@ -9,6 +9,10 @@
 #include <node.h>
 #include <clutter/clutter.h>
 
+#if USE_X11
+#include <clutter/x11/clutter-x11.h>
+#endif
+
 #include "jsdx_toolkit.hpp"
 #include "actor.hpp"
 #include "texture.hpp"
@@ -61,6 +65,11 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileSync", Texture::LoadFileSync);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "keepAspectRatio", Texture::KeepAspectRatio);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Texture::On);
+
+#if USE_X11
+		/* Sync X11 window */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setX11Window", Texture::SetX11Window);
+#endif
 	}
 
 	/* ECMAScript constructor */
@@ -79,6 +88,15 @@ namespace JSDXToolkit {
 		obj->Wrap(args.This());
 
 		/* Create Texture */
+#if USE_X11
+		if (args[0]->IsNumber()) {
+			if (args[0]->ToInteger()->Value() == JSDX_TOOLKIT_TEXTURE_X11) {
+				obj->_actor = clutter_x11_texture_pixmap_new();
+
+				return scope.Close(args.This());
+			}
+		}
+#endif
 		obj->_actor = clutter_texture_new();
 
 		return scope.Close(args.This());
@@ -185,6 +203,23 @@ namespace JSDXToolkit {
 
 		return args.This();
 	}
+
+#if USE_X11
+	Handle<Value> Texture::SetX11Window(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		if (args[0]->IsNumber()) {
+			clutter_x11_texture_pixmap_set_window((ClutterX11TexturePixmap *)instance, (Window)(args[0]->ToInteger()->Value()), TRUE);
+			clutter_x11_texture_pixmap_sync_window((ClutterX11TexturePixmap *)instance);
+			clutter_x11_texture_pixmap_set_automatic((ClutterX11TexturePixmap *)instance, TRUE);
+		}
+
+		return args.This();
+	}
+#endif
 
 	/* Event handlers */
 	void Texture::_LoadFinishedCallback(ClutterTexture *tex, GError *error, gpointer user_data)

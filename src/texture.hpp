@@ -34,6 +34,10 @@ namespace JSDXToolkit {
 		static v8::Handle<v8::Value> On(const v8::Arguments& args);
 
 		static void _LoadFinishedCallback(ClutterTexture *texture, GError *error, gpointer user_data);
+
+#if USE_X11
+		static v8::Handle<v8::Value> SetX11Window(const v8::Arguments& args);
+#endif
 	};
 
 }
