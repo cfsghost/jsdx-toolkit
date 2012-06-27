@@ -589,6 +589,7 @@ namespace JSDXToolkit {
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
+		o->Set(String::New("button"), Number::New(event->button.button));
 		o->Set(String::New("x"), Number::New(event->button.x));
 		o->Set(String::New("y"), Number::New(event->button.y));
 
@@ -609,6 +610,7 @@ namespace JSDXToolkit {
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
+		o->Set(String::New("button"), Number::New(event->button.button));
 		o->Set(String::New("x"), Number::New(event->button.x));
 		o->Set(String::New("y"), Number::New(event->button.y));
 
