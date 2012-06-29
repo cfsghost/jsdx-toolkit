@@ -69,6 +69,7 @@ namespace JSDXToolkit {
 #if USE_X11
 		/* Sync X11 window */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setX11Window", Texture::SetX11Window);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setX11WindowAutoSync", Texture::SetX11WindowAutoSync);
 #endif
 	}
 
@@ -212,9 +213,26 @@ namespace JSDXToolkit {
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
 		if (args[0]->IsNumber()) {
-			clutter_x11_texture_pixmap_set_window((ClutterX11TexturePixmap *)instance, (Window)(args[0]->ToInteger()->Value()), TRUE);
+			XWindowAttributes xwa;
+
+			/* Ping this window to make sure it's live */
+			if (XGetWindowAttributes(clutter_x11_get_default_display(), (Window)(args[0]->ToInteger()->Value()), &xwa)) {
+				clutter_x11_texture_pixmap_set_window((ClutterX11TexturePixmap *)instance, (Window)(args[0]->ToInteger()->Value()), FALSE);
+			}
+		}
+
+		return args.This();
+	}
+
+	Handle<Value> Texture::SetX11WindowAutoSync(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		if (args[0]->IsBoolean()) {
 			clutter_x11_texture_pixmap_sync_window((ClutterX11TexturePixmap *)instance);
-			clutter_x11_texture_pixmap_set_automatic((ClutterX11TexturePixmap *)instance, TRUE);
+			clutter_x11_texture_pixmap_set_automatic((ClutterX11TexturePixmap *)instance, args[0]->ToBoolean()->Value());
 		}
 
 		return args.This();

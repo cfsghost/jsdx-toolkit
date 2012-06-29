@@ -590,8 +590,12 @@ namespace JSDXToolkit {
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
 		o->Set(String::New("button"), Number::New(event->button.button));
-		o->Set(String::New("x"), Number::New(event->button.x));
-		o->Set(String::New("y"), Number::New(event->button.y));
+
+		/* Get coordinates on actor */
+		gfloat actor_x, actor_y;
+		clutter_actor_transform_stage_point(actor, event->button.x, event->button.y, &actor_x, &actor_y);
+		o->Set(String::New("x"), Number::New(actor_x));
+		o->Set(String::New("y"), Number::New(actor_y));
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_PRESS)),
@@ -611,8 +615,12 @@ namespace JSDXToolkit {
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
 		o->Set(String::New("button"), Number::New(event->button.button));
-		o->Set(String::New("x"), Number::New(event->button.x));
-		o->Set(String::New("y"), Number::New(event->button.y));
+
+		/* Get coordinates on actor */
+		gfloat actor_x, actor_y;
+		clutter_actor_transform_stage_point(actor, event->button.x, event->button.y, &actor_x, &actor_y);
+		o->Set(String::New("x"), Number::New(actor_x));
+		o->Set(String::New("y"), Number::New(actor_y));
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_RELEASE)),
@@ -854,7 +862,7 @@ namespace JSDXToolkit {
 			obj->button_release_cb->Holder = Persistent<Object>::New(args.Holder());
 			obj->button_release_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_PressCallback), (gpointer)obj->button_release_cb);
+			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_ReleaseCallback), (gpointer)obj->button_release_cb);
 
 			break;
 

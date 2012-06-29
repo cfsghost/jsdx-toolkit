@@ -37,6 +37,7 @@ namespace JSDXToolkit {
 
 #if USE_X11
 		static v8::Handle<v8::Value> SetX11Window(const v8::Arguments& args);
+		static v8::Handle<v8::Value> SetX11WindowAutoSync(const v8::Arguments &args);
 #endif
 	};
 
