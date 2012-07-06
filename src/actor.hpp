@@ -39,6 +39,7 @@ namespace JSDXToolkit {
 		NodeCallback *leave_cb;
 		NodeCallback *motion_cb;
 		NodeCallback *drag_cb;
+		NodeCallback *scroll_cb;
 
 	protected:
 		Actor();
@@ -118,6 +119,8 @@ namespace JSDXToolkit {
 			gfloat delta_x,
 			gfloat delta_y,
 			gpointer user_data);
+
+		static gboolean _ScrollCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 	};
 
 }

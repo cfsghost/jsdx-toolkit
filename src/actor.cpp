@@ -66,6 +66,7 @@ namespace JSDXToolkit {
 		leave_cb = NULL;
 		motion_cb = NULL;
 		drag_cb = NULL;
+		scroll_cb = NULL;
 	}
 
 	Actor::~Actor() {
@@ -788,6 +789,28 @@ namespace JSDXToolkit {
 		cb->cb->Call(cb->Holder, argc, argv);
 	}
 
+	gboolean Actor::_ScrollCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+	{
+		const unsigned argc = 2;
+		NodeCallback *cb = (NodeCallback *)user_data;
+
+		/* create a JavaScript Object */
+		Local<Object> o = Object::New();
+		o->Set(String::New("x"), Number::New(event->scroll.x));
+		o->Set(String::New("y"), Number::New(event->scroll.y));
+		o->Set(String::New("time"), Uint32::New(event->scroll.time));
+		o->Set(String::New("direction"), Uint32::New(event->scroll.direction));
+
+		Local<Value> argv[argc] = {
+			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_SCROLL)),
+			o
+		};
+
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
+
+		return (*ret)->IsTrue();
+	}
+
 	Handle<Value> Actor::On(const Arguments &args)
 	{
 		HandleScope scope;
@@ -962,7 +985,7 @@ namespace JSDXToolkit {
 
 			break;
 
-		case JSDX_TOOLKIT_EVENT_DRAG:
+		case JSDX_TOOLKIT_EVENT_DRAG: {
 			gint x_threshold = 0;
 			gint y_threshold = 0;
 			ClutterDragAxis axis = CLUTTER_DRAG_AXIS_NONE;
@@ -1001,6 +1024,22 @@ namespace JSDXToolkit {
 			g_signal_connect(G_OBJECT(action), "drag-begin", G_CALLBACK(Actor::_DragActionBeginCallback), (gpointer)obj->drag_cb);
 			g_signal_connect(G_OBJECT(action), "drag-end", G_CALLBACK(Actor::_DragActionEndCallback), (gpointer)obj->drag_cb);
 			g_signal_connect(G_OBJECT(action), "drag-motion", G_CALLBACK(Actor::_DragActionMotionCallback), (gpointer)obj->drag_cb);
+
+			break;
+		}
+		case JSDX_TOOLKIT_EVENT_SCROLL:
+
+			if (!obj->scroll_cb) {
+				obj->scroll_cb = new NodeCallback();
+			} else {
+				obj->scroll_cb->Holder.Dispose();
+				obj->scroll_cb->cb.Dispose();
+			}
+
+			obj->scroll_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->scroll_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "scroll-event", G_CALLBACK(Actor::_ScrollCallback), (gpointer)obj->scroll_cb);
 
 			break;
 
