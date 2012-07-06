@@ -24,7 +24,7 @@ namespace JSDXToolkit {
 		JSDX_TOOLKIT_EVENT_MOTION,
 		JSDX_TOOLKIT_EVENT_DRAG,
 		JSDX_TOOLKIT_EVENT_SCROLL
-	} NodeClutterEvent;
+	} JSDXToolkitEvent;
 
 	typedef enum {
 		JSDX_TOOLKIT_SCROLL_UP,
@@ -40,7 +40,7 @@ namespace JSDXToolkit {
 		JSDX_TOOLKIT_EFFECT_COLORIZE,
 		JSDX_TOOLKIT_EFFECT_DESATURATE,
 		JSDX_TOOLKIT_EFFECT_PAGE_TURN
-	} NodeClutterEffect;
+	} JSDXToolkitEffect;
 
 	typedef enum {
 		JSDX_TOOLKIT_TEXTURE_X11
