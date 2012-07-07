@@ -334,6 +334,8 @@ toolkit.Widget.Dialog.prototype.remove = remove;
 toolkit.Widget.Dialog.prototype.setTransientParent = setTransientParent;
 
 function setTransientParent(_parent) {
+	var self = this;
+
 	this.parent = _parent;
 
 	if ('actor_list' in self)
