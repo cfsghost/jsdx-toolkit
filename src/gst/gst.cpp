@@ -19,7 +19,7 @@ namespace JSDXToolkit {
 	using namespace node;
 	using namespace v8;
 
-	Gst::Gst() : Texture() {}
+	Gst::Gst() : Media() {}
 
 	void Gst::Initialize(Handle<Object> target)
 	{

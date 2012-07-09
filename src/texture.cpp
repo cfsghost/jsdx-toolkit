@@ -257,9 +257,7 @@ namespace JSDXToolkit {
 		Local<Value> Options;
 		Local<Value> Callback;
 		ClutterActor *instance = ObjectWrap::Unwrap<Texture>(args.This())->_actor;
-
-		Actor::On(args);
-
+#if 0
 		/* Check arguments */
 		if (args.Length() == 2) {
 			Event = args[0];
@@ -280,16 +278,10 @@ namespace JSDXToolkit {
 			return ThrowException(Exception::TypeError(
 				String::New("Second argument must be a callback function")));
 		}
+#endif
+		Actor::On(args);
 
-		/* Get callback function */
-		Persistent<Function> *callback = new Persistent<Function>();
-		*callback = Persistent<Function>::New(Handle<Function>::Cast(Callback));
-
-		switch(Event->ToInteger()->Value()) {
-		case JSDX_TOOLKIT_TEXTURE_EVENT_LOAD_FINISHED:
-	//		g_signal_connect(G_OBJECT(instance), "load-finished", G_CALLBACK(Texture::_LoadFinishedCallback), (gpointer)callback);
-			break;
-		}
+		return args.This();
 	}
 
 }

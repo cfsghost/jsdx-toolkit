@@ -7,11 +7,15 @@
 
 namespace JSDXToolkit {
 
-	class Media : node::ObjectWrap {
+	class Media : public Texture {
 	public:
 		static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 
+		NodeCallback *signal_eos_cb;
+		NodeCallback *signal_error_cb;
+
 	protected:
+
 		Media();
 
 		static v8::Handle<v8::Value> LoadFile(const v8::Arguments& args);
@@ -22,6 +26,12 @@ namespace JSDXToolkit {
 		static v8::Handle<v8::Value> GetVolume(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetProgress(const v8::Arguments& args);
 		static v8::Handle<v8::Value> GetProgress(const v8::Arguments& args);
+
+		static v8::Handle<v8::Value> On(const v8::Arguments& args);
+
+		/* Signal callback */
+		static void _SignalEOSCallback(ClutterMedia *media, gpointer user_data);
+		static void _SignalErrorCallback(ClutterMedia *media, GError *error, gpointer user_data);
 	};
 
 }
