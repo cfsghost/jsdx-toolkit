@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'Fullscreen';
 stage.setColor(0, 0, 0, 255);
 stage.fullscreen(true);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();

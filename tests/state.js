@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'State Manchine';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();
@@ -45,13 +45,13 @@ state.set('blur', [
 	[ texture2, 'scale-y', toolkit.EASE_OUT_CUBIC, 0.5 ]
 ]);
 
-texture1.on(toolkit.EVENT_ENTER, function(ev) {
+texture1.on('enter', function(ev) {
 	state.setState('focus');
 
 	return true;
 });
 
-texture1.on(toolkit.EVENT_LEAVE, function(ev) {
+texture1.on('leave', function(ev) {
 	state.setState('blur');
 
 	return true;

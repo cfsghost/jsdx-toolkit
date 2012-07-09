@@ -5,7 +5,7 @@ var app = new toolkit.Application('Test Application');
 app.loadStyleFile('default.css');
 
 app.createWindow(function(window) {
-	window.on(toolkit.EVENT_DESTROY, function() {
+	window.on('destroy', function() {
 		app.quit();
 	});
 

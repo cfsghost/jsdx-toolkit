@@ -48,6 +48,22 @@ namespace JSDXToolkit {
 		{ NULL, 0 },
 	};
 
+	struct EventDefine events[] = {
+		{ JSDX_TOOLKIT_EVENT_DESTROY, "destroy" },
+		{ JSDX_TOOLKIT_EVENT_SHOW, "show" },
+		{ JSDX_TOOLKIT_EVENT_HIDE, "hide" },
+		{ JSDX_TOOLKIT_EVENT_PRESS, "press" },
+		{ JSDX_TOOLKIT_EVENT_RELEASE, "release" },
+		{ JSDX_TOOLKIT_EVENT_CLICK, "click" },
+		{ JSDX_TOOLKIT_EVENT_LONG_PRESS, "long_press" },
+		{ JSDX_TOOLKIT_EVENT_ENTER, "enter" },
+		{ JSDX_TOOLKIT_EVENT_LEAVE, "leave" },
+		{ JSDX_TOOLKIT_EVENT_MOTION, "motion" },
+		{ JSDX_TOOLKIT_EVENT_DRAG, "drag" },
+		{ JSDX_TOOLKIT_EVENT_SCROLL, "scroll" },
+		{ -1, NULL },
+	};
+
 	Persistent<FunctionTemplate> Actor::constructor_template;
 
 	Actor::Actor()
@@ -823,6 +839,14 @@ namespace JSDXToolkit {
 		ClutterActor *instance = obj->_actor;
 
 		/* Check arguments */
+		if (args.Length() > 3) {
+			return ThrowException(Exception::TypeError(
+				String::New("too much arguments")));
+		} else if (args.Length() < 2) {
+			return ThrowException(Exception::TypeError(
+				String::New("too few arguments")));
+		}
+
 		if (args.Length() == 2) {
 			Event = args[0];
 			Callback = args[1];
@@ -830,20 +854,32 @@ namespace JSDXToolkit {
 			Event = args[0];
 			Options = args[1];
 			Callback = args[2];
-		} else
-			return args.This();
 
-		if (!Event->IsNumber()) {
-			return ThrowException(Exception::TypeError(
-				String::New("first argument must be integer")));
+			if (!Options->IsObject())
+				return ThrowException(Exception::TypeError(
+					String::New("options parameter must be object")));
 		}
 
-		if (!Callback->IsFunction()) {
+		if (!Event->IsString())
 			return ThrowException(Exception::TypeError(
-				String::New("Second argument must be a callback function")));
+				String::New("first arguments must be string")));
+
+		if (!Callback->IsFunction())
+			return ThrowException(Exception::TypeError(
+				String::New("require callback function")));
+
+		/* Get event id */
+		int i;
+		int event = -1;
+		for (i = 0; events[i].event != NULL; ++i) {
+			if (strcmp(events[i].event, *String::AsciiValue(Event->ToString())) == 0) {
+				event = events[i].id;
+				break;
+			}
 		}
 
-		switch(Event->ToInteger()->Value()) {
+		//switch(Event->ToInteger()->Value()) {
+		switch(event) {
 		case JSDX_TOOLKIT_EVENT_DESTROY:
 			if (!obj->destroy_cb) {
 				obj->destroy_cb = new NodeCallback();

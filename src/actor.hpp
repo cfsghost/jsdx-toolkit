@@ -18,6 +18,11 @@ namespace JSDXToolkit {
 		GType type;
 	};
 
+	struct EventDefine {
+		int id;
+		const char *event;
+	};
+
 	class Actor : public node::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor_template;

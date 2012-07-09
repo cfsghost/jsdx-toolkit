@@ -17,7 +17,7 @@ stage.resize(500, 500);
 stage.setColor(255, 0, 0, 255);
 stage.setCursor(false);
 
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 

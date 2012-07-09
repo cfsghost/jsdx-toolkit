@@ -14,7 +14,7 @@ stage.useAlpha = true;
 stage.opacity = 100;
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();
@@ -33,13 +33,13 @@ texture2.loadFileSync('fred.jpg');
 texture2.setPosition(200, 150);
 texture2.rotate(30, toolkit.GRAVITY_CENTER);
 texture2.reactive = true;
-texture2.on(toolkit.EVENT_PRESS, function(ev) {
+texture2.on('press', function(ev) {
 	console.log('Pressed texture2!');
 });
-texture2.on(toolkit.EVENT_RELEASE, function(ev) {
+texture2.on('release', function(ev) {
 	console.log('Released texture2!');
 });
-texture2.on(toolkit.EVENT_CLICK, function(ev) {
+texture2.on('click', function(ev) {
 	console.log('Clicked texture2!');
 });
 stage.add(texture2);

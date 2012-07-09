@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'FlickView Widget';
 stage.resize(800, 600);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();

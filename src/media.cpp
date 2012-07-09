@@ -205,9 +205,9 @@ namespace JSDXToolkit {
 			media->signal_error_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
 			g_signal_connect(G_OBJECT(instance), "error", G_CALLBACK(Media::_SignalErrorCallback), (gpointer)media->signal_error_cb);
+		} else {
+			Texture::On(args);
 		}
-
-//		Texture::On(args);
 
 		return args.This();
 	}

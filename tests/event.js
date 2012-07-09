@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'Event';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();
@@ -21,17 +21,17 @@ texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.opacity = 150;
 texture1.reactive = true;
-texture1.on(toolkit.EVENT_ENTER, function(ev) {
+texture1.on('enter', function(ev) {
 	console.log('texture1: enter');
 
 	return true;
 });
-texture1.on(toolkit.EVENT_LEAVE, function(ev) {
+texture1.on('leave', function(ev) {
 	console.log('texture1: leave');
 
 	return true;
 });
-texture1.on(toolkit.EVENT_MOTION, function(ev, motion) {
+texture1.on('motion', function(ev, motion) {
 	//console.log('texture1: motion');
 	console.log('texture1: motion (' + motion.x + ', ' + motion.y + ') time=' + motion.time);
 
@@ -46,7 +46,7 @@ texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
 texture2.reactive = true;
-texture2.on(toolkit.EVENT_CLICK, function(ev) {
+texture2.on('click', function(ev) {
 	console.log('texture2: click');
 });
 stage.add(texture2);

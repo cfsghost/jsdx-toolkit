@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'Drag Action';
 stage.resize(500, 500);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();
@@ -20,7 +20,7 @@ texture1.loadFile('fred.jpg');
 texture1.setPosition(100, 100);
 texture1.opacity = 150;
 texture1.reactive = true;
-texture1.on(toolkit.EVENT_DRAG, function(ev, data) {
+texture1.on('drag', function(ev, data) {
 	console.log(ev);
 	console.log(data);
 });
@@ -31,7 +31,7 @@ texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
 texture2.reactive = true;
-texture2.on(toolkit.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
+texture2.on('drag', { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
 	console.log(ev);
 	console.log(data);
 });

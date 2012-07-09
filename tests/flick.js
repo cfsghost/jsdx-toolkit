@@ -10,7 +10,7 @@ var stage = new toolkit.Stage();
 stage.title = 'Flick';
 stage.resize(1000, 800);
 stage.setColor(0, 0, 0, 255);
-stage.on(toolkit.EVENT_DESTROY, function() {
+stage.on('destroy', function() {
 	toolkit.quit();
 });
 stage.show();
@@ -38,7 +38,7 @@ var lastTimestampX;
 var lastTimestampY;
 
 /* Do not speed up with long press */
-texture1.on(toolkit.EVENT_LONG_PRESS, { duration: stopFactor }, function(ev, data) {
+texture1.on('long_press', { duration: stopFactor }, function(ev, data) {
 	switch(data.state) {
 	case toolkit.ACTION_STATE_LONG_PRESS_QUERY:
 		return true;
@@ -55,7 +55,7 @@ texture1.on(toolkit.EVENT_LONG_PRESS, { duration: stopFactor }, function(ev, dat
 
 });
 
-texture1.on(toolkit.EVENT_PRESS, function(ev, data) {
+texture1.on('press', function(ev, data) {
 	texture1.setAnimate(toolkit.ANIMATION_PAUSE);
 	timeX = new Date().getTime();
 	timeY = timeX;
@@ -63,7 +63,7 @@ texture1.on(toolkit.EVENT_PRESS, function(ev, data) {
 	dy = 0;
 });
 
-texture1.on(toolkit.EVENT_DRAG, function(ev, data) {
+texture1.on('drag', function(ev, data) {
 	var durationX;
 	var durationY;
 
@@ -134,7 +134,7 @@ texture2.loadFile('fred.jpg');
 texture2.setPosition(200, 200);
 texture2.depth = -200;
 texture2.reactive = true;
-texture2.on(toolkit.EVENT_DRAG, { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
+texture2.on('drag', { x_threshold: 50, y_threshold: 50 }, function(ev, data) {
 	console.log(ev);
 	console.log(data);
 });
