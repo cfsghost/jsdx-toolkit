@@ -65,6 +65,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("orientation"), BoxLayout::OrientationGetter, BoxLayout::OrientationSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("spacing"), BoxLayout::SpacingGetter, BoxLayout::SpacingSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("enableAnimations"), BoxLayout::EnableAnimationsGetter, BoxLayout::EnableAnimationsSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("scrollToFocused"), BoxLayout::ScrollToFocusedGetter, BoxLayout::ScrollToFocusedSetter);
 
 		/* Methods */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", BoxLayout::Add);
@@ -157,6 +158,28 @@ namespace JSDXToolkit {
 			ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
 
 			mx_box_layout_set_enable_animations(MX_BOX_LAYOUT(instance), value->ToBoolean()->Value());
+		}
+	}
+
+	Handle<Value> BoxLayout::ScrollToFocusedGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(mx_box_layout_get_scroll_to_focused(MX_BOX_LAYOUT(instance)))
+		);
+	}
+
+	void BoxLayout::ScrollToFocusedSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<BoxLayout>(info.This())->_actor;
+
+			mx_box_layout_set_scroll_to_focused(MX_BOX_LAYOUT(instance), value->ToBoolean()->Value());
 		}
 	}
 
