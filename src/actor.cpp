@@ -1315,6 +1315,8 @@ namespace JSDXToolkit {
 
 		constraint = clutter_align_constraint_new(source, axis, factor);
 		clutter_actor_add_constraint(actor, constraint);
+
+		return args.This();
 	}
 
 	Handle<Value> Actor::SetBindConstraint(const Arguments &args)
@@ -1358,6 +1360,8 @@ namespace JSDXToolkit {
 
 		constraint = clutter_bind_constraint_new(source, coordinate, offset);
 		clutter_actor_add_constraint(actor, constraint);
+
+		return args.This();
 	}
 
 }
