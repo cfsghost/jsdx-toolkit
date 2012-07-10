@@ -53,6 +53,7 @@ namespace JSDXToolkit {
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("state"), KineticScrollView::StateGetter, KineticScrollView::StateSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("clampMode"), KineticScrollView::ClampModeGetter, KineticScrollView::ClampModeSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("clampToCenter"), KineticScrollView::ClampToCenterGetter, KineticScrollView::ClampToCenterSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("overshoot"), KineticScrollView::OvershootGetter, KineticScrollView::OvershootSetter);
 
 		target->Set(name, constructor->GetFunction());
 	}
@@ -237,6 +238,27 @@ namespace JSDXToolkit {
 					NULL);
 			}
 		}
+	}
+
+	Handle<Value> KineticScrollView::OvershootGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		return scope.Close(
+			Number::New(mx_kinetic_scroll_view_get_overshoot(MX_KINETIC_SCROLL_VIEW(instance)))
+		);
+	}
+
+	void KineticScrollView::OvershootSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		if (value->IsNumber())
+			mx_kinetic_scroll_view_set_overshoot(MX_KINETIC_SCROLL_VIEW(instance), value->ToNumber()->Value());
 	}
 
 }
