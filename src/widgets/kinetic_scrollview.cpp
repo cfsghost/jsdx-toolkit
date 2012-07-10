@@ -50,6 +50,7 @@ namespace JSDXToolkit {
 
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_horizontal"), KineticScrollView::PolicyHorizontalGetter, KineticScrollView::PolicyHorizontalSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_vertical"), KineticScrollView::PolicyVerticalGetter, KineticScrollView::PolicyVerticalSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("state"), KineticScrollView::StateGetter, KineticScrollView::StateSetter);
 
 		target->Set(name, constructor->GetFunction());
 	}
@@ -147,6 +148,25 @@ namespace JSDXToolkit {
 					mx_kinetic_scroll_view_set_scroll_policy(MX_KINETIC_SCROLL_VIEW(instance), MX_SCROLL_POLICY_HORIZONTAL);
 			}
 		}
+	}
+
+	Handle<Value> KineticScrollView::StateGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		MxKineticScrollViewState state;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		g_object_get(G_OBJECT(instance), "state", &state, NULL);
+
+		return scope.Close(Integer::New(state));
+	}
+
+	void KineticScrollView::StateSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		/* Do nothing */
 	}
 
 }
