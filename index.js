@@ -2,6 +2,8 @@ var toolkit = module.exports = require('./build/Release/jsdx_toolkit');
 toolkit.JTKML = require('./lib/jtkml');
 toolkit.UIRender = require('./lib/ui-render');
 
+var internal = require('./lib/internal');
+
 /* JSDX Toolkit Object */
 toolkit.Application.prototype.type = 'Application';
 toolkit.Window.prototype.type = 'Window';
@@ -33,40 +35,6 @@ toolkit.Widget.Image.prototype.type = 'Image';
 toolkit.Widget.Viewport.prototype.type = 'Viewport';
 toolkit.Widget.ScrollView.prototype.type = 'ScrollView';
 toolkit.Widget.KineticScrollView.prototype.type = 'KineticScrollView';
-
-/* Internal functions */
-function traverseWidgets(widget, handler) {
-
-	handler(widget);
-
-	if ('actor_list' in widget) {
-		for (var index in widget.actor_list) {
-			traverseWidgets(widget.actor_list[index], handler);
-		}
-	}
-}
-
-function getWidgetIdDict(widget, callback) {
-	var idDict = {};
-
-	traverseWidgets(widget, function(w) {
-		if ('id' in w) {
-			idDict[w.id] = w;
-		}
-	});
-
-	process.nextTick(function() {
-		callback(idDict);
-	});
-}
-
-function setApplication(widget, app) {
-
-	/* Set all widgets */
-	traverseWidgets(widget, function(w) {
-		w.application = app;
-	});
-}
 
 /* Destroy */
 //toolkit.Application.prototype.destroy = destroy;
@@ -158,10 +126,10 @@ function add() {
 	if ('application' in this) {
 
 		/* TODO: Combine setApplication and getWidgetIdDict, DO NOT traverse widget tree twice. */
-		setApplication(widget, this.application);
+		internal.setApplication(widget, this.application);
 
 		/* Get all child of window which has id, to append them to list */
-		getWidgetIdDict(widget, function(idDict) {
+		internal.getWidgetIdDict(widget, function(idDict) {
 
 			/* Append to widget list of application */
 			for (var id in idDict)
@@ -295,10 +263,10 @@ function setChild(child) {
 	if ('application' in this) {
 
 		/* TODO: Combine setApplication and getWidgetIdDict, DO NOT traverse widget tree twice. */
-		setApplication(child, this.application);
+		internal.setApplication(child, this.application);
 
 		/* Get all child of window which has id, to append them to list */
-		getWidgetIdDict(child, function(idDict) {
+		internal.getWidgetIdDict(child, function(idDict) {
 
 			/* Append to widget list of application */
 			for (var id in idDict)
@@ -348,10 +316,10 @@ function setTransientParent(_parent) {
 	if ('application' in _parent) {
 
 		/* TODO: Combine setApplication and getWidgetIdDict, DO NOT traverse widget tree twice. */
-		setApplication(this, _parent.application);
+		internal.setApplication(this, _parent.application);
 
 		/* Get all child of window which has id, to append them to list */
-		getWidgetIdDict(this, function(idDict) {
+		internal.getWidgetIdDict(this, function(idDict) {
 
 			/* Append to widget list of application */
 			for (var id in idDict)
@@ -381,7 +349,7 @@ toolkit.Application.prototype.add = function(window) {
 		this.widget = {};
 
 	/* Get all child of window which has id, to append them to list */
-	getWidgetIdDict(window, function(idDict) {
+	internal.getWidgetIdDict(window, function(idDict) {
 
 		/* Append to widget list of application */
 		for (var id in idDict)
@@ -389,7 +357,7 @@ toolkit.Application.prototype.add = function(window) {
 	});
 
 	/* set all child to belongs to this application */
-	setApplication(window, this);
+	internal.setApplication(window, this);
 };
 
 toolkit.Application.prototype.createWindow = function(callback) {
