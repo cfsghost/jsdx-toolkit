@@ -29,6 +29,7 @@ namespace JSDXToolkit {
 	KineticScrollView::KineticScrollView() : Bin() {
 		_actor = mx_kinetic_scroll_view_new();
 
+		mx_kinetic_scroll_view_set_use_captured(MX_KINETIC_SCROLL_VIEW(_actor), TRUE);
 		mx_kinetic_scroll_view_set_overshoot(MX_KINETIC_SCROLL_VIEW(_actor), 0.2);
 	}
 
