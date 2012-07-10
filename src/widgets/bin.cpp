@@ -50,6 +50,7 @@ namespace JSDXToolkit {
 		Stylable::PrototypeMethodsInit(constructor_template);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Bin::Add);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "focus", Bin::Focus);
 	}
 
 	/* ECMAScript constructor */
@@ -81,5 +82,15 @@ namespace JSDXToolkit {
 
 			mx_bin_set_child(MX_BIN(instance), CLUTTER_ACTOR(actor));
 		}
+	}
+
+	Handle<Value> Bin::Focus(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Bin>(args.This())->_actor;
+		ClutterActor *stage = clutter_actor_get_stage(instance);
+
+		mx_focus_manager_push_focus(mx_focus_manager_get_for_stage(CLUTTER_STAGE(stage)), MX_FOCUSABLE(instance));
 	}
 }
