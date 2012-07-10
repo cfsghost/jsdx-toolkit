@@ -51,6 +51,8 @@ namespace JSDXToolkit {
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_horizontal"), KineticScrollView::PolicyHorizontalGetter, KineticScrollView::PolicyHorizontalSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("policy_vertical"), KineticScrollView::PolicyVerticalGetter, KineticScrollView::PolicyVerticalSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("state"), KineticScrollView::StateGetter, KineticScrollView::StateSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("clampMode"), KineticScrollView::ClampModeGetter, KineticScrollView::ClampModeSetter);
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("clampToCenter"), KineticScrollView::ClampToCenterGetter, KineticScrollView::ClampToCenterSetter);
 
 		target->Set(name, constructor->GetFunction());
 	}
@@ -167,6 +169,74 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		/* Do nothing */
+	}
+
+	Handle<Value> KineticScrollView::ClampModeGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		gboolean enabled;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		g_object_get(G_OBJECT(instance), "clamp-mode", &enabled, NULL);
+
+		return scope.Close(Boolean::New(enabled));
+	}
+
+	void KineticScrollView::ClampModeSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		if (value->IsBoolean()) {
+
+			if (value->ToBoolean()->Value()) {
+				g_object_set(G_OBJECT(instance),
+					"clamp-mode", TRUE,
+					NULL);
+			} else {
+				g_object_set(G_OBJECT(instance),
+					"clamp-mode", FALSE,
+					NULL);
+			}
+		}
+	}
+
+	Handle<Value> KineticScrollView::ClampToCenterGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		gboolean enabled;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		g_object_get(G_OBJECT(instance), "clamp-mode", &enabled, NULL);
+
+		if (enabled) {
+			g_object_get(G_OBJECT(instance), "clamp-to-center", &enabled, NULL);
+			return scope.Close(Boolean::New(enabled));
+		}
+
+		return scope.Close(Boolean::New(FALSE));
+	}
+
+	void KineticScrollView::ClampToCenterSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		ClutterActor *instance = ObjectWrap::Unwrap<KineticScrollView>(info.This())->_actor;
+
+		if (value->IsBoolean()) {
+
+			if (value->ToBoolean()->Value()) {
+				g_object_set(G_OBJECT(instance),
+					"clamp-mode", TRUE,
+					"clamp-to-center", TRUE,
+					NULL);
+			} else {
+				g_object_set(G_OBJECT(instance),
+					"clamp-to-center", FALSE,
+					NULL);
+			}
+		}
 	}
 
 }

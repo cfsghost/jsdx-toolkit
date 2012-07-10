@@ -24,6 +24,12 @@ protected:
 
 	static v8::Handle<v8::Value> StateGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 	static void StateSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+	static v8::Handle<v8::Value> ClampModeGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+	static void ClampModeSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+
+	static v8::Handle<v8::Value> ClampToCenterGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+	static void ClampToCenterSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 };
 
 }
