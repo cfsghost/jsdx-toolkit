@@ -165,6 +165,7 @@ namespace JSDXToolkit {
 
 		/* Constraint */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAlignConstraint", Actor::SetAlignConstraint);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setBindConstraint", Actor::SetBindConstraint);
 
 	}
 
@@ -1313,6 +1314,49 @@ namespace JSDXToolkit {
 		}
 
 		constraint = clutter_align_constraint_new(source, axis, factor);
+		clutter_actor_add_constraint(actor, constraint);
+	}
+
+	Handle<Value> Actor::SetBindConstraint(const Arguments &args)
+	{
+		ClutterConstraint *constraint;
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		if (!args[0]->IsObject())
+			return ThrowException(Exception::TypeError(
+				String::New("first argument must be actor")));
+
+		if (!args[1]->IsString())
+			return ThrowException(Exception::TypeError(
+				String::New("second argument must be coordinate")));
+
+		if (!args[2]->IsNumber())
+			return ThrowException(Exception::TypeError(
+				String::New("third argument must be offset")));
+
+		ClutterActor *source = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+		ClutterBindCoordinate coordinate;
+		gfloat offset = args[2]->ToNumber()->Value();
+
+		if (strcmp(*String::Utf8Value(args[1]->ToString()), "x") == 0) {
+			coordinate = CLUTTER_BIND_X;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "y") == 0) {
+			coordinate = CLUTTER_BIND_Y;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "width") == 0) {
+			coordinate = CLUTTER_BIND_WIDTH;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "height") == 0) {
+			coordinate = CLUTTER_BIND_HEIGHT;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "position") == 0) {
+			coordinate = CLUTTER_BIND_POSITION;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "size") == 0) {
+			coordinate = CLUTTER_BIND_SIZE;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "all") == 0) {
+			coordinate = CLUTTER_BIND_ALL;
+		} else {
+			return args.This();
+		}
+
+		constraint = clutter_bind_constraint_new(source, coordinate, offset);
 		clutter_actor_add_constraint(actor, constraint);
 	}
 
