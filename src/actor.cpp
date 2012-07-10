@@ -162,6 +162,10 @@ namespace JSDXToolkit {
 		/* Animation */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "animate", Actor::Animate);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnimate", Actor::SetAnimate);
+
+		/* Constraint */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAlignConstraint", Actor::SetAlignConstraint);
+
 	}
 
 	bool Actor::PropertyValueInit(GValue *gvalue, Handle<Value> property, Handle<Value> value)
@@ -1275,6 +1279,41 @@ namespace JSDXToolkit {
 		}
 
 		return args.This();
+	}
+
+	Handle<Value> Actor::SetAlignConstraint(const Arguments &args)
+	{
+		ClutterConstraint *constraint;
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		if (!args[0]->IsObject())
+			return ThrowException(Exception::TypeError(
+				String::New("first argument must be actor")));
+
+		if (!args[1]->IsString())
+			return ThrowException(Exception::TypeError(
+				String::New("second argument must be axis")));
+
+		if (!args[2]->IsNumber())
+			return ThrowException(Exception::TypeError(
+				String::New("third argument must be factor")));
+
+		ClutterActor *source = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+		ClutterAlignAxis axis;
+		gfloat factor = args[2]->ToNumber()->Value();
+
+		if (strcmp(*String::Utf8Value(args[1]->ToString()), "x") == 0) {
+			axis = CLUTTER_ALIGN_X_AXIS;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "y") == 0) {
+			axis = CLUTTER_ALIGN_Y_AXIS;
+		} else if (strcmp(*String::Utf8Value(args[1]->ToString()), "both") == 0) {
+			axis = CLUTTER_ALIGN_BOTH;
+		} else {
+			return args.This();
+		}
+
+		constraint = clutter_align_constraint_new(source, axis, factor);
+		clutter_actor_add_constraint(actor, constraint);
 	}
 
 }
