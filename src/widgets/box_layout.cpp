@@ -32,7 +32,7 @@ namespace JSDXToolkit {
 	BoxLayout::BoxLayout() : Widget() {
 		_actor = mx_box_layout_new();
 		mx_box_layout_set_orientation(MX_BOX_LAYOUT(_actor), (MxOrientation)JSDX_TOOLKIT_WIDGET_ORIENTATION_VERTICAL);
-		mx_focusable_accept_focus(MX_FOCUSABLE(_actor), MX_FOCUS_HINT_PRIOR);
+		mx_box_layout_set_enable_animations(MX_BOX_LAYOUT(_actor), TRUE);
 	}
 
 	void BoxLayout::Initialize(Handle<Object> target)
