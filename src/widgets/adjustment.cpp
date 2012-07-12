@@ -33,6 +33,7 @@ namespace JSDXToolkit {
 		constructor->InstanceTemplate()->SetInternalFieldCount(1);
 		constructor->SetClassName(name);
 
+		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("clamp_value"), Adjustment::ClampValueGetter, Adjustment::ClampValueSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("value"), Adjustment::ValueGetter, Adjustment::ValueSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("lower"), Adjustment::LowerGetter, Adjustment::LowerSetter);
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("upper"), Adjustment::UpperGetter, Adjustment::UpperSetter);
@@ -73,6 +74,28 @@ namespace JSDXToolkit {
 		obj->Wrap(args.This());
 
 		return scope.Close(args.This());
+	}
+
+	Handle<Value> Adjustment::ClampValueGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		Adjustment *adjust = ObjectWrap::Unwrap<Adjustment>(info.This());
+
+		return scope.Close(
+			Boolean::New(mx_adjustment_get_clamp_value(adjust->_adjust))
+		);
+	}
+
+	void Adjustment::ClampValueSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			Adjustment *adjust = ObjectWrap::Unwrap<Adjustment>(info.This());
+
+			mx_adjustment_set_clamp_value(adjust->_adjust, value->ToBoolean()->Value());
+		}
 	}
 
 	Handle<Value> Adjustment::ValueGetter(Local<String> name, const AccessorInfo& info)
