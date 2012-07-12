@@ -54,6 +54,8 @@ namespace JSDXToolkit {
 		{ JSDX_TOOLKIT_EVENT_HIDE, "hide" },
 		{ JSDX_TOOLKIT_EVENT_PRESS, "press" },
 		{ JSDX_TOOLKIT_EVENT_RELEASE, "release" },
+		{ JSDX_TOOLKIT_EVENT_KEY_PRESS, "keypress" },
+		{ JSDX_TOOLKIT_EVENT_KEY_RELEASE, "keyrelease" },
 		{ JSDX_TOOLKIT_EVENT_CLICK, "click" },
 		{ JSDX_TOOLKIT_EVENT_LONG_PRESS, "long_press" },
 		{ JSDX_TOOLKIT_EVENT_ENTER, "enter" },
@@ -77,6 +79,8 @@ namespace JSDXToolkit {
 		button_press_cb = NULL;
 		button_release_cb = NULL;
 		button_clicked_cb = NULL;
+		key_press_cb = NULL;
+		key_release_cb = NULL;
 		long_press_cb = NULL;
 		enter_cb = NULL;
 		leave_cb = NULL;
@@ -97,6 +101,8 @@ namespace JSDXToolkit {
 		delete destroy_cb;
 		delete button_press_cb;
 		delete button_release_cb;
+		delete key_press_cb;
+		delete key_release_cb;
 		delete button_clicked_cb;
 		delete long_press_cb;
 		delete enter_cb;
@@ -654,6 +660,45 @@ namespace JSDXToolkit {
 		return (*ret)->IsTrue();
 	}
 
+	gboolean Actor::_KeyPressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+	{
+		const unsigned argc = 2;
+		NodeCallback *cb = (NodeCallback *)user_data;
+
+		/* create a JavaScript Object */
+		Local<Object> o = Object::New();
+		o->Set(String::New("keyval"), Number::New(event->key.keyval));
+
+		Local<Value> argv[argc] = {
+			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_KEY_PRESS)),
+			o
+		};
+
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
+
+		return (*ret)->IsTrue();
+	}
+
+	gboolean Actor::_KeyReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data)
+	{
+		const unsigned argc = 2;
+		NodeCallback *cb = (NodeCallback *)user_data;
+
+		/* create a JavaScript Object */
+		Local<Object> o = Object::New();
+		o->Set(String::New("keyval"), Number::New(event->key.keyval));
+
+		Local<Value> argv[argc] = {
+			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_KEY_RELEASE)),
+			o
+		};
+
+		Local<Value> ret = cb->cb->Call(cb->Holder, argc, argv);
+
+		return (*ret)->IsTrue();
+	}
+
+
 	void Actor::_ClickActionCallback(ClutterClickAction *action, ClutterActor *actor, gpointer user_data)
 	{
 		const unsigned argc = 1;
@@ -927,6 +972,36 @@ namespace JSDXToolkit {
 			obj->button_release_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
 			g_signal_connect(G_OBJECT(instance), "button-release-event", G_CALLBACK(Actor::_ReleaseCallback), (gpointer)obj->button_release_cb);
+
+			break;
+
+		case JSDX_TOOLKIT_EVENT_KEY_PRESS:
+			if (!obj->key_press_cb) {
+				obj->key_press_cb = new NodeCallback();
+			} else {
+				obj->key_press_cb->Holder.Dispose();
+				obj->key_press_cb->cb.Dispose();
+			}
+
+			obj->key_press_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->key_press_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "key-press-event", G_CALLBACK(Actor::_KeyPressCallback), (gpointer)obj->key_press_cb);
+
+			break;
+
+		case JSDX_TOOLKIT_EVENT_KEY_RELEASE:
+			if (!obj->key_release_cb) {
+				obj->key_release_cb = new NodeCallback();
+			} else {
+				obj->key_release_cb->Holder.Dispose();
+				obj->key_release_cb->cb.Dispose();
+			}
+
+			obj->key_release_cb->Holder = Persistent<Object>::New(args.Holder());
+			obj->key_release_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "key-release-event", G_CALLBACK(Actor::_KeyReleaseCallback), (gpointer)obj->key_release_cb);
 
 			break;
 

@@ -39,6 +39,8 @@ namespace JSDXToolkit {
 		NodeCallback *button_press_cb;
 		NodeCallback *button_release_cb;
 		NodeCallback *button_clicked_cb;
+		NodeCallback *key_press_cb;
+		NodeCallback *key_release_cb;
 		NodeCallback *long_press_cb;
 		NodeCallback *enter_cb;
 		NodeCallback *leave_cb;
@@ -105,6 +107,8 @@ namespace JSDXToolkit {
 		static gboolean _LongPressActionCallback(ClutterClickAction *action, ClutterActor *actor, ClutterLongPressState state, gpointer user_data);
 		static gboolean _PressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 		static gboolean _ReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
+		static gboolean _KeyPressCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
+		static gboolean _KeyReleaseCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 		static gboolean _EnterCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 		static gboolean _LeaveCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
 		static gboolean _MotionCallback(ClutterActor *actor, ClutterEvent *event, gpointer user_data);
