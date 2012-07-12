@@ -103,7 +103,7 @@ toolkit.Stage.prototype.add = add;
 toolkit.Stage.prototype.remove = remove;
 
 function add() {
-	if (arguments.length != 1)
+	if (arguments.length == 0)
 		throw Error('add() syntax error: first argument is widget');
 
 	var self = this;

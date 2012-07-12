@@ -43,6 +43,9 @@ namespace JSDXToolkit {
 
 		constructor->InstanceTemplate()->SetAccessor(String::NewSymbol("elastic"), Adjustment::ElasticGetter, Adjustment::ElasticSetter);
 
+		/* Methods */
+		NODE_SET_PROTOTYPE_METHOD(constructor, "animate", Adjustment::Animate);
+
 		target->Set(name, constructor->GetFunction());
 	}
 
@@ -250,5 +253,19 @@ namespace JSDXToolkit {
 
 			mx_adjustment_set_elastic(adjust->_adjust, value->ToBoolean()->Value());
 		}
+	}
+
+	/* Methods */
+	Handle<Value> Adjustment::Animate(const Arguments &args)
+	{
+		HandleScope scope;
+
+		if (args[0]->IsNumber()) {
+			Adjustment *adjust = ObjectWrap::Unwrap<Adjustment>(args.This());
+
+			mx_adjustment_interpolate(adjust->_adjust, args[0]->NumberValue(), 450, CLUTTER_EASE_OUT_BACK);
+		}
+
+		return Undefined();
 	}
 }
