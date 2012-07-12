@@ -146,6 +146,7 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "resize", Actor::Resize);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setBackgroundColor", Actor::SetBackgroundColor);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "raiseTop", Actor::RaiseTop);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "isVisible", Actor::IsVisible);
 
@@ -364,6 +365,17 @@ namespace JSDXToolkit {
 
 			clutter_actor_set_background_color(CLUTTER_ACTOR(instance), &color);
 		}
+
+		return args.This();
+	}
+
+	Handle<Value> Actor::RaiseTop(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_set_child_below_sibling(clutter_actor_get_parent(instance), CLUTTER_ACTOR(instance), NULL);
 
 		return args.This();
 	}
