@@ -8,6 +8,9 @@
 #include <v8.h>
 #include <node.h>
 #include <clutter/clutter.h>
+#if ENABLE_MX
+	#include <mx/mx.h>
+#endif
 
 #if USE_X11
 #include <clutter/x11/clutter-x11.h>
@@ -147,6 +150,7 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setPosition", Actor::SetPosition);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setBackgroundColor", Actor::SetBackgroundColor);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "raiseTop", Actor::RaiseTop);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "lowerBottom", Actor::LowerBottom);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "isVisible", Actor::IsVisible);
 
@@ -374,8 +378,21 @@ namespace JSDXToolkit {
 		HandleScope scope;
 
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		ClutterActor *parent = clutter_actor_get_parent(instance);
 
-		clutter_actor_set_child_below_sibling(clutter_actor_get_parent(instance), CLUTTER_ACTOR(instance), NULL);
+		clutter_actor_set_child_above_sibling(parent, CLUTTER_ACTOR(instance), NULL);
+
+		return args.This();
+	}
+
+	Handle<Value> Actor::LowerBottom(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		ClutterActor *parent = clutter_actor_get_parent(instance);
+
+		clutter_actor_set_child_below_sibling(parent, CLUTTER_ACTOR(instance), NULL);
 
 		return args.This();
 	}
