@@ -18,6 +18,7 @@
 #include "../container.hpp"
 #include "widget.hpp"
 #include "bin.hpp"
+#include "scrollable.hpp"
 #include "grid.hpp"
 
 namespace JSDXToolkit {
@@ -67,6 +68,10 @@ namespace JSDXToolkit {
 		// Creates a new instance object of this type and wraps it.
 		Grid* obj = new Grid();
 		obj->Wrap(args.This());
+
+		/* Initializing sub-objects */
+		Local<Object> ScrollableObject = Scrollable::New(MX_SCROLLABLE(obj->_actor));
+		args.Holder()->Set(String::NewSymbol("scroll"), ScrollableObject);
 
 		return scope.Close(args.This());
 	}

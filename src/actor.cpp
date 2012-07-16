@@ -394,6 +394,8 @@ namespace JSDXToolkit {
 
 		clutter_actor_set_child_below_sibling(parent, CLUTTER_ACTOR(instance), NULL);
 
+		clutter_actor_queue_relayout(parent);
+
 		return args.This();
 	}
 
