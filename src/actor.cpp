@@ -140,6 +140,7 @@ namespace JSDXToolkit {
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("height"), Actor::HeightGetter, Actor::HeightSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("hasClip"), Actor::HasClipGetter, Actor::HasClipSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("reactive"), Actor::ReactiveGetter, Actor::ReactiveSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("marginTop"), Actor::MarginTopGetter, Actor::MarginTopSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_destroy", Actor::Destroy);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", Actor::Show);
@@ -532,6 +533,28 @@ namespace JSDXToolkit {
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 			clutter_actor_set_reactive(CLUTTER_ACTOR(instance), value->ToBoolean()->Value());
+		}
+	}
+
+	Handle<Value> Actor::MarginTopGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Integer::New(clutter_actor_get_margin_top(CLUTTER_ACTOR(instance)))
+		);
+	}
+
+	void Actor::MarginTopSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_actor_set_margin_top(CLUTTER_ACTOR(instance), value->ToInteger()->Value());
 		}
 	}
 
