@@ -153,6 +153,8 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "raiseTop", Actor::RaiseTop);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "lowerBottom", Actor::LowerBottom);
 
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "clone", Actor::Clone);
+
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "isVisible", Actor::IsVisible);
 
 		/* Anchor */
@@ -396,6 +398,27 @@ namespace JSDXToolkit {
 		clutter_actor_set_child_below_sibling(parent, CLUTTER_ACTOR(instance), NULL);
 
 		clutter_actor_queue_relayout(parent);
+
+		return args.This();
+	}
+
+	Handle<Value> Actor::Clone(const Arguments &args)
+	{
+		HandleScope scope;
+
+		Actor *actor = ObjectWrap::Unwrap<Actor>(args.This());
+		ClutterActor *instance = actor->_actor;
+		if (instance)
+			return args.This();
+
+		if (args[0]->IsObject()) {
+
+			Actor *source = ObjectWrap::Unwrap<Actor>(args[0]->ToObject());
+			if (!source->_actor)
+				return args.This();
+
+			actor->_actor = clutter_clone_new(source->_actor);
+		}
 
 		return args.This();
 	}
