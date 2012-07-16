@@ -60,6 +60,8 @@ namespace JSDXToolkit {
 
 		Actor::PrototypeMethodsInit(constructor_template);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("filterQuality"), Texture::FilterQualityGetter, Texture::FilterQualitySetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("repeatX"), Texture::RepeatXGetter, Texture::RepeatXSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("repeatY"), Texture::RepeatYGetter, Texture::RepeatYSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Texture::LoadFile);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileSync", Texture::LoadFileSync);
@@ -183,6 +185,56 @@ namespace JSDXToolkit {
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 			clutter_texture_set_filter_quality(CLUTTER_TEXTURE(instance), (ClutterTextureQuality)value->ToInteger()->Value());
+		}
+	}
+
+	Handle<Value> Texture::RepeatXGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		gboolean x, y;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_texture_get_repeat(CLUTTER_TEXTURE(instance), &x, &y);
+
+		return scope.Close(
+			Boolean::New(x)
+		);
+	}
+
+	void Texture::RepeatXSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			g_object_set(G_OBJECT(instance), "repeat-x", value->ToBoolean()->Value(), NULL);
+		}
+	}
+
+	Handle<Value> Texture::RepeatYGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		gboolean x, y;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_texture_get_repeat(CLUTTER_TEXTURE(instance), &x, &y);
+
+		return scope.Close(
+			Boolean::New(y)
+		);
+	}
+
+	void Texture::RepeatYSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			g_object_set(G_OBJECT(instance), "repeat-y", value->ToBoolean()->Value(), NULL);
 		}
 	}
 
