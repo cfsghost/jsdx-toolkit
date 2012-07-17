@@ -22,6 +22,7 @@ namespace JSDXToolkit {
 
 	Media::Media() : Texture() {
 
+		notify_state_cb = NULL;
 		signal_eos_cb = NULL;
 		signal_error_cb = NULL;
 	}
@@ -29,6 +30,8 @@ namespace JSDXToolkit {
 	void Media::PrototypeMethodsInit(Handle<FunctionTemplate> constructor_template)
 	{
 		HandleScope scope;
+
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("playing"), Media::PlayingGetter, Media::PlayingSetter);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFile", Media::LoadFile);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadFileURI", Media::LoadFileURI);
@@ -42,6 +45,33 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Media::On);
 	}
 
+	/* Accessors */
+	Handle<Value> Media::PlayingGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+		gboolean x, y;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		clutter_texture_get_repeat(CLUTTER_TEXTURE(instance), &x, &y);
+
+		return scope.Close(
+			Boolean::New(clutter_media_get_playing(CLUTTER_MEDIA(instance)))
+		);
+	}
+
+	void Media::PlayingSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_media_set_playing(CLUTTER_MEDIA(instance), value->ToBoolean()->Value());
+		}
+	}
+
+	/* Methods */
 	Handle<Value> Media::LoadFile(const Arguments &args)
 	{
 		HandleScope scope;
@@ -178,7 +208,21 @@ namespace JSDXToolkit {
 			return ThrowException(Exception::TypeError(
 				String::New("require callback function")));
 
-		if (strcmp(*String::Utf8Value(Event->ToString()), "eos") == 0) {
+		if (strcmp(*String::Utf8Value(Event->ToString()), "state") == 0) {
+
+			if (!media->notify_state_cb) {
+				media->notify_state_cb = new NodeCallback;
+			} else {
+				media->notify_state_cb->Holder.Dispose();
+				media->notify_state_cb->cb.Dispose();
+			}
+
+			media->notify_state_cb->Holder = Persistent<Object>::New(args.Holder());
+			media->notify_state_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "notify::playing", G_CALLBACK(Media::_NotifyStateCallback), (gpointer)media->notify_state_cb);
+
+		} else if (strcmp(*String::Utf8Value(Event->ToString()), "eos") == 0) {
 
 			if (!media->signal_eos_cb) {
 				media->signal_eos_cb = new NodeCallback;
@@ -192,7 +236,7 @@ namespace JSDXToolkit {
 
 			g_signal_connect(G_OBJECT(instance), "eos", G_CALLBACK(Media::_SignalEOSCallback), (gpointer)media->signal_eos_cb);
 
-		} else if (strcmp(*String::Utf8Value(Event->ToString()), "err") == 0) {
+		} else if (strcmp(*String::Utf8Value(Event->ToString()), "error") == 0) {
 
 			if (!media->signal_error_cb) {
 				media->signal_error_cb = new NodeCallback;
@@ -213,6 +257,13 @@ namespace JSDXToolkit {
 	}
 
 	/* Signal callback */
+	void Media::_NotifyStateCallback(GObject *object, GParamSpec *pspec, gpointer user_data)
+	{
+		NodeCallback *cb = (NodeCallback *)user_data;
+
+		cb->cb->Call(cb->Holder, 0, 0);
+	}
+
 	void Media::_SignalEOSCallback(ClutterMedia *media, gpointer user_data)
 	{
 		NodeCallback *cb = (NodeCallback *)user_data;
