@@ -41,6 +41,7 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getVolume", Media::GetVolume);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setProgress", Media::SetProgress);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getProgress", Media::GetProgress);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getBufferFill", Media::GetBufferFill);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Media::On);
 	}
@@ -49,11 +50,8 @@ namespace JSDXToolkit {
 	Handle<Value> Media::PlayingGetter(Local<String> name, const AccessorInfo& info)
 	{
 		HandleScope scope;
-		gboolean x, y;
 
 		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
-
-		clutter_texture_get_repeat(CLUTTER_TEXTURE(instance), &x, &y);
 
 		return scope.Close(
 			Boolean::New(clutter_media_get_playing(CLUTTER_MEDIA(instance)))
@@ -165,6 +163,17 @@ namespace JSDXToolkit {
 
 		return scope.Close(
 			Number::New(clutter_media_get_progress(CLUTTER_MEDIA(instance)))
+		);
+	}
+
+	Handle<Value> Media::GetBufferFill(const Arguments &args)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		return scope.Close(
+			Number::New(clutter_media_get_buffer_fill(CLUTTER_MEDIA(instance)))
 		);
 	}
 
