@@ -12,6 +12,7 @@ namespace JSDXToolkit {
 		static void PrototypeMethodsInit(v8::Handle<v8::FunctionTemplate> constructor_template);
 
 		NodeCallback *notify_state_cb;
+		NodeCallback *notify_buffering_cb;
 		NodeCallback *signal_eos_cb;
 		NodeCallback *signal_error_cb;
 
@@ -36,6 +37,7 @@ namespace JSDXToolkit {
 
 		/* Signal callback */
 		static void _NotifyStateCallback(GObject *object, GParamSpec *pspec, gpointer user_data);
+		static void _NotifyBufferingCallback(GObject *object, GParamSpec *pspec, gpointer user_data);
 		static void _SignalEOSCallback(ClutterMedia *media, gpointer user_data);
 		static void _SignalErrorCallback(ClutterMedia *media, GError *error, gpointer user_data);
 	};

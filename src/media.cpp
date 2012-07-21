@@ -23,6 +23,7 @@ namespace JSDXToolkit {
 	Media::Media() : Texture() {
 
 		notify_state_cb = NULL;
+		notify_buffering_cb = NULL;
 		signal_eos_cb = NULL;
 		signal_error_cb = NULL;
 	}
@@ -231,6 +232,20 @@ namespace JSDXToolkit {
 
 			g_signal_connect(G_OBJECT(instance), "notify::playing", G_CALLBACK(Media::_NotifyStateCallback), (gpointer)media->notify_state_cb);
 
+		} else if (strcmp(*String::Utf8Value(Event->ToString()), "buffering") == 0) {
+
+			if (!media->notify_buffering_cb) {
+				media->notify_buffering_cb = new NodeCallback;
+			} else {
+				media->notify_buffering_cb->Holder.Dispose();
+				media->notify_buffering_cb->cb.Dispose();
+			}
+
+			media->notify_buffering_cb->Holder = Persistent<Object>::New(args.Holder());
+			media->notify_buffering_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
+
+			g_signal_connect(G_OBJECT(instance), "notify::buffer-fill", G_CALLBACK(Media::_NotifyBufferingCallback), (gpointer)media->notify_buffering_cb);
+
 		} else if (strcmp(*String::Utf8Value(Event->ToString()), "eos") == 0) {
 
 			if (!media->signal_eos_cb) {
@@ -267,6 +282,13 @@ namespace JSDXToolkit {
 
 	/* Signal callback */
 	void Media::_NotifyStateCallback(GObject *object, GParamSpec *pspec, gpointer user_data)
+	{
+		NodeCallback *cb = (NodeCallback *)user_data;
+
+		cb->cb->Call(cb->Holder, 0, 0);
+	}
+
+	void Media::_NotifyBufferingCallback(GObject *object, GParamSpec *pspec, gpointer user_data)
 	{
 		NodeCallback *cb = (NodeCallback *)user_data;
 
