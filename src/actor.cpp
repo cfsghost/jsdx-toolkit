@@ -164,7 +164,9 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "scale", Actor::Scale);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setScaleGravity", Actor::SetScaleGravity);
 
+		/* Rotation */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "rotate", Actor::Rotate);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setRotationGravity", Actor::SetRotationGravity);
 
 		/* Event handler */
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "on", Actor::On);
@@ -674,6 +676,19 @@ namespace JSDXToolkit {
 						args[4]->NumberValue()); 
 
 			}
+		}
+
+		return args.This();
+	}
+
+	Handle<Value> Actor::SetRotationGravity(const Arguments &args)
+	{
+		HandleScope scope;
+
+		if (args[0]->IsNumber()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+			g_object_set(G_OBJECT(instance), "rotation-center-z-gravity", (ClutterGravity)args[0]->ToInteger()->Value(), NULL);
 		}
 
 		return args.This();

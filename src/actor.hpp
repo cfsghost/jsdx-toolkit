@@ -97,6 +97,7 @@ namespace JSDXToolkit {
 		static v8::Handle<v8::Value> SetScaleGravity(const v8::Arguments& args);
 
 		static v8::Handle<v8::Value> Rotate(const v8::Arguments& args);
+		static v8::Handle<v8::Value> SetRotationGravity(const v8::Arguments& args);
 
 		static v8::Handle<v8::Value> Effect(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Animate(const v8::Arguments& args);
