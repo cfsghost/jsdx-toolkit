@@ -180,6 +180,7 @@ namespace JSDXToolkit {
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAnimate", Actor::SetAnimate);
 
 		/* Constraint */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "clearConstraints", Actor::ClearConstraints);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setAlignConstraint", Actor::SetAlignConstraint);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setBindConstraint", Actor::SetBindConstraint);
 
@@ -1324,6 +1325,8 @@ namespace JSDXToolkit {
 
 		cb->cb->Call(cb->Holder, 0, NULL);
 
+		g_signal_handlers_disconnect_by_data(G_OBJECT(animation), user_data);
+
 		delete cb;
 	}
 
@@ -1449,8 +1452,19 @@ namespace JSDXToolkit {
 		return args.This();
 	}
 
+	Handle<Value> Actor::ClearConstraints(const Arguments &args)
+	{
+		HandleScope scope;
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_actor_clear_constraints(actor);
+
+		return args.This();
+	}
+
 	Handle<Value> Actor::SetAlignConstraint(const Arguments &args)
 	{
+		HandleScope scope;
 		ClutterConstraint *constraint;
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 
@@ -1488,6 +1502,7 @@ namespace JSDXToolkit {
 
 	Handle<Value> Actor::SetBindConstraint(const Arguments &args)
 	{
+		HandleScope scope;
 		ClutterConstraint *constraint;
 		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
 

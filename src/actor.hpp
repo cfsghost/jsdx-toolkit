@@ -102,6 +102,7 @@ namespace JSDXToolkit {
 		static v8::Handle<v8::Value> Effect(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Animate(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetAnimate(const v8::Arguments& args);
+		static v8::Handle<v8::Value> ClearConstraints(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetAlignConstraint(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetBindConstraint(const v8::Arguments& args);
 		static void _AnimationCompletedCallback(ClutterAnimation *animation, gpointer user_data);
