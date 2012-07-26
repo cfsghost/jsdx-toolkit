@@ -218,9 +218,11 @@ namespace JSDXToolkit {
 			return ThrowException(Exception::TypeError(
 				String::New("require callback function")));
 
+		bool reg = FALSE;
 		if (strcmp(*String::Utf8Value(Event->ToString()), "state") == 0) {
 
 			if (!media->notify_state_cb) {
+				reg = TRUE;
 				media->notify_state_cb = new NodeCallback;
 			} else {
 				media->notify_state_cb->Holder.Dispose();
@@ -230,11 +232,13 @@ namespace JSDXToolkit {
 			media->notify_state_cb->Holder = Persistent<Object>::New(args.Holder());
 			media->notify_state_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-			g_signal_connect(G_OBJECT(instance), "notify::playing", G_CALLBACK(Media::_NotifyStateCallback), (gpointer)media->notify_state_cb);
+			if (reg)
+				g_signal_connect(G_OBJECT(instance), "notify::playing", G_CALLBACK(Media::_NotifyStateCallback), (gpointer)media->notify_state_cb);
 
 		} else if (strcmp(*String::Utf8Value(Event->ToString()), "buffering") == 0) {
 
 			if (!media->notify_buffering_cb) {
+				reg = TRUE;
 				media->notify_buffering_cb = new NodeCallback;
 			} else {
 				media->notify_buffering_cb->Holder.Dispose();
@@ -244,11 +248,13 @@ namespace JSDXToolkit {
 			media->notify_buffering_cb->Holder = Persistent<Object>::New(args.Holder());
 			media->notify_buffering_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-			g_signal_connect(G_OBJECT(instance), "notify::buffer-fill", G_CALLBACK(Media::_NotifyBufferingCallback), (gpointer)media->notify_buffering_cb);
+			if (reg)
+				g_signal_connect(G_OBJECT(instance), "notify::buffer-fill", G_CALLBACK(Media::_NotifyBufferingCallback), (gpointer)media->notify_buffering_cb);
 
 		} else if (strcmp(*String::Utf8Value(Event->ToString()), "eos") == 0) {
 
 			if (!media->signal_eos_cb) {
+				reg = TRUE;
 				media->signal_eos_cb = new NodeCallback;
 			} else {
 				media->signal_eos_cb->Holder.Dispose();
@@ -258,11 +264,13 @@ namespace JSDXToolkit {
 			media->signal_eos_cb->Holder = Persistent<Object>::New(args.Holder());
 			media->signal_eos_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-			g_signal_connect(G_OBJECT(instance), "eos", G_CALLBACK(Media::_SignalEOSCallback), (gpointer)media->signal_eos_cb);
+			if (reg)
+				g_signal_connect(G_OBJECT(instance), "eos", G_CALLBACK(Media::_SignalEOSCallback), (gpointer)media->signal_eos_cb);
 
 		} else if (strcmp(*String::Utf8Value(Event->ToString()), "error") == 0) {
 
 			if (!media->signal_error_cb) {
+				reg = TRUE;
 				media->signal_error_cb = new NodeCallback;
 			} else {
 				media->signal_error_cb->Holder.Dispose();
@@ -272,7 +280,9 @@ namespace JSDXToolkit {
 			media->signal_error_cb->Holder = Persistent<Object>::New(args.Holder());
 			media->signal_error_cb->cb = Persistent<Function>::New(Handle<Function>::Cast(Callback));
 
-			g_signal_connect(G_OBJECT(instance), "error", G_CALLBACK(Media::_SignalErrorCallback), (gpointer)media->signal_error_cb);
+			if (reg)
+				g_signal_connect(G_OBJECT(instance), "error", G_CALLBACK(Media::_SignalErrorCallback), (gpointer)media->signal_error_cb);
+
 		} else {
 			Texture::On(args);
 		}
