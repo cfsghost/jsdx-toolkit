@@ -20,6 +20,9 @@
 
 #include "jsdx_toolkit.hpp"
 #include "actor.hpp"
+#ifndef ENABLE_MX
+#include "container.hpp"
+#endif
 #include "stage.hpp"
 #include "window.hpp"
 
@@ -155,7 +158,7 @@ namespace JSDXToolkit {
 
 			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
 #else
-		Actor::WidthSetter(name, info);
+		Actor::WidthSetter(name, value, info);
 #endif
 		}
 	}
@@ -172,7 +175,7 @@ namespace JSDXToolkit {
 
 		return scope.Close(Number::New(height));
 #else
-		Actor::WidthGetter(name, info);
+		Actor::HeightGetter(name, info);
 #endif
 	}
 
@@ -191,7 +194,7 @@ namespace JSDXToolkit {
 
 			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
 #else
-		Actor::WidthSetter(name, info);
+		Actor::HeightSetter(name, value, info);
 #endif
 		}
 	}

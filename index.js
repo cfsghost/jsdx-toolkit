@@ -331,6 +331,14 @@ function setTransientParent(_parent) {
 }
 
 /* Application */
+toolkit.Application.prototype.run = function(window) {
+	toolkit.main();
+};
+
+toolkit.Application.prototype.quit = function(window) {
+	toolkit.quit();
+};
+
 toolkit.Application.prototype.add = function(window) {
 	var self = this;
 

@@ -41,8 +41,6 @@ namespace JSDXToolkit {
 	{
 		HandleScope scope;
 
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "run", Application::Run);
-		NODE_SET_PROTOTYPE_METHOD(constructor_template, "quit", Application::Quit);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_add", Application::Add);
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "loadStyleFile", Application::LoadStyleFile);
@@ -97,24 +95,6 @@ namespace JSDXToolkit {
 	}
 
 	/* Methods */
-	Handle<Value> Application::Run(const Arguments &args)
-	{
-		Application *application = ObjectWrap::Unwrap<Application>(args.This());
-
-		ev_ref(EV_DEFAULT_UC);
-
-		return Undefined();
-	}
-
-	Handle<Value> Application::Quit(const Arguments &args)
-	{
-		Application *application = ObjectWrap::Unwrap<Application>(args.This());
-
-		ev_unref(EV_DEFAULT_UC);
-
-		return Undefined();
-	}
-
 	Handle<Value> Application::Add(const Arguments &args)
 	{
 		HandleScope scope;

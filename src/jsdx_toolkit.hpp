@@ -3,6 +3,7 @@
 
 #include <v8.h>
 #include <clutter/clutter.h>
+#include "context.hpp"
 
 namespace JSDXToolkit {
 
@@ -57,7 +58,6 @@ namespace JSDXToolkit {
 			cb.Dispose();
 		}
 	};
-
 }
 
 #endif

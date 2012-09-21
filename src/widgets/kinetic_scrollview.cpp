@@ -85,10 +85,10 @@ namespace JSDXToolkit {
 
 		policy = mx_kinetic_scroll_view_get_scroll_policy(MX_KINETIC_SCROLL_VIEW(instance));
 		if (policy == MX_SCROLL_POLICY_HORIZONTAL || policy == MX_SCROLL_POLICY_BOTH) {
-			return scope.Close(Boolean::New(True));
+			return scope.Close(Boolean::New(true));
 		}
 
-		return scope.Close(Boolean::New(False));
+		return scope.Close(Boolean::New(false));
 	}
 
 	void KineticScrollView::PolicyHorizontalSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
@@ -124,10 +124,10 @@ namespace JSDXToolkit {
 
 		policy = mx_kinetic_scroll_view_get_scroll_policy(MX_KINETIC_SCROLL_VIEW(instance));
 		if (policy == MX_SCROLL_POLICY_VERTICAL || policy == MX_SCROLL_POLICY_BOTH) {
-			return scope.Close(Boolean::New(True));
+			return scope.Close(Boolean::New(true));
 		}
 
-		return scope.Close(Boolean::New(False));
+		return scope.Close(Boolean::New(false));
 	}
 
 	void KineticScrollView::PolicyVerticalSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
