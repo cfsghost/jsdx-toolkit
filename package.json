@@ -1,6 +1,6 @@
 {
 	"name": "jsdx-toolkit",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Graphical toolkit on JSDX framework",
 	"keywords": [
 		"jsdx",
@@ -23,9 +23,9 @@
 		"tests": "tests"
 	},
 	"engines": {
-		"node": ">= 0.4.0"
+		"node": ">= 0.8.0"
 	},
 	"scripts": {
-		"install": "node-waf configure build"
+		"install": "node-gyp configure build"
 	}
 }
