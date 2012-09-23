@@ -118,9 +118,7 @@ function add() {
 		self.actor_list = [ widget ];
 
 	/* Call internal method in next time, to avoid that process was confused cause crashing */
-	process.nextTick(function() {
-		self._add.apply(self, args);
-	});
+	self._add.apply(self, args);
 
 	/* If container belongs to specific application, child has the same one as well. */
 	if ('application' in this) {
@@ -348,9 +346,7 @@ toolkit.Application.prototype.add = function(window) {
 		self.window_list = [ window ];
 
 	/* Call internal method in next time, to avoid that process was confused cause crashing */
-	process.nextTick(function() {
-		self._add(window);
-	});
+	self._add(window);
 
 	window.parent = this;
 
