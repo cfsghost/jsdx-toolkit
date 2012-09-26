@@ -117,9 +117,6 @@ function add() {
 	else
 		self.actor_list = [ widget ];
 
-	/* Call internal method in next time, to avoid that process was confused cause crashing */
-	self._add.apply(self, args);
-
 	/* If container belongs to specific application, child has the same one as well. */
 	if ('application' in this) {
 
@@ -134,6 +131,9 @@ function add() {
 				self.application.widget[id] = idDict[id];
 		});
 	}
+
+	/* Call internal method in next time, to avoid that process was confused cause crashing */
+	self._add.apply(self, args);
 }
 
 function remove(widget) {
@@ -255,8 +255,6 @@ function setChild(child) {
 	else
 		self.actor_list = [ child ];
 
-	this._setChild(child);
-
 	/* If container belongs to specific application, child has the same one as well. */
 	if ('application' in this) {
 
@@ -271,6 +269,8 @@ function setChild(child) {
 				self.application.widget[id] = idDict[id];
 		});
 	}
+
+	this._setChild(child);
 }
 
 /* Widgets */
@@ -345,9 +345,6 @@ toolkit.Application.prototype.add = function(window) {
 	else
 		self.window_list = [ window ];
 
-	/* Call internal method in next time, to avoid that process was confused cause crashing */
-	self._add(window);
-
 	window.parent = this;
 
 	/* Initializing object to store childs */
@@ -364,6 +361,9 @@ toolkit.Application.prototype.add = function(window) {
 
 	/* set all child to belongs to this application */
 	internal.setApplication(window, this);
+
+	/* Call internal method in next time, to avoid that process was confused cause crashing */
+	self._add(window);
 };
 
 toolkit.Application.prototype.createWindow = function(callback) {

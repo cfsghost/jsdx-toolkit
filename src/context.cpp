@@ -33,6 +33,7 @@ namespace JSDXToolkit {
 
 		g_main_context_acquire(gc);
 		ctx->gc = g_main_context_ref(gc);
+		ctx->nfds = 0;
 		ctx->fds = NULL;
 
 		/* Prepare */
@@ -76,8 +77,7 @@ namespace JSDXToolkit {
 		gint timeout;
 		struct gcontext *ctx = &g_context;
 
-		g_main_context_dispatch(ctx->gc);
-
+		g_main_context_wakeup(ctx->gc);
 		g_main_context_prepare(ctx->gc, &ctx->max_priority);
 
 		/* Getting all sources from GLib main context */
@@ -114,6 +114,9 @@ namespace JSDXToolkit {
 	{
 		struct gcontext *ctx = &g_context;
 
-		g_main_context_check(ctx->gc, ctx->max_priority, ctx->fds, ctx->nfds);
+		if (ctx->nfds)
+			g_main_context_check(ctx->gc, ctx->max_priority, ctx->fds, ctx->nfds);
+
+		g_main_context_dispatch(ctx->gc);
 	}
 }

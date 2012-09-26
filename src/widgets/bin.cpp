@@ -82,6 +82,8 @@ namespace JSDXToolkit {
 
 			mx_bin_set_child(MX_BIN(instance), CLUTTER_ACTOR(actor));
 		}
+
+		return scope.Close(args.This());
 	}
 
 	Handle<Value> Bin::Focus(const Arguments &args)
@@ -92,5 +94,7 @@ namespace JSDXToolkit {
 		ClutterActor *stage = clutter_actor_get_stage(instance);
 
 		mx_focus_manager_push_focus(mx_focus_manager_get_for_stage(CLUTTER_STAGE(stage)), MX_FOCUSABLE(instance));
+
+		return scope.Close(args.This());
 	}
 }
