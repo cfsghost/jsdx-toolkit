@@ -77,7 +77,6 @@ namespace JSDXToolkit {
 		gint timeout;
 		struct gcontext *ctx = &g_context;
 
-		g_main_context_wakeup(ctx->gc);
 		g_main_context_prepare(ctx->gc, &ctx->max_priority);
 
 		/* Getting all sources from GLib main context */
@@ -85,13 +84,10 @@ namespace JSDXToolkit {
 			g_free(ctx->fds);
 			g_free(ctx->poll_handles);
 
-			ctx->allocated_nfds = 1;
-			while (ctx->allocated_nfds < ctx->nfds) {
-				ctx->allocated_nfds <<= 1;
-			}
+			ctx->allocated_nfds = ctx->nfds;
 
-			ctx->fds = g_new(GPollFD, ctx->allocated_nfds);
-			ctx->poll_handles = g_new(uv_poll_t, ctx->allocated_nfds);
+			ctx->fds = g_new(GPollFD, ctx->nfds);
+			ctx->poll_handles = g_new(uv_poll_t, ctx->nfds);
 		}
 
 		/* Poll */
@@ -117,6 +113,7 @@ namespace JSDXToolkit {
 
 		/* Release all polling events which aren't finished yet. */
 		for (i = 0; i < ctx->nfds; ++i) {
+			GPollFD *pfd = ctx->fds + i;
 			uv_poll_t *pt = ctx->poll_handles + i;
 
 			if (uv_is_active((uv_handle_t *)pt)) {
@@ -126,9 +123,7 @@ namespace JSDXToolkit {
 			}
 		}
 
-		if (ctx->nfds)
-			g_main_context_check(ctx->gc, ctx->max_priority, ctx->fds, ctx->nfds);
-
+		g_main_context_check(ctx->gc, ctx->max_priority, ctx->fds, ctx->nfds);
 		g_main_context_dispatch(ctx->gc);
 	}
 }
