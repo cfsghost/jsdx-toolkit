@@ -20,4 +20,7 @@ var dialog = new toolkit.Widget.Dialog;
 dialog.setTransientParent(stage);
 dialog.show();
 
+var spinner = new toolkit.Widget.Spinner();
+dialog.add(spinner);
+
 toolkit.main();
