@@ -33,6 +33,8 @@ namespace JSDXToolkit {
 		JSDXWindowType windowType;
 		int x;
 		int y;
+		int width;
+		int height;
 
 #if ENABLE_MX
 		MxWindow *_window;

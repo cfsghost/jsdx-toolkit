@@ -43,6 +43,8 @@ namespace JSDXToolkit {
 		parent = NULL;
 		x = -1;
 		y = -1;
+		width = -1;
+		height = -1;
 		windowType = JSDX_WINDOW_TYPE_NORMAL;
 		_actor = clutter_stage_new();
 		clutter_stage_set_title(CLUTTER_STAGE(_actor), "Default");
@@ -149,16 +151,23 @@ namespace JSDXToolkit {
 
 		if (value->IsNumber()) {
 			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 #if ENABLE_MX
 			gint width, height;
-			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
 
-			width = value->ToInteger()->Value();
+			window->width = value->ToInteger()->Value();
 
-			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
+			if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
+				mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+				if (window->width < 0)
+					window->width = width;
+
+				mx_window_set_window_size(MX_WINDOW(window->_window), window->width, window->height);
+			}
 #else
-		Actor::WidthSetter(name, value, info);
+			Actor::WidthSetter(name, value, info);
 #endif
 		}
 	}
@@ -185,16 +194,23 @@ namespace JSDXToolkit {
 
 		if (value->IsNumber()) {
 			JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
+			ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 #if ENABLE_MX
 			gint width, height;
-			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
 
-			height = value->ToInteger()->Value();
+			window->height = value->ToInteger()->Value();
 
-			mx_window_set_window_size(MX_WINDOW(window->_window), width, height);
+			if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
+				mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+				if (window->height < 0)
+					window->height = height;
+
+				mx_window_set_window_size(MX_WINDOW(window->_window), window->width, window->height);
+			}
 #else
-		Actor::HeightSetter(name, value, info);
+			Actor::HeightSetter(name, value, info);
 #endif
 		}
 	}
@@ -524,6 +540,9 @@ namespace JSDXToolkit {
 				clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
 			}
 		}
+
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 #if ENABLE_MX
@@ -537,6 +556,15 @@ namespace JSDXToolkit {
 
 		if (window->y < 0)
 			window->y = y;
+
+		gint width, height;
+
+		mx_window_get_window_size(instance, &width, &height);
+		if (window->width < 0)
+			window->width = width;
+
+		if (window->height < 0)
+			window->height = height;
 #else
 		/* TODO: Using pure X11 solution to get window position */
 #endif
@@ -549,13 +577,9 @@ namespace JSDXToolkit {
 
 #if ENABLE_MX
 		mx_window_set_window_position(instance, window->x, window->y);
+		mx_window_set_window_size(instance, window->width, window->height);
 #else
 		/* TODO: Using pure X11 solution to set window position */
-#endif
-
-#if USE_X11
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
-		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 		return args.This();
@@ -595,6 +619,9 @@ namespace JSDXToolkit {
 				clutter_x11_add_filter(JSDXWindow::MenuEventHandler, (gpointer)window);
 			}
 		}
+
+		X11::setWindowDecorator(disp, w, window->hasDecorator);
+		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 #if ENABLE_MX
@@ -608,6 +635,15 @@ namespace JSDXToolkit {
 
 		if (window->y < 0)
 			window->y = y;
+
+		gint width, height;
+
+		mx_window_get_window_size(instance, &width, &height);
+		if (window->width < 0)
+			window->width = width;
+
+		if (window->height < 0)
+			window->height = height;
 #else
 		/* TODO: Using pure X11 solution to get window position */
 #endif
@@ -616,13 +652,9 @@ namespace JSDXToolkit {
 
 #if ENABLE_MX
 		mx_window_set_window_position(instance, window->x, window->y);
+		mx_window_set_window_size(instance, window->width, window->height);
 #else
 		/* TODO: Using pure X11 solution to set window position */
-#endif
-
-#if USE_X11
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
-		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 		return args.This();
