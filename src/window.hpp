@@ -78,6 +78,7 @@ namespace JSDXToolkit {
 		/* Methods */
 		static v8::Handle<v8::Value> SetChild(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetParentWindow(const v8::Arguments& args);
+		static v8::Handle<v8::Value> Focus(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Show(const v8::Arguments& args);
 		static v8::Handle<v8::Value> ShowAll(const v8::Arguments& args);
 		static v8::Handle<v8::Value> Hide(const v8::Arguments& args);

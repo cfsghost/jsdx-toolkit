@@ -96,6 +96,7 @@ namespace JSDXToolkit {
 
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setParentWindow", JSDXWindow::SetParentWindow);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "_setChild", JSDXWindow::SetChild);
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "focus", JSDXWindow::Focus);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "show", JSDXWindow::Show);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "showAll", JSDXWindow::ShowAll);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "hide", JSDXWindow::Hide);
@@ -500,6 +501,26 @@ namespace JSDXToolkit {
 */
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(args.This());
 		window->parent = ObjectWrap::Unwrap<JSDXWindow>(args[0]->ToObject());
+
+#endif
+
+		return args.This();
+	}
+
+	Handle<Value> JSDXWindow::Focus(const Arguments &args)
+	{
+		HandleScope scope;
+
+#if USE_X11
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+		Display *disp = clutter_x11_get_default_display();
+		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+/*
+		ClutterActor *parent = ObjectWrap::Unwrap<Actor>(args[0]->ToObject())->_actor;
+		Window w = clutter_x11_get_stage_window(CLUTTER_STAGE(actor));
+*/
+
+		X11::setActive(disp, clutter_x11_get_root_window(), w, TRUE);
 
 #endif
 

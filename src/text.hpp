@@ -22,6 +22,7 @@ namespace JSDXToolkit {
 		static void TextSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 		/* Methods */
+		static v8::Handle<v8::Value> Focus(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetColor(const v8::Arguments& args);
 		static v8::Handle<v8::Value> GetColor(const v8::Arguments& args);
 		static v8::Handle<v8::Value> SetFontName(const v8::Arguments& args);

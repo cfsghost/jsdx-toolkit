@@ -44,6 +44,7 @@ namespace JSDXToolkit {
 		Actor::PrototypeMethodsInit(constructor_template);
 
 		/* Methods */
+		NODE_SET_PROTOTYPE_METHOD(constructor_template, "focus", Text::Focus);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setColor", Text::SetColor);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "getColor", Text::GetColor);
 		NODE_SET_PROTOTYPE_METHOD(constructor_template, "setFontName", Text::SetFontName);
@@ -57,7 +58,6 @@ namespace JSDXToolkit {
 	Handle<Value> Text::New(const Arguments& args)
 	{
 		HandleScope scope;
-		static ClutterColor color;
 
 		if (!args.IsConstructCall()) {
 			return ThrowException(Exception::TypeError(
@@ -101,6 +101,17 @@ namespace JSDXToolkit {
 
 			clutter_text_set_text(CLUTTER_TEXT(instance), *String::Utf8Value(value->ToString()));
 		}
+	}
+
+	/* Methods */
+	Handle<Value> Text::Focus(const Arguments &args)
+	{
+		HandleScope scope;
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(args.This())->_actor;
+
+		clutter_stage_set_key_focus(CLUTTER_STAGE(clutter_actor_get_stage(actor)), actor);
+
+		return args.This();
 	}
 
 	Handle<Value> Text::SetColor(const Arguments &args)

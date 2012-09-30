@@ -15,6 +15,7 @@
 
 #include "../jsdx_toolkit.hpp"
 #include "../actor.hpp"
+#include "../text.hpp"
 #include "widget.hpp"
 #include "bin.hpp"
 #include "entry.hpp"
@@ -48,6 +49,7 @@ namespace JSDXToolkit {
 
 		Widget::PrototypeMethodsInit(constructor_template);
 		Bin::PrototypeMethodsInit(constructor_template);
+		Text::PrototypeMethodsInit(constructor_template);
 
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("text"), Entry::TextGetter, Entry::TextSetter);
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("passwordChar"), Entry::PasswordCharGetter, Entry::PasswordCharSetter);
