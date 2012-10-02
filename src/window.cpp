@@ -137,12 +137,18 @@ namespace JSDXToolkit {
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
-		gint width, height;
-		mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
-		return scope.Close(Number::New(width));
+		if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
+			gint width, height;
+			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+			return scope.Close(Number::New(width));
+		} else {
+			return scope.Close(Number::New(window->width));
+		}
 #else
-		Actor::WidthGetter(name, info);
+		return Actor::WidthGetter(name, info);
 #endif
 	}
 
@@ -180,12 +186,18 @@ namespace JSDXToolkit {
 		JSDXWindow *window = ObjectWrap::Unwrap<JSDXWindow>(info.This());
 
 #if ENABLE_MX
-		gint width, height;
-		mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+		ClutterActor *actor = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
-		return scope.Close(Number::New(height));
+		if (CLUTTER_ACTOR_IS_REALIZED(actor)) {
+			gint width, height;
+			mx_window_get_window_size(MX_WINDOW(window->_window), &width, &height);
+
+			return scope.Close(Number::New(height));
+		} else {
+			return scope.Close(Number::New(window->height));
+		}
 #else
-		Actor::HeightGetter(name, info);
+		return Actor::HeightGetter(name, info);
 #endif
 	}
 
@@ -562,8 +574,8 @@ namespace JSDXToolkit {
 			}
 		}
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
-		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
+		if (window->windowType != JSDX_WINDOW_TYPE_NORMAL)
+			X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
 #if ENABLE_MX
@@ -596,9 +608,15 @@ namespace JSDXToolkit {
 		clutter_actor_show(actor);
 #endif
 
+#if USE_X11
+		if (window->windowType != JSDX_WINDOW_TYPE_MENU && window->windowType != JSDX_WINDOW_TYPE_POPUP_MENU) {
+			X11::setWindowDecorator(disp, w, window->hasDecorator);
+		}
+#endif
+
 #if ENABLE_MX
-		mx_window_set_window_position(instance, window->x, window->y);
 		mx_window_set_window_size(instance, window->width, window->height);
+		mx_window_set_window_position(instance, window->x, window->y);
 #else
 		/* TODO: Using pure X11 solution to set window position */
 #endif
@@ -641,7 +659,6 @@ namespace JSDXToolkit {
 			}
 		}
 
-		X11::setWindowDecorator(disp, w, window->hasDecorator);
 		X11::windowConfigure(disp, clutter_x11_get_root_window(), w, (X11::X11WindowType)window->windowType);
 #endif
 
@@ -670,6 +687,12 @@ namespace JSDXToolkit {
 #endif
 
 		clutter_actor_show_all(actor);
+
+#if USE_X11
+		if (window->windowType != JSDX_WINDOW_TYPE_MENU && window->windowType != JSDX_WINDOW_TYPE_POPUP_MENU) {
+			X11::setWindowDecorator(disp, w, window->hasDecorator);
+		}
+#endif
 
 #if ENABLE_MX
 		mx_window_set_window_position(instance, window->x, window->y);

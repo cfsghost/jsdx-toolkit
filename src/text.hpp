@@ -20,6 +20,8 @@ namespace JSDXToolkit {
 		/* Accessor */
 		static v8::Handle<v8::Value> TextGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 		static void TextSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+		static v8::Handle<v8::Value> EditableGetter(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+		static void EditableSetter(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 		/* Methods */
 		static v8::Handle<v8::Value> Focus(const v8::Arguments& args);

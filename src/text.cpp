@@ -52,6 +52,7 @@ namespace JSDXToolkit {
 
 		/* Accessor */
 		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("text"), Text::TextGetter, Text::TextSetter);
+		constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("editable"), Text::EditableGetter, Text::EditableSetter);
 	}
 
 	/* ECMAScript constructor */
@@ -100,6 +101,28 @@ namespace JSDXToolkit {
 			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
 
 			clutter_text_set_text(CLUTTER_TEXT(instance), *String::Utf8Value(value->ToString()));
+		}
+	}
+
+	Handle<Value> Text::EditableGetter(Local<String> name, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+		return scope.Close(
+			Boolean::New(clutter_text_get_editable(CLUTTER_TEXT(instance)))
+		);
+	}
+
+	void Text::EditableSetter(Local<String> name, Local<Value> value, const AccessorInfo& info)
+	{
+		HandleScope scope;
+
+		if (value->IsBoolean()) {
+			ClutterActor *instance = ObjectWrap::Unwrap<Actor>(info.This())->_actor;
+
+			clutter_text_set_editable(CLUTTER_TEXT(instance), value->ToBoolean()->Value());
 		}
 	}
 
