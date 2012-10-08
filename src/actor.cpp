@@ -864,9 +864,13 @@ namespace JSDXToolkit {
 
 		/* create a JavaScript Object */
 		Local<Object> o = Object::New();
-		o->Set(String::New("x"), Number::New(event->motion.x));
-		o->Set(String::New("y"), Number::New(event->motion.y));
 		o->Set(String::New("time"), Uint32::New(event->motion.time));
+
+		/* Get coordinates on actor */
+		gfloat actor_x, actor_y;
+		clutter_actor_transform_stage_point(actor, event->motion.x, event->motion.y, &actor_x, &actor_y);
+		o->Set(String::New("x"), Number::New(actor_x));
+		o->Set(String::New("y"), Number::New(actor_y));
 
 		Local<Value> argv[argc] = {
 			Local<Value>::New(Integer::New(JSDX_TOOLKIT_EVENT_MOTION)),
