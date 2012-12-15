@@ -31,5 +31,4 @@ texture1.animate(toolkit.EASE_IN_QUINT, 1000, {
 	}, { loop: true });
 });
 
-
 toolkit.main();

@@ -19,6 +19,9 @@
 		"type": "git",
 		"url": "git@github.com:cfsghost/jsdx-toolkit.git"
 	},
+	"dependencies": {
+		"gcontext": ">= 0.0.2"
+	},
 	"directories": {
 		"tests": "tests"
 	},

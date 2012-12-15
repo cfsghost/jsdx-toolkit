@@ -13,7 +13,6 @@
 #include <clutter/x11/clutter-x11.h>
 
 #include "jsdx_toolkit.hpp"
-#include "context.hpp"
 
 #include "actor.hpp"
 #include "container.hpp"
@@ -42,8 +41,6 @@ namespace JSDXToolkit {
 	using namespace node;
 	using namespace v8;
 
-	Context *context = new Context;
-
 	static Handle<Value> ClutterInit(const Arguments& args)
 	{
 		HandleScope scope;
@@ -54,8 +51,6 @@ namespace JSDXToolkit {
 	static Handle<Value> ClutterMain(const Arguments& args)
 	{
 		HandleScope scope;
-
-		context->Init();
 
 		return Undefined();
 	}
@@ -71,8 +66,6 @@ namespace JSDXToolkit {
 
 	static Handle<Value> ClutterMainQuit(const Arguments& args)
 	{
-		context->Uninit();
-
 		return Undefined();
 	}
 	 
@@ -218,8 +211,8 @@ namespace JSDXToolkit {
 			JSDX_TOOLKIT_DEFINE_CONSTANT(target, "TEXTURE_X11", JSDX_TOOLKIT_TEXTURE_X11);
 
 			NODE_SET_METHOD(target, "init", ClutterInit);
-			NODE_SET_METHOD(target, "main", ClutterMain);
-			NODE_SET_METHOD(target, "quit", ClutterMainQuit);
+			NODE_SET_METHOD(target, "_main", ClutterMain);
+			NODE_SET_METHOD(target, "_quit", ClutterMainQuit);
 			NODE_SET_METHOD(target, "useARGB", SetUseARGBVisual);
 
 			/* Application */

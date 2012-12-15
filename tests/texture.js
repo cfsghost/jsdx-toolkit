@@ -42,7 +42,8 @@ texture3.keepAspectRatio(true);
 texture3.loadFile('fred.jpg');
 texture3.width = 50;
 texture3.setPosition(50, 50);
-texture3.effect(toolkit.EFFECT_DESATURATE, 0.5);
+//texture3.effect(toolkit.EFFECT_DESATURATE, 0.5);
+texture3.effect(toolkit.EFFECT_BLUR);
 stage.add(texture3);
 
 console.log('texture3 keepAspectRatio() = ' + texture3.keepAspectRatio());

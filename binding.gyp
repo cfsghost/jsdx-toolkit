@@ -13,7 +13,6 @@
 			'target_name': 'jsdx_toolkit',
 			'sources': [
 				'src/jsdx_toolkit.cpp',
-				'src/context.cpp',
 				'src/application.cpp',
 				'src/window.cpp',
 				'src/actor.cpp',

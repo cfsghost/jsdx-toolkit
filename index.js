@@ -1,6 +1,18 @@
+var GContext = require('gcontext');
+
 var toolkit = module.exports = require('./build/Release/jsdx_toolkit');
 toolkit.JTKML = require('./lib/jtkml');
 toolkit.UIRender = require('./lib/ui-render');
+
+toolkit.main = function() {
+	toolkit._main();
+	GContext.init();
+};
+
+toolkit.quit = function() {
+	toolkit._quit();
+	GContext.uninit();
+};
 
 var internal = require('./lib/internal');
 
